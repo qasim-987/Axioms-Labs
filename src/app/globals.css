@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #030303;
+  --foreground: #f4f4f5;
+  --accent-purple: #8587e3;
+  --accent-violet: #696aac;
+  --card-border: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Glassmorphism card styles */
+.glass-panel {
+  background: rgba(14, 14, 18, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(20, 20, 26, 0.85);
+  border-color: rgba(133, 135, 227, 0.35);
+  box-shadow: 0 12px 36px -10px rgba(133, 135, 227, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Conic & Radial Light Rays Backdrop */
+.light-rays-bg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1400px;
+  height: 900px;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ray-conic {
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1200px;
+  height: 900px;
+  background: conic-gradient(
+    from 180deg at 50% 0%,
+    transparent 40deg,
+    rgba(133, 135, 227, 0.18) 60deg,
+    rgba(105, 106, 172, 0.28) 85deg,
+    rgba(255, 255, 255, 0.35) 90deg,
+    rgba(105, 106, 172, 0.28) 95deg,
+    rgba(133, 135, 227, 0.18) 120deg,
+    transparent 140deg
+  );
+  filter: blur(55px);
+  opacity: 0.65;
+}
+
+.ray-glow {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 380px;
+  background: radial-gradient(
+    ellipse at 50% 20%,
+    rgba(133, 135, 227, 0.45) 0%,
+    rgba(105, 106, 172, 0.2) 50%,
+    transparent 80%
+  );
+  filter: blur(40px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050506;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(133, 135, 227, 0.4);
+}
+
+/* Tabular Numerals for live clock and animated counters */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
