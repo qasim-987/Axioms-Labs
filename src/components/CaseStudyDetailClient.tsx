@@ -45,9 +45,9 @@ export default function CaseStudyDetailClient({
       >
         <LightRays />
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-8 sm:px-12 lg:px-16">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-8">
+          <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-500 mb-8">
             <Link href="/" className="hover:text-white transition-colors">
               Home
             </Link>
@@ -61,13 +61,13 @@ export default function CaseStudyDetailClient({
             </span>
           </div>
 
-          {/* Header Block */}
-          <div className="mb-14">
+          {/* Centered Header Block */}
+          <div className="mb-14 text-center flex flex-col items-center">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: MOTION_EASE.cinematicOut }}
-              className="flex flex-wrap items-center gap-3 mb-5"
+              className="flex flex-wrap items-center justify-center gap-3 mb-5"
             >
               <span className="text-xs font-mono font-bold text-white px-3 py-1 rounded-md bg-white/[0.08] border border-white/10">
                 {study.client}
@@ -85,7 +85,7 @@ export default function CaseStudyDetailClient({
               text={study.title}
               accentFromWordIndex={3}
               triggerOnLoad
-              className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4 leading-tight"
+              className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4 leading-tight text-center max-w-4xl mx-auto"
             />
 
             <motion.p
@@ -96,7 +96,7 @@ export default function CaseStudyDetailClient({
                 delay: 0.35,
                 ease: MOTION_EASE.cinematicOut,
               }}
-              className="text-lg text-zinc-300 leading-relaxed font-light max-w-3xl"
+              className="text-lg text-zinc-300 leading-relaxed font-light max-w-3xl mx-auto"
             >
               {study.tagline}
             </motion.p>

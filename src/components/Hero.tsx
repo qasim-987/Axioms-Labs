@@ -5,127 +5,191 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import ParticleSphereHero from "./ParticleSphereHero";
 import LightBeam from "./LightBeam";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import RollingNumber from "./RollingNumber";
+import { Sparkles } from "lucide-react";
 
 export default function Hero() {
-  return (
-    <section className="relative w-full min-h-screen bg-[#020108] overflow-hidden flex flex-col justify-between pt-24 pb-12 sm:pb-16 px-6 sm:px-10 lg:px-16 selection:bg-brand-primary selection:text-white">
-      {/* LAYER 1: Deep Near-Black Background is on the parent section (#020108) */}
+  const handleMagneticMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.18;
+    const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.18;
+    e.currentTarget.style.transform = `translate3d(${dx.toFixed(
+      1
+    )}px, ${dy.toFixed(1)}px, 0)`;
+  };
 
-      {/* LAYER 2: Giant Ghost Watermark */}
+  const handleMagneticLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.transform = "translate3d(0px, 0px, 0)";
+  };
+
+  return (
+    <section className="relative w-full min-h-screen bg-[#020108] overflow-hidden flex flex-col justify-between pt-28 pb-12 sm:pb-16 selection:bg-brand-primary selection:text-white">
+      {/* LAYER 1B: Centered Radial Precision Micro-Grid Backdrop */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0"
+        className="absolute inset-0 pointer-events-none select-none z-0 opacity-[0.045]"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgba(255, 255, 255, 0.65) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+          backgroundPosition: "center center",
+          maskImage:
+            "radial-gradient(circle at 50% 50%, black 18%, transparent 68%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at 50% 50%, black 18%, transparent 68%)",
+        }}
+      />
+
+      {/* LAYER 2: Centered Giant Ghost Watermark (fits 100% centered inside viewport without edge clipping) */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 px-8"
       >
-        <span className="text-[34vh] md:text-[40vh] font-extrabold uppercase tracking-tight text-white/[0.035] whitespace-nowrap leading-none scale-y-110">
+        <span
+          className="font-extrabold uppercase tracking-[0.03em] text-white/[0.038] whitespace-nowrap leading-none scale-y-110 text-center mx-auto"
+          style={{ fontSize: "clamp(2.25rem, 9.2vw, 9rem)" }}
+        >
           AXIOM STUDIO
         </span>
       </div>
 
-      {/* LAYER 3: Volumetric Violet-Blue Light Beam from Top-Left */}
+      {/* LAYER 3: Symmetrical Volumetric Violet-Blue Light Beam */}
       <LightBeam />
 
-      {/* LAYER 4: Hollow 3D Particle Sphere with Fibonacci distribution & Cursor Physics */}
+      {/* LAYER 4: Centered Hollow 3D Particle Sphere with Fibonacci Distribution & Cursor Physics */}
       <ParticleSphereHero />
 
-      {/* LAYER 5: Foreground Typography, CTAs and Stats UI (z-10, sits in front of sphere) */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto flex-1 flex flex-col justify-between pointer-events-none">
-        {/* Top spacer below navbar */}
-        <div className="h-6 sm:h-12" />
+      {/* LAYER 5: Centered Foreground Typography, CTA & Balanced Stats Container */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-8 sm:px-14 lg:px-20 flex-1 flex flex-col items-center justify-between text-center pointer-events-none">
+        {/* Top breathing spacer below fixed navbar */}
+        <div className="h-4 sm:h-8" />
 
-        {/* Headline Left-Center (Sphere sits behind this) */}
-        <div className="my-auto py-12 sm:py-16 pointer-events-auto">
-          <motion.div
+        {/* Centered Main Hero Stack (Headline + Subtext + CTA) */}
+        <div className="my-auto py-10 sm:py-14 flex flex-col items-center justify-center text-center max-w-4xl mx-auto pointer-events-auto">
+          <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col tracking-tight text-white text-4xl sm:text-6xl md:text-[62px] lg:text-[70px] leading-[1.08] select-none"
+            className="flex flex-col items-center justify-center text-center tracking-tight text-white text-4xl sm:text-6xl md:text-[64px] lg:text-[72px] leading-[1.08] select-none mb-7"
           >
-            {/* Line 1 */}
-            <div className="flex items-center flex-wrap">
+            {/* Line 1 — Centered */}
+            <span className="flex items-center justify-center flex-wrap gap-x-3 sm:gap-x-4">
               <span className="font-light text-white">Building</span>
-              <span className="font-extrabold italic text-white ml-3 sm:ml-4">Digital</span>
-            </div>
+              <span className="font-extrabold italic text-white">Digital</span>
+            </span>
 
-            {/* Line 2 — Indented ~170px on desktop */}
-            <div className="flex items-center flex-wrap mt-2 sm:mt-3 pl-0 sm:pl-[120px] md:pl-[170px]">
-              <span className="font-extrabold italic text-white mr-3 sm:mr-4">Solutions</span>
+            {/* Line 2 — Centered */}
+            <span className="flex items-center justify-center flex-wrap gap-x-3 sm:gap-x-4 mt-2 sm:mt-3">
+              <span className="font-extrabold italic text-white">
+                Solutions
+              </span>
               <span className="font-light text-white">That Matter</span>
-            </div>
-          </motion.div>
-        </div>
+            </span>
+          </motion.h1>
 
-        {/* Bottom Section: Subtext & CTA (Left) + Stats Row (Right) */}
-        <div className="w-full flex flex-col md:flex-row items-start md:items-end justify-between gap-8 sm:gap-12 pt-6 pointer-events-auto">
-          {/* Subtext and Primary CTA Button (Bottom-Left) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+          {/* Centered Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-md flex flex-col items-start"
+            transition={{
+              duration: 0.85,
+              delay: 0.14,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="max-w-xl mx-auto text-center text-sm sm:text-base md:text-lg text-white/85 leading-relaxed font-normal mb-8"
           >
-            <p className="text-sm sm:text-base text-white/85 leading-relaxed font-normal mb-6">
-              We empower organizations with AI that turns complex challenges into real-world outcomes.
-            </p>
+            We empower organizations with AI that turns complex challenges into
+            real-world outcomes.
+          </motion.p>
 
+          {/* Centered Primary CTA Pill */}
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.24,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="flex items-center justify-center"
+          >
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-white tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
+              className="inline-flex items-center justify-center px-9 py-3.5 rounded-full text-sm font-semibold text-white tracking-wide transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] will-change-transform"
               style={{
                 background: "linear-gradient(135deg, #6b5fd6 0%, #8a7ff0 100%)",
-                boxShadow: "0 0 28px rgba(107, 95, 214, 0.55), 0 4px 14px rgba(0, 0, 0, 0.3)",
+                boxShadow:
+                  "0 0 32px rgba(107, 95, 214, 0.55), 0 4px 16px rgba(0, 0, 0, 0.35)",
               }}
             >
               <span>Start Your Project</span>
             </Link>
           </motion.div>
-
-          {/* Stats Row (Bottom-Right) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-wrap items-center gap-8 sm:gap-10 lg:gap-12"
-          >
-            {/* Stat 1 */}
-            <div className="flex items-center gap-3">
-              <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight">50+</span>
-              <span className="text-xs text-zinc-400 font-medium leading-snug">
-                Projects
-                <br />
-                Delivered
-              </span>
-            </div>
-
-            {/* Stat 2 */}
-            <div className="flex items-center gap-3">
-              <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight">100%</span>
-              <span className="text-xs text-zinc-400 font-medium leading-snug">
-                Client
-                <br />
-                Satisfaction
-              </span>
-            </div>
-
-            {/* Stat 3 */}
-            <div className="flex items-center gap-3">
-              <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight">24/7</span>
-              <span className="text-xs text-zinc-400 font-medium leading-snug">
-                Support
-                <br />
-                Available
-              </span>
-            </div>
-          </motion.div>
         </div>
+
+        {/* Centered Bottom Metrics Strip with Symmetrical Side Breathing Space */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.85, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-3xl mx-auto pt-7 border-t border-white/[0.08] flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16 pointer-events-auto"
+        >
+          {/* Stat 1 */}
+          <div className="flex items-center gap-3 text-left">
+            <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
+              <RollingNumber value={50} duration={1700} suffix="+" />
+            </span>
+            <span className="text-xs text-zinc-400 font-medium leading-snug">
+              Projects
+              <br />
+              Delivered
+            </span>
+          </div>
+
+          <div
+            aria-hidden="true"
+            className="hidden sm:block h-8 w-px bg-white/[0.1]"
+          />
+
+          {/* Stat 2 */}
+          <div className="flex items-center gap-3 text-left">
+            <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
+              <RollingNumber value={100} duration={1900} suffix="%" />
+            </span>
+            <span className="text-xs text-zinc-400 font-medium leading-snug">
+              Client
+              <br />
+              Satisfaction
+            </span>
+          </div>
+
+          <div
+            aria-hidden="true"
+            className="hidden sm:block h-8 w-px bg-white/[0.1]"
+          />
+
+          {/* Stat 3 */}
+          <div className="flex items-center gap-3 text-left">
+            <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-mono tabular-nums">
+              24/7
+            </span>
+            <span className="text-xs text-zinc-400 font-medium leading-snug">
+              Support
+              <br />
+              Available
+            </span>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Floating Chat Badge (Bottom-Right Corner) */}
-      <div className="fixed bottom-5 right-5 z-40 pointer-events-auto">
-        <button
-          type="button"
-          aria-label="Start Conversation with Axiom AI"
-          className="group relative w-12 h-12 rounded-full bg-[#0d0c15] border border-white/20 shadow-2xl shadow-purple-600/30 flex items-center justify-center transition-all duration-300 hover:scale-108 hover:border-brand-primary/60"
+      {/* Floating Quick-Contact Badge (Bottom-Right Corner, clear of centered stats) */}
+      <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
+        <Link
+          href="/contact"
+          aria-label="Start Conversation with Axiom Studio"
+          className="group relative w-12 h-12 rounded-full bg-[#0d0c15] border border-white/20 shadow-2xl shadow-purple-600/30 flex items-center justify-center transition-all duration-300 hover:scale-105 hover:border-brand-primary/60"
         >
           <div className="absolute inset-0 rounded-full bg-brand-primary/20 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
           <div className="relative w-8 h-8 rounded-full bg-gradient-to-tr from-[#6b5fd6] via-[#9488f5] to-white p-[1px] flex items-center justify-center">
@@ -133,7 +197,7 @@ export default function Hero() {
               <Sparkles className="w-4 h-4 text-[#b9b2ff] group-hover:rotate-12 transition-transform duration-300" />
             </div>
           </div>
-        </button>
+        </Link>
       </div>
     </section>
   );

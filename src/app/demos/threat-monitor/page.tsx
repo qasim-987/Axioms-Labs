@@ -120,7 +120,7 @@ export default function ThreatMonitorDemoPage() {
     <div className="relative min-h-screen bg-[#030303] text-zinc-100 flex flex-col justify-between">
       <Navbar />
 
-      <main id="main-content" className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex-1">
+      <main id="main-content" className="relative pt-32 pb-24 px-8 sm:px-12 lg:px-16 max-w-6xl mx-auto w-full flex-1">
         <LightRays />
 
         {/* Header Block with Live Status */}

@@ -54,7 +54,7 @@ export default function BlogPostDetail({ params }: BlogPostPageProps) {
       <main id="main-content" className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#030303] text-zinc-100">
         <LightRays />
 
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <article className="max-w-4xl mx-auto px-8 sm:px-12 lg:px-16">
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-8">
             <Link href="/" className="hover:text-white transition-colors">

@@ -7,7 +7,7 @@
 ## Table of Contents
 
 0. [Hero 3D Particle Sphere & Cursor Dynamics Specification (Video Ground Truth)](#0-hero-3d-particle-sphere--cursor-dynamics-specification-video-ground-truth)
-   - [0.4 Case Study Cursor ("View Work" Blob) & 50/50 Card Hover](#04-case-study-cursor-view-work-blob--5050-card-hover)
+   - [Case study cursor](#case-study-cursor)
 1. [Motion Stack & Architecture Overview](#1-motion-stack--architecture-overview)
 2. [Current Axiom Studio vs. `antimatterai.agency` Parity Matrix](#2-current-axiom-studio-vs-antimatteraiagency-parity-matrix)
 3. [Global Smooth Scroll & Timing Tokens (`Lenis` + `GSAP` + `Framer Motion`)](#3-global-smooth-scroll--timing-tokens-lenis--gsap--framer-motion)
@@ -90,36 +90,38 @@ The hero section recreates the exact visual identity, atmospheric volumetric lig
 
 ---
 
-### 0.4 Case Study Cursor ("View Work" Blob) & 50/50 Card Hover
+## Case study cursor
 
-The Case Study section reproduces the signature cursor-follower and interactive device showcase seen in `antimatterai.agency`'s 17-second reference recording.
+The Case Study section (`src/components/CaseStudies.tsx` + `src/components/ViewWorkCursor.tsx`) reproduces the `"View Work"` magnetic difference-blend cursor follower and 50/50 device showcase from the 17-second reference footage (`1884×754`), branded for **Axiom Studio** using Axiom Studio's own project cards (*Strata Systems* `/work/strata-systems` and *Zenith Health* `/work/zenith-health`).
 
 #### 1. Visual Hierarchy & 50/50 Layout
-- **Backdrop**: Pure black (`#000000`).
-- **Top Divider Line**: 1px subtle white border (`border-t border-white/15`) with top/bottom padding.
-- **Two Project Columns (50/50 Grid)**: 24px gap (`grid grid-cols-1 md:grid-cols-2 gap-6`).
-- **Index Labels**: Lightweight, ~20px white text `"01"` and `"02"` positioned directly above each card.
-- **Card 01 (Left)**: Dark card (`#050508`), high-fidelity MacBook device mockup displaying *Strata Systems* ("The Standard for Modern Supervision" + 10:15 telemetry display).
-- **Card 02 (Right)**: Light gray card (`#e8e8e8`), high-fidelity iMac desktop device mockup displaying *Zenith Health* ("Creating the New Standard for Innovative Materials & Manufacturing").
-- **Tool / Software Badge**: Top-left of each card under the index label (26px Photoshop "Ps" badge: `#001e36` background with `#31a8ff` cyan text). Fades in over 200ms on card hover and fades out on leave.
-- **Native Cursor & Real Anchors**: Uses standard `<Link href="...">` anchors with `cursor: pointer` retained; browser status URL displays destination on hover.
+- **Backdrop**: Pure black (`#000000`) with a thin `1px` top divider line (`border-t border-white/15`) and top/bottom studio padding.
+- **Two Project Columns (50/50 Grid)**: `24px` column gap (`grid grid-cols-1 md:grid-cols-2 gap-6`).
+- **Index Labels**: Lightweight `20px` (`font-light`) white labels `"01"` and `"02"` positioned directly above each card.
+- **Card 01 (Left — Dark Card `#000000` -> `/work/strata-systems`)**: Perspective-angled dark display frame with warm copper/amber volumetric studio lighting and sculpted obsidian telemetry hardware unit (`STRATA•OS` — *"Autonomous Mesh for Modern Cloud Supervision."* + `10:15` readout), cropped cleanly at the bottom edge of the card.
+- **Card 02 (Right — Light Gray `#e8e8e8` Card -> `/work/zenith-health`)**: Brushed silver aluminum desktop iMac mockup on `#e8e8e8` light studio gray with a dark top web navbar (`ZENITH`) and clinical diagnostics robotics scene (*"Creating the New Standard for Autonomous Clinical AI & Diagnostics."*), cropped cleanly at the bottom of the stand.
+- **Tool / Software Badge**: `26px × 26px` `"Ps"` badge (`#001e36` fill, `#31a8ff` text) at top-left of each card under `"01"` / `"02"`. Fades in over `200ms` (`duration-200 ease-out`) **only** while that card is hovered and fades out on leave.
+- **Real Anchors, Native Cursor & Accessibility**: Real `<Link href="...">` (`<a>`) anchors retain the native pointing-hand cursor (`cursor-pointer`), browser bottom-left URL preview, visible keyboard `focus-visible:ring-2` focus ring, and visually-hidden `<span className="sr-only">View Work — ...</span>` labels; the cursor follower is `aria-hidden="true"`.
 
 ---
 
-#### 2. "View Work" Magnetic Difference Cursor Constants
+#### 2. Final Tuned Constants (`ViewWorkCursor.tsx`)
 
-| Parameter | Tuned Value | Description / Purpose |
+| Constant | Final Tuned Value | Description / Behavior |
 | :--- | :--- | :--- |
-| `DIAMETER` | `100px - 190px` (`clamp(100px, 11vw, 190px)`) | Responsive follower circle diameter |
-| `FILL_COLOR` | `#ffffff` | Solid white fill rendered with `mix-blend-mode: difference` |
-| `TEXT_LABEL` | `"View Work"` | 16px regular weight, `#000000` text (no wrap) |
-| `LERP_FACTOR` | `0.15` | Position interpolation rate per frame (lag & catch-up) |
-| `ENTER_DURATION` | `~450ms` | Scale transition from 0.15 to 1.0 (`cubic-bezier(0.22, 1, 0.36, 1)`) |
-| `LEAVE_DURATION` | `~300ms` | Scale exit transition from 1.0 to 0 (`ease-in`) |
-| `GAP_SHRINK_SCALE`| `0.20` | Dynamic shrink while crossing the 24px column gap |
-| `TEXT_DELAY` | `~140ms` | Delayed opacity fade-in for centered text label |
-| `SQUASH_STRETCH` | `Max 8%` (`0.08`) | Velocity-proportional directional elongation along motion vector |
-| `TOOL_BADGE_FADE`| `200ms` | Opacity transition duration for software icon |
+| `DIAMETER` | `clamp(100px, 10.1vw, 190px)` | `190px` at `1884px` desktop width; scales down to `100px` on compact laptops |
+| `CIRCLE_FILL` | `#ffffff` (`mix-blend-mode: difference`) | Pure white over `#000` dark areas; dark `#171717` over `#e8e8e8` light areas; sharp split inversion across mixed edges |
+| `LABEL_STYLE` | `"View Work"`, `clamp(13px, 0.85vw, 16px)`, `400` regular, `#000000`, `nowrap` | Upright centered label inside the difference-blended circle (`|B - 0| = B`: black text on white circle, `#e8e8e8` text on dark circle) |
+| `LERP_FACTOR_60FPS` | `0.15` (`1 - (1 - 0.15)^(dt * 60)`) | Frame-rate-independent smoothing (~`0.5s` `power3.out` feel); visibly lags fast pointer motion and catches up smoothly with zero jitter |
+| `ENTER_INITIAL_SCALE` | `0.15` | Starts as a small grayish dot (`~50%` scale & `~60%` opacity mid-grow) at exact pointer entry coordinates (`clientX, clientY`) |
+| `ENTER_DURATION_MS` | `450ms` | Exact `cubic-bezier(0.22, 1, 0.36, 1)` (`power3.out` equivalent) scale `0.15 -> 1.0` & opacity `0.08 -> 1.0` |
+| `TEXT_FADE_DELAY_MS` | `150ms` (`+ 200ms` fade) | Delayed fade-in of `"View Work"` label after card entry |
+| `LEAVE_DURATION_MS` | `300ms` | Exact `power3.in` (`t³`) shrink-out to `scale(0)` and `opacity: 0` on `pointerleave` |
+| `GAP_DIP_MAX_SCALE` | `0.22` | Ensures crossing the `24px` gap between Card `01` and Card `02` visibly shrinks and re-grows even on a fast swipe |
+| `MAX_SQUASH_STRETCH` | `0.08` (`max 8%`) | Velocity-proportional elongation (`scaleX = 1 + stretch`, `scaleY = 1 - 0.85 * stretch`) applied strictly to the circle so label text never shears |
+| `CARD_HOVER_SCALE` | `1.015` over `600ms` (`ease-out`) | Subtle card artwork breathing without distracting from the cursor star effect |
+| `TOOL_BADGE_FADE` | `200ms` (`ease-out`) | Hover-only `"Ps"` software icon opacity transition |
+| `REDUCED_MOTION` | `0` lag, `0` squash, `160ms` opacity fade | Respects `(prefers-reduced-motion: reduce)` and hides completely on coarse/touch devices without `(hover: hover) and (pointer: fine)` |
 
 ---
 

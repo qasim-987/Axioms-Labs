@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
 import SplitTextReveal from "@/components/SplitTextReveal";
+import ViewWorkCursor from "@/components/ViewWorkCursor";
 import { clientsData, clientCategories } from "@/data/clients";
 import { MOTION_EASE, MOTION_SPRING } from "@/lib/motionTokens";
 import {
@@ -34,12 +35,12 @@ export default function WorkIndexPage() {
 
       <main
         id="main-content"
-        className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex-1"
+        className="relative pt-32 pb-24 px-8 sm:px-12 lg:px-16 max-w-6xl mx-auto w-full flex-1"
       >
         <LightRays />
 
-        {/* Header Section */}
-        <div className="max-w-3xl mb-12 sm:mb-16">
+        {/* Centered Header Section */}
+        <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -55,10 +56,10 @@ export default function WorkIndexPage() {
             text="Engineering That Moves The Needle"
             accentFromWordIndex={2}
             triggerOnLoad
-            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]"
+            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-[1.1] text-center"
           />
 
-          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
+          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
             Explore our deployed autonomous agent meshes, clinical intelligence
             copilots, and high-throughput digital flagship platforms across
             enterprise clients.
@@ -130,6 +131,8 @@ export default function WorkIndexPage() {
                 >
                   <Link
                     href={`/work/${project.slug}`}
+                    data-cursor="view-work"
+                    data-cursor-label="View Work"
                     onMouseMove={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       const x = e.clientX - rect.left;
@@ -260,6 +263,7 @@ export default function WorkIndexPage() {
       </main>
 
       <Footer />
+      <ViewWorkCursor label="View Work" />
     </div>
   );
 }

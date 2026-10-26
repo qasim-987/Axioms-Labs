@@ -38,12 +38,12 @@ export default function BlogIndexPage() {
 
       <main
         id="main-content"
-        className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex-1"
+        className="relative pt-32 pb-24 px-8 sm:px-12 lg:px-16 max-w-6xl mx-auto w-full flex-1"
       >
         <LightRays />
 
-        {/* Header Block */}
-        <div className="max-w-3xl mb-12 sm:mb-16">
+        {/* Centered Header Block */}
+        <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -59,10 +59,10 @@ export default function BlogIndexPage() {
             text="Insights from the Frontiers of AI Systems"
             accentFromWordIndex={3}
             triggerOnLoad
-            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight"
+            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight text-center"
           />
 
-          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
+          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
             In-depth technical writeups on multi-agent orchestration, model
             evaluation frameworks, hardware economics, and enterprise AI
             production architecture.

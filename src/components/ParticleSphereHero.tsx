@@ -188,30 +188,39 @@ export default function ParticleSphereHero({ className = "" }: ParticleSpherePro
       visibleWidthAtZ0 = visibleHeightAtZ0 * camera.aspect;
       pxToWorld = visibleWidthAtZ0 / width;
 
-      // Position: x = 39% width on desktop, 50% on mobile; y = 45% height
+      // Position: dead-center horizontally (50% width) and vertically (50% height) -> world origin (0, 0, 0)
       const isMobile = width < 768;
-      const targetScreenX = isMobile ? width * 0.5 : width * 0.39;
-      const targetScreenY = isMobile ? height * 0.42 : height * 0.45;
+      const targetScreenX = width * 0.5;
+      const targetScreenY = height * 0.5;
 
-      // Radius: 17% width on desktop (~320px at 1884px wide), ~35% on mobile
+      // Radius: ~17% width on desktop (~320px at 1884px wide), ~34% on mobile, clamped to height too
+      const maxRadiusByHeight = height * 0.34;
       const screenRadius = isMobile
-        ? Math.max(130, Math.min(width * 0.35, 230))
-        : Math.max(150, Math.min(width * 0.17, 340));
+        ? Math.min(maxRadiusByHeight, Math.max(125, Math.min(width * 0.34, 220)))
+        : Math.min(maxRadiusByHeight, Math.max(150, Math.min(width * 0.17, 330)));
 
       sphereRadius = screenRadius * pxToWorld;
 
-      // Position sphere in world coordinates so it matches the exact screen coordinate
+      // Exact center (0, 0, 0) in world coordinates
       const worldX = (targetScreenX - width / 2) * pxToWorld;
       const worldY = -(targetScreenY - height / 2) * pxToWorld;
       sphereGroup.position.set(worldX, worldY, 0);
 
-      // Scale inner glow sprite
-      const glowScale = sphereRadius * 2.3;
+      // Scale inner glow sprite symmetrically around sphere center
+      const glowScale = sphereRadius * 2.45;
       glowSprite.scale.set(glowScale, glowScale, 1);
     };
 
     updateProjectionMetrics();
     window.addEventListener("resize", updateProjectionMetrics);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => {
+        updateProjectionMetrics();
+      });
+      resizeObserver.observe(container);
+    }
 
     // --- CURSOR TRACKING STATE ---
     let targetMouseX = -9999;
@@ -295,9 +304,8 @@ export default function ParticleSphereHero({ className = "" }: ParticleSpherePro
       let cursorActive = isMouseInHero;
 
       if (isCoarsePointer && !isMouseInHero && !prefersReducedMotion) {
-        const isMobile = width < 768;
-        const centerScreenX = isMobile ? width * 0.5 : width * 0.39;
-        const centerScreenY = isMobile ? height * 0.42 : height * 0.45;
+        const centerScreenX = width * 0.5;
+        const centerScreenY = height * 0.5;
         const orbitRadius = (sphereRadius / pxToWorld) * 0.65;
         activeCursorX = centerScreenX + Math.cos(time * 0.8) * orbitRadius;
         activeCursorY = centerScreenY + Math.sin(time * 1.1) * (orbitRadius * 0.7);
@@ -469,6 +477,9 @@ export default function ParticleSphereHero({ className = "" }: ParticleSpherePro
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", updateProjectionMetrics);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("visibilitychange", onVisibilityChange);
@@ -488,7 +499,7 @@ export default function ParticleSphereHero({ className = "" }: ParticleSpherePro
   return (
     <div
       ref={containerRef}
-      className={`absolute inset-0 pointer-events-none select-none overflow-hidden ${className}`}
+      className={`absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden ${className}`}
       style={{ zIndex: 1 }}
       aria-hidden="true"
     />

@@ -45,9 +45,9 @@ export default function ServicesGrid() {
 
   return (
     <section id="services" className="py-24 sm:py-32 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading */}
-        <div className="max-w-3xl mb-16">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+        {/* Centered Section Heading */}
+        <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-primary text-xs font-mono font-medium mb-4">
             <span>OUR SERVICES • 01 — 06</span>
           </div>
@@ -55,9 +55,9 @@ export default function ServicesGrid() {
             as="h2"
             text="Specialized Engineering Pillars Built for Extreme Demands."
             accentFromWordIndex={4}
-            className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight"
+            className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight text-center"
           />
-          <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
             We don&apos;t build cookie-cutter templates. Each engagement is an
             intensive technical partnership designed to eliminate operational
             bottlenecks and build permanent technical moats.
@@ -86,15 +86,13 @@ export default function ServicesGrid() {
                   delay: idx * 0.07,
                   ease: MOTION_EASE.cinematicOut,
                 }}
-                data-cursor="view-work"
-                data-cursor-label="View Work"
                 style={
                   {
                     "--mouse-x": `${coords.x}px`,
                     "--mouse-y": `${coords.y}px`,
                   } as React.CSSProperties
                 }
-                className={`group relative overflow-hidden rounded-2xl glass-panel p-7 flex flex-col justify-between transition-all duration-300 cursor-pointer ${
+                className={`group relative overflow-hidden rounded-2xl glass-panel p-7 flex flex-col justify-between transition-all duration-300 ${
                   isActive
                     ? "border-brand-primary/50 bg-[#0c0c14]/90 shadow-2xl shadow-brand-primary/10 -translate-y-1"
                     : "hover:border-brand-primary/40 hover:bg-[#0c0c11]/80 hover:-translate-y-1"

@@ -83,7 +83,7 @@ export default function Navbar() {
           : "bg-transparent py-5"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         <div className="flex items-center justify-between">
           {/* Brand Wordmark matching video reference */}
           <Link
@@ -304,7 +304,7 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -6, scale: 0.99 }}
             transition={{ duration: 0.22, ease: MOTION_EASE.cinematicOut }}
             onMouseLeave={() => setMegaMenuOpen(false)}
-            className="hidden md:block absolute left-0 right-0 mt-3 px-4 sm:px-6 lg:px-8 z-50"
+            className="hidden md:block absolute left-0 right-0 mt-3 px-8 sm:px-12 lg:px-16 z-50"
           >
             <div className="max-w-6xl mx-auto rounded-3xl bg-[#09090e]/95 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/90 p-6 lg:p-8">
               <div className="grid grid-cols-12 gap-8">

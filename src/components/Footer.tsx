@@ -53,10 +53,10 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-[#020203] border-t border-white/[0.08] pt-20 pb-12 text-zinc-400 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Closing Cinematic Split-Character CTA Stage (antimatterai.agency parity) */}
-        <div className="pb-16 mb-16 border-b border-white/[0.08] flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-          <div className="max-w-2xl">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+        {/* Centered Closing Cinematic Split-Character CTA Stage */}
+        <div className="pb-16 mb-16 border-b border-white/[0.08] flex flex-col items-center text-center gap-7">
+          <div className="max-w-2xl mx-auto">
             <span className="text-xs font-mono uppercase tracking-widest text-brand-primary block mb-3">
               READY TO ARCHITECT?
             </span>
@@ -64,7 +64,7 @@ export default function Footer() {
               as="h2"
               text="We turn bold ideas into powerful digital realities."
               accentFromWordIndex={5}
-              className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.1]"
+              className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.1] text-center"
             />
           </div>
 
@@ -72,7 +72,7 @@ export default function Footer() {
             href="/contact"
             onMouseMove={handleMagneticMove}
             onMouseLeave={handleMagneticLeave}
-            className="self-start lg:self-auto inline-flex items-center gap-2.5 px-7 py-4 rounded-full bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold transition-all duration-200 shadow-xl shadow-brand-primary/25 will-change-transform shrink-0"
+            className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold transition-all duration-200 shadow-xl shadow-brand-primary/25 will-change-transform shrink-0"
           >
             <span>Let&apos;s work together</span>
             <ArrowRight className="w-4 h-4" />

@@ -14,7 +14,6 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <ViewWorkCursor label="View Work" />
 
       <main id="main-content" className="min-h-screen">
         {/* Hero Section with Volumetric Light-Ray Shader & Character-Split Typography */}
@@ -32,7 +31,7 @@ export default function Home() {
         {/* Scroll-Scrubbed Methodology & Architectural Guardrails */}
         <MethodologySection />
 
-        {/* Synchronized 01-06 Split-Stage Case Studies Showcase */}
+        {/* 50/50 Case Study Showcase with "View Work" Difference Cursor */}
         <CaseStudies />
 
         {/* Anti-Spam Validated Scoping & Contact Section */}
@@ -40,6 +39,7 @@ export default function Home() {
       </main>
 
       <Footer />
+      <ViewWorkCursor label="View Work" />
     </>
   );
 }

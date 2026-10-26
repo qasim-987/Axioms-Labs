@@ -40,7 +40,7 @@ export default function ContactPage() {
         <ContactSection />
 
         {/* Global Coordinates & Smooth Zero-Jank FAQ Accordion Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             {/* Global Hubs */}
             <div className="lg:col-span-5">
