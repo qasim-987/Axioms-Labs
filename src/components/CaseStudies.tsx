@@ -13,8 +13,8 @@ export default function CaseStudies() {
       aria-label="Selected Case Studies"
       className="relative w-full bg-[#000000] text-white border-t border-white/15 pt-10 sm:pt-14 pb-20 sm:pb-28"
     >
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 w-full">
-        {/* 50/50 Two-Card Grid with 24px (gap-6) gutter */}
+      <div className="max-w-[1640px] mx-auto px-6 sm:px-10 lg:px-14 w-full">
+        {/* 50/50 Two-Card Grid with ~24px (gap-6) gutter */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           {/* ==============================================================
               PROJECT CARD 01 — DARK STUDIO CARD (Axiom Studio: Strata Systems)
@@ -36,7 +36,7 @@ export default function CaseStudies() {
               onBlur={() =>
                 setHoveredCard((prev) => (prev === 1 ? null : prev))
               }
-              className="group relative block w-full h-[460px] sm:h-[540px] md:h-[580px] lg:h-[650px] bg-[#000000] overflow-hidden cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/85 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
+              className="group relative block w-full h-[460px] sm:h-[540px] md:h-[580px] lg:h-[660px] bg-[#000000] overflow-hidden cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/85 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
             >
               <span className="sr-only">
                 View Work — Strata Systems Autonomous Cloud Supervision Case
@@ -55,11 +55,11 @@ export default function CaseStudies() {
                 </span>
               </div>
 
-              {/* Subtle 1.015 hover scale over 600ms — cropped cleanly at bottom edge */}
-              <div className="relative w-full h-full flex flex-col justify-end pt-14 sm:pt-20 pl-4 sm:pl-7 pr-0 overflow-hidden transition-transform duration-[600ms] ease-out group-hover:scale-[1.015] origin-bottom">
-                {/* Perspective Angled Dark Studio Display Frame (cropped at bottom of card) */}
+              {/* Subtle 1.015 hover scale over 600ms — edge-to-edge & cropped cleanly at bottom */}
+              <div className="relative w-full h-full flex flex-col justify-end pt-16 sm:pt-24 pl-4 sm:pl-8 pr-0 overflow-hidden transition-transform duration-[600ms] ease-out group-hover:scale-[1.015] origin-bottom">
+                {/* Perspective-Tilted Dark Studio Display Frame (cropped at bottom & right edge) */}
                 <div
-                  className="relative w-[104%] h-[86%] rounded-tl-[18px] bg-[#0d0a08] border-t border-l border-white/[0.14] shadow-[0_-20px_70px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col justify-between"
+                  className="relative w-[105%] h-[86%] rounded-tl-[18px] bg-[#0d0a08] border-t border-l border-white/[0.14] shadow-[0_-20px_70px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col justify-between"
                   style={{
                     transform:
                       "perspective(1500px) rotateY(-5deg) rotateX(1.5deg)",
@@ -91,43 +91,43 @@ export default function CaseStudies() {
                   />
 
                   {/* Top Web Navigation Bar inside Strata Systems Mockup */}
-                  <div className="relative z-10 flex items-center justify-between px-5 sm:px-8 pt-4 sm:pt-5 pb-3 text-[10px] sm:text-[11px] text-amber-100/75">
-                    <span className="font-mono font-semibold tracking-[0.22em] uppercase text-amber-100/90">
+                  <div className="relative z-10 flex items-center justify-between px-5 sm:px-9 pt-4 sm:pt-6 pb-3 text-[10px] sm:text-[11px] text-amber-100/75">
+                    <span className="font-mono font-semibold tracking-[0.24em] uppercase text-amber-100/90">
                       STRATA•OS
                     </span>
-                    <div className="hidden sm:flex items-center gap-5 text-[10px] text-amber-100/55">
-                      <span>Mesh</span>
+                    <div className="hidden sm:flex items-center gap-6 text-[10px] text-amber-100/55">
+                      <span>About</span>
                       <span>Platform</span>
+                      <span>Mesh</span>
                       <span>Telemetry</span>
-                      <span>Security</span>
                     </div>
-                    <span className="px-2.5 py-1 rounded-md bg-white/[0.06] border border-amber-200/20 text-[9px] sm:text-[10px] text-amber-100/85">
-                      Deploy Node
+                    <span className="px-3 py-1 rounded-md bg-white/[0.06] border border-amber-200/20 text-[9px] sm:text-[10px] text-amber-100/85">
+                      Get Started
                     </span>
                   </div>
 
                   {/* Center Display Headline (Axiom Studio's Strata Systems Project) */}
                   <div className="relative z-10 text-center px-5 sm:px-10 mt-2 sm:mt-4">
-                    <h3 className="text-2xl sm:text-3xl lg:text-[34px] font-light text-white tracking-tight leading-[1.15]">
+                    <h3 className="text-2xl sm:text-4xl lg:text-[40px] font-light text-white tracking-tight leading-[1.14]">
                       Autonomous Mesh for
                       <br />
-                      <span className="font-medium text-white">
-                        Modern Cloud Supervision.
+                      <span className="font-normal text-white">
+                        Modern Supervision.
                       </span>
                     </h3>
                   </div>
 
                   {/* Sculpted Obsidian Smart Telemetry Hardware Unit Cropped at Bottom */}
                   <div className="relative z-10 mx-auto mt-auto pt-5 flex justify-center w-full">
-                    <div className="relative w-[190px] sm:w-[235px] h-[145px] sm:h-[175px] translate-y-4 rounded-t-[38px] bg-gradient-to-b from-[#2a2420] via-[#110f0e] to-[#050505] p-[3px] shadow-[0_-10px_45px_rgba(217,119,36,0.28)]">
+                    <div className="relative w-[200px] sm:w-[250px] h-[150px] sm:h-[185px] translate-y-4 rounded-t-[40px] bg-gradient-to-b from-[#2a2420] via-[#110f0e] to-[#050505] p-[3px] shadow-[0_-10px_45px_rgba(217,119,36,0.28)]">
                       {/* Metallic Rim Highlight */}
-                      <div className="w-full h-full rounded-t-[35px] bg-gradient-to-b from-[#171412] via-[#090808] to-[#020202] border-t border-x border-amber-200/25 flex flex-col items-center justify-start pt-5 sm:pt-6 px-5 relative overflow-hidden">
+                      <div className="w-full h-full rounded-t-[37px] bg-gradient-to-b from-[#171412] via-[#090808] to-[#020202] border-t border-x border-amber-200/25 flex flex-col items-center justify-start pt-5 sm:pt-7 px-5 relative overflow-hidden">
                         {/* Side Hardware Crown Button */}
                         <div className="absolute -right-1 top-12 w-1.5 h-8 rounded-l bg-zinc-600/60" />
-                        <span className="text-[8px] sm:text-[9px] font-mono tracking-[0.28em] uppercase text-amber-200/55">
-                          STRATA MESH
+                        <span className="text-[8px] sm:text-[9px] font-mono tracking-[0.32em] uppercase text-amber-200/55">
+                          S T R A T A
                         </span>
-                        <span className="mt-2 text-2xl sm:text-[28px] font-semibold font-mono tracking-wider text-white tabular-nums">
+                        <span className="mt-2 text-2xl sm:text-[30px] font-semibold font-mono tracking-wider text-white tabular-nums">
                           10:15
                         </span>
                         <div className="mt-2.5 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/25">
@@ -164,7 +164,7 @@ export default function CaseStudies() {
               onBlur={() =>
                 setHoveredCard((prev) => (prev === 2 ? null : prev))
               }
-              className="group relative block w-full h-[460px] sm:h-[540px] md:h-[580px] lg:h-[650px] bg-[#e8e8e8] overflow-hidden cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/85 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
+              className="group relative block w-full h-[460px] sm:h-[540px] md:h-[580px] lg:h-[660px] bg-[#e8e8e8] overflow-hidden cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/85 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
             >
               <span className="sr-only">
                 View Work — Zenith Health Autonomous Clinical Diagnostics Case
@@ -183,7 +183,7 @@ export default function CaseStudies() {
                 </span>
               </div>
 
-              {/* Subtle Studio Ambient Vignette on #e8e8e8 */}
+              {/* Studio Wall Ambient Lighting on #e8e8e8 */}
               <div
                 aria-hidden="true"
                 className="absolute inset-0 pointer-events-none"
@@ -194,17 +194,17 @@ export default function CaseStudies() {
               />
 
               {/* Subtle 1.015 hover scale over 600ms — iMac stand cropped cleanly at bottom edge */}
-              <div className="relative w-full h-full flex flex-col items-center justify-end pt-12 sm:pt-16 px-5 sm:px-9 overflow-hidden transition-transform duration-[600ms] ease-out group-hover:scale-[1.015] origin-bottom">
+              <div className="relative w-full h-full flex flex-col items-center justify-end pt-12 sm:pt-16 px-5 sm:px-10 overflow-hidden transition-transform duration-[600ms] ease-out group-hover:scale-[1.015] origin-bottom">
                 {/* 27-inch Studio iMac Desktop Mockup */}
-                <div className="relative w-full max-w-[540px] flex flex-col items-center">
+                <div className="relative w-full max-w-[600px] flex flex-col items-center">
                   {/* Glossy Black Outer Display Bezel */}
-                  <div className="relative w-full rounded-t-[16px] bg-[#0b0c0f] p-[10px] sm:p-[13px] pb-0 border-t border-x border-black/80 shadow-[0_24px_50px_rgba(0,0,0,0.22)]">
+                  <div className="relative w-full rounded-t-[16px] bg-[#0b0c0f] p-[10px] sm:p-[14px] pb-0 border-t border-x border-black/80 shadow-[0_24px_50px_rgba(0,0,0,0.22)]">
                     {/* iSight Camera Dot */}
                     <div className="w-1.5 h-1.5 rounded-full bg-[#1f2430] mx-auto mb-1.5" />
 
                     {/* Active Screen Viewport */}
-                    <div className="relative w-full h-[235px] sm:h-[290px] lg:h-[345px] bg-[#0c131c] overflow-hidden flex flex-col justify-between">
-                      {/* Multi-Tone Industrial / Clinical Robotics Lab Perspective Scene (creates dynamic split inversion under difference cursor) */}
+                    <div className="relative w-full h-[240px] sm:h-[295px] lg:h-[355px] bg-[#0c131c] overflow-hidden flex flex-col justify-between">
+                      {/* Multi-Tone Industrial / Clinical Robotics Lab Perspective Scene (inverts dynamically under difference cursor) */}
                       <svg
                         aria-hidden="true"
                         viewBox="0 0 600 380"
@@ -340,7 +340,7 @@ export default function CaseStudies() {
 
                       {/* Center Screen Headline (Axiom Studio's Zenith Health Project) */}
                       <div className="relative z-10 my-auto text-center px-4 sm:px-8">
-                        <h3 className="text-lg sm:text-2xl lg:text-[25px] font-normal text-white tracking-tight leading-[1.2] drop-shadow">
+                        <h3 className="text-lg sm:text-2xl lg:text-[26px] font-normal text-white tracking-tight leading-[1.2] drop-shadow">
                           Creating the New
                           <br />
                           Standard for Autonomous
