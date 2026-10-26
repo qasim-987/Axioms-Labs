@@ -8,11 +8,13 @@ import MethodologySection from "@/components/MethodologySection";
 import CaseStudies from "@/components/CaseStudies";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import ViewWorkCursor from "@/components/ViewWorkCursor";
 
 export default function Home() {
   return (
     <>
       <Navbar />
+      <ViewWorkCursor label="View Work" />
 
       <main id="main-content" className="min-h-screen">
         {/* Hero Section with Volumetric Light-Ray Shader & Character-Split Typography */}

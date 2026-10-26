@@ -7,6 +7,7 @@
 ## Table of Contents
 
 0. [Hero 3D Particle Sphere & Cursor Dynamics Specification (Video Ground Truth)](#0-hero-3d-particle-sphere--cursor-dynamics-specification-video-ground-truth)
+   - [0.4 Case Study Cursor ("View Work" Blob) & 50/50 Card Hover](#04-case-study-cursor-view-work-blob--5050-card-hover)
 1. [Motion Stack & Architecture Overview](#1-motion-stack--architecture-overview)
 2. [Current Axiom Studio vs. `antimatterai.agency` Parity Matrix](#2-current-axiom-studio-vs-antimatteraiagency-parity-matrix)
 3. [Global Smooth Scroll & Timing Tokens (`Lenis` + `GSAP` + `Framer Motion`)](#3-global-smooth-scroll--timing-tokens-lenis--gsap--framer-motion)
@@ -86,6 +87,52 @@ The hero section recreates the exact visual identity, atmospheric volumetric lig
    Every frame, particles experience a Hookean restoring force proportional to displacement:
    $$\vec{F}_\text{spring} = -k \cdot \vec{d}_i, \quad \vec{v}_i \leftarrow (\vec{v}_i + \vec{F}_\text{spring}) \cdot c_\text{damping}, \quad \vec{d}_i \leftarrow \vec{d}_i + \vec{v}_i$$
    When the cursor leaves, displaced streaks and clusters relax back to their home positions over 0.8–1.2s, while color lerps from `#8f7fff` back to `#dfe3ff`.
+
+---
+
+### 0.4 Case Study Cursor ("View Work" Blob) & 50/50 Card Hover
+
+The Case Study section reproduces the signature cursor-follower and interactive device showcase seen in `antimatterai.agency`'s 17-second reference recording.
+
+#### 1. Visual Hierarchy & 50/50 Layout
+- **Backdrop**: Pure black (`#000000`).
+- **Top Divider Line**: 1px subtle white border (`border-t border-white/15`) with top/bottom padding.
+- **Two Project Columns (50/50 Grid)**: 24px gap (`grid grid-cols-1 md:grid-cols-2 gap-6`).
+- **Index Labels**: Lightweight, ~20px white text `"01"` and `"02"` positioned directly above each card.
+- **Card 01 (Left)**: Dark card (`#050508`), high-fidelity MacBook device mockup displaying *Strata Systems* ("The Standard for Modern Supervision" + 10:15 telemetry display).
+- **Card 02 (Right)**: Light gray card (`#e8e8e8`), high-fidelity iMac desktop device mockup displaying *Zenith Health* ("Creating the New Standard for Innovative Materials & Manufacturing").
+- **Tool / Software Badge**: Top-left of each card under the index label (26px Photoshop "Ps" badge: `#001e36` background with `#31a8ff` cyan text). Fades in over 200ms on card hover and fades out on leave.
+- **Native Cursor & Real Anchors**: Uses standard `<Link href="...">` anchors with `cursor: pointer` retained; browser status URL displays destination on hover.
+
+---
+
+#### 2. "View Work" Magnetic Difference Cursor Constants
+
+| Parameter | Tuned Value | Description / Purpose |
+| :--- | :--- | :--- |
+| `DIAMETER` | `100px - 190px` (`clamp(100px, 11vw, 190px)`) | Responsive follower circle diameter |
+| `FILL_COLOR` | `#ffffff` | Solid white fill rendered with `mix-blend-mode: difference` |
+| `TEXT_LABEL` | `"View Work"` | 16px regular weight, `#000000` text (no wrap) |
+| `LERP_FACTOR` | `0.15` | Position interpolation rate per frame (lag & catch-up) |
+| `ENTER_DURATION` | `~450ms` | Scale transition from 0.15 to 1.0 (`cubic-bezier(0.22, 1, 0.36, 1)`) |
+| `LEAVE_DURATION` | `~300ms` | Scale exit transition from 1.0 to 0 (`ease-in`) |
+| `GAP_SHRINK_SCALE`| `0.20` | Dynamic shrink while crossing the 24px column gap |
+| `TEXT_DELAY` | `~140ms` | Delayed opacity fade-in for centered text label |
+| `SQUASH_STRETCH` | `Max 8%` (`0.08`) | Velocity-proportional directional elongation along motion vector |
+| `TOOL_BADGE_FADE`| `200ms` | Opacity transition duration for software icon |
+
+---
+
+#### 3. Optical Inversion Mathematics (`mix-blend-mode: difference`)
+In RGB color space, difference blending computes $C_\text{result} = |C_\text{backdrop} - C_\text{source}|$:
+- **Over Black Card ($C_\text{backdrop} = 0$)**:
+  - Circle: $|0 - 255| = 255$ $\rightarrow$ Bright solid white circle.
+  - Text ($C_\text{source} = 0$): $|0 - 0| = 0$ $\rightarrow$ Crisp black text on white circle.
+- **Over Light Gray Card ($C_\text{backdrop} = 232$)**:
+  - Circle: $|232 - 255| = 23$ $\rightarrow$ Dark obsidian circle.
+  - Text ($C_\text{source} = 0$): $|232 - 0| = 232$ $\rightarrow$ Light gray text on dark circle.
+- **Over Mixed Mockup Elements**:
+  - Automatically splits the circle across the edge, inverting light and dark areas symmetrically with perfect legibility everywhere.
 
 ---
 
