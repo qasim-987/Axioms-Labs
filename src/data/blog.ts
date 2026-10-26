@@ -30,7 +30,7 @@ export const blogPosts: BlogPost[] = [
     category: "Architecture",
     author: {
       name: "Marcus Vance",
-      role: "Head of AI Architecture, Axiom Labs",
+      role: "Head of AI Architecture, Axiom Studio",
       avatar: "MV"
     },
     publishedAt: "October 14, 2026",
@@ -115,7 +115,7 @@ export const blogPosts: BlogPost[] = [
     category: "Economics",
     author: {
       name: "Tariq Kabbani",
-      role: "VP of Engineering, Axiom Labs",
+      role: "VP of Engineering, Axiom Studio",
       avatar: "TK"
     },
     publishedAt: "September 12, 2026",
@@ -144,7 +144,7 @@ export const blogPosts: BlogPost[] = [
     category: "Evaluation",
     author: {
       name: "Marcus Vance",
-      role: "Head of AI Architecture, Axiom Labs",
+      role: "Head of AI Architecture, Axiom Studio",
       avatar: "MV"
     },
     publishedAt: "August 30, 2026",

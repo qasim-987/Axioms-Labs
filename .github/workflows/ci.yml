@@ -1,0 +1,67 @@
+name: Axiom Studio Separated Front-End & Back-End CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-verify:
+    name: Back-End API Service (Express + TypeScript + Zod)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Back-End Dependencies
+        run: npm ci
+
+      - name: Strict TypeScript Check (Back-End)
+        run: npm run typecheck
+
+      - name: Compile Production Back-End
+        run: npm run build
+
+  frontend-verify:
+    name: Front-End Web Application (Next.js 14 + Motion Stack)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Brand Nomenclature Hygiene Check
+        run: |
+          if grep -ri "Axiom Labs" src/ backend/src/ public/; then
+            echo "ERROR: Legacy brand string found in source or public assets."
+            exit 1
+          fi
+
+      - name: Install Front-End Dependencies
+        run: npm ci
+
+      - name: Strict TypeScript Check (Front-End)
+        run: npm run typecheck
+
+      - name: ESLint Verification
+        run: npm run lint
+
+      - name: Production Front-End Static & SSR Build
+        run: npm run build

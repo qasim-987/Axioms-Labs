@@ -26,7 +26,7 @@ export const openSourceItems: OpenSourceItem[] = [
     license: "MIT",
     techStack: ["Python", "FastAPI", "DuckDuckGo API", "BeautifulSoup", "Pydantic"],
     installCommand: "pip install axiom-forensic-engine",
-    githubUrl: "https://github.com/axiomlabs/forensic-research-engine",
+    githubUrl: "https://github.com/axiomstudio/forensic-research-engine",
     featured: true
   },
   {
@@ -40,7 +40,7 @@ export const openSourceItems: OpenSourceItem[] = [
     license: "Apache-2.0",
     techStack: ["Python", "PyTorch", "Megatron-LM", "CUDA", "vLLM"],
     installCommand: "pip install axiom-training-architect",
-    githubUrl: "https://github.com/axiomlabs/frontier-model-architect",
+    githubUrl: "https://github.com/axiomstudio/frontier-model-architect",
     featured: false
   },
   {
@@ -54,7 +54,7 @@ export const openSourceItems: OpenSourceItem[] = [
     license: "MIT",
     techStack: ["Next.js 14", "Tailwind CSS", "TypeScript", "Stripe", "Supabase"],
     installCommand: "npx create-axiom-template orbitly",
-    githubUrl: "https://github.com/axiomlabs/orbitly-template",
+    githubUrl: "https://github.com/axiomstudio/orbitly-template",
     featured: true
   },
   {
@@ -68,7 +68,7 @@ export const openSourceItems: OpenSourceItem[] = [
     license: "MIT",
     techStack: ["Next.js", "Tailwind CSS", "Recharts", "Lucide Icons"],
     installCommand: "npx create-axiom-template nexus-ai",
-    githubUrl: "https://github.com/axiomlabs/nexus-ai-template"
+    githubUrl: "https://github.com/axiomstudio/nexus-ai-template"
   },
   {
     id: "studio-veil",
@@ -81,7 +81,7 @@ export const openSourceItems: OpenSourceItem[] = [
     license: "MIT",
     techStack: ["Next.js", "Framer Motion", "Tailwind CSS", "Lenis"],
     installCommand: "npx create-axiom-template studio-veil",
-    githubUrl: "https://github.com/axiomlabs/studio-veil"
+    githubUrl: "https://github.com/axiomstudio/studio-veil"
   },
   {
     id: "prism-chat",
@@ -94,7 +94,7 @@ export const openSourceItems: OpenSourceItem[] = [
     license: "MIT",
     techStack: ["React", "TypeScript", "Tailwind CSS", "AI SDK", "Shadcn UI"],
     installCommand: "npx create-axiom-template prism-chat",
-    githubUrl: "https://github.com/axiomlabs/prism-chat",
+    githubUrl: "https://github.com/axiomstudio/prism-chat",
     featured: true
   },
   {
@@ -108,7 +108,7 @@ export const openSourceItems: OpenSourceItem[] = [
     license: "MIT",
     techStack: ["Next.js", "TypeScript", "Tailwind CSS"],
     installCommand: "npx create-axiom-template groundwork",
-    githubUrl: "https://github.com/axiomlabs/groundwork"
+    githubUrl: "https://github.com/axiomstudio/groundwork"
   },
   {
     id: "signal-chat-app",
@@ -120,7 +120,7 @@ export const openSourceItems: OpenSourceItem[] = [
     forks: "780",
     license: "Apache-2.0",
     techStack: ["Electron", "React", "WebLLM", "Ollama", "Tailwind CSS"],
-    githubUrl: "https://github.com/axiomlabs/signal-app",
+    githubUrl: "https://github.com/axiomstudio/signal-app",
     featured: true
   },
   {
@@ -134,7 +134,7 @@ export const openSourceItems: OpenSourceItem[] = [
     license: "MIT",
     techStack: ["Python", "FastAPI", "Redis", "Pydantic"],
     installCommand: "pip install meridian-agents",
-    githubUrl: "https://github.com/axiomlabs/meridian"
+    githubUrl: "https://github.com/axiomstudio/meridian"
   }
 ];
 

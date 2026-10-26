@@ -5,6 +5,8 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
+import SplitTextReveal from "@/components/SplitTextReveal";
+import { synthesizeOutreachViaApi } from "@/lib/apiClient";
 import {
   TrendingUp,
   Sliders,
@@ -80,7 +82,25 @@ const mockAccounts: IntentAccount[] = [
 export default function IntentIQDemoPage() {
   const [minScore, setMinScore] = useState<number>(75);
   const [selectedAccount, setSelectedAccount] = useState<IntentAccount>(mockAccounts[0]);
-  const [generatedDraft, setGeneratedDraft] = useState<boolean>(true);
+  const [synthesizing, setSynthesizing] = useState<boolean>(false);
+
+  const handleSynthesizeLive = async () => {
+    setSynthesizing(true);
+    const res = await synthesizeOutreachViaApi({
+      company: selectedAccount.name,
+      industry: selectedAccount.domain,
+      intentScore: selectedAccount.intentScore,
+      signals: selectedAccount.signals,
+    });
+    if (res) {
+      setSelectedAccount((prev) => ({
+        ...prev,
+        draftSubject: res.subject,
+        draftBody: res.draft,
+      }));
+    }
+    setSynthesizing(false);
+  };
 
   const filteredAccounts = mockAccounts.filter((a) => a.intentScore >= minScore);
 
@@ -97,12 +117,14 @@ export default function IntentIQDemoPage() {
             <Zap className="w-3.5 h-3.5" />
             Interactive Simulation
           </div>
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
-            Atom IntentIQ: <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-300 to-brand-primary">
-              Buyer Intent Intelligence
-            </span>
-          </h1>
+          <SplitTextReveal
+            as="h1"
+            text="Atom IntentIQ: Buyer Intent Intelligence"
+            accentFromWordIndex={2}
+            accentClassName="text-amber-300"
+            triggerOnLoad
+            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight"
+          />
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
             Real-time pipeline intent scoring, telemetry correlation, and AI-synthesized contextual executive outreach. Adjust the sensitivity threshold below to simulate dynamic lead routing.
           </p>
@@ -153,7 +175,6 @@ export default function IntentIQDemoPage() {
                 key={account.id}
                 onClick={() => {
                   setSelectedAccount(account);
-                  setGeneratedDraft(true);
                 }}
                 className={`p-6 rounded-2xl border transition-all cursor-pointer ${
                   selectedAccount.id === account.id
@@ -249,10 +270,16 @@ export default function IntentIQDemoPage() {
                 </div>
               </div>
 
-              <div className="pt-6 mt-6 border-t border-white/[0.08] flex items-center justify-between">
-                <span className="text-[10px] font-mono text-zinc-500">
-                  Zero Hallucination Guaranteed
-                </span>
+              <div className="pt-6 mt-6 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={handleSynthesizeLive}
+                  disabled={synthesizing}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-primary/15 border border-brand-primary/30 hover:bg-brand-primary/25 text-brand-light text-xs font-mono uppercase tracking-wider transition-colors disabled:opacity-50"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {synthesizing ? "Synthesizing..." : "Re-Synthesize via API"}
+                </button>
                 <Link
                   href="/contact"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black hover:bg-zinc-200 text-xs font-semibold uppercase tracking-wider transition-colors"

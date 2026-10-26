@@ -1,17 +1,22 @@
 # Dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
 # Testing
 /coverage
 
-# Next.js
+# Next.js Front-End
 /.next/
 /out/
 
+# Standalone Back-End Build & Local Audit Store
+/backend/dist/
+/backend/data/*.jsonl
+
 # Production
 /build
+/dist
 
 # Misc
 .DS_Store
@@ -25,6 +30,7 @@ yarn-error.log*
 # Local env files
 .env*.local
 .env
+backend/.env
 
 # Vercel
 .vercel

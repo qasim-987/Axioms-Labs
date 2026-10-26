@@ -5,6 +5,12 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
+import SplitTextReveal from "@/components/SplitTextReveal";
+import OrbitalThreatGlobe from "@/components/OrbitalThreatGlobe";
+import {
+  fetchThreatTelemetryViaApi,
+  ThreatArcTelemetry,
+} from "@/lib/apiClient";
 import {
   ShieldAlert,
   Activity,
@@ -63,6 +69,16 @@ export default function ThreatMonitorDemoPage() {
   const [logs, setLogs] = useState<ThreatLog[]>(initialLogs);
   const [isLive, setIsLive] = useState<boolean>(true);
   const [selectedTechnique, setSelectedTechnique] = useState<string | null>(null);
+  const [orbitalArcs, setOrbitalArcs] = useState<ThreatArcTelemetry[]>([]);
+
+  useEffect(() => {
+    fetchThreatTelemetryViaApi().then((res) => {
+      if (res) {
+        setAttacksCount(res.last24hBlocked);
+        setOrbitalArcs(res.activeArcs);
+      }
+    });
+  }, []);
 
   // Simulated live telemetry loop
   useEffect(() => {
@@ -117,9 +133,13 @@ export default function ThreatMonitorDemoPage() {
               </span>
               <span className="text-xs font-mono text-zinc-500">• Simulated Telemetry Feed</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-              Axiom ATOM Threat Monitor
-            </h1>
+            <SplitTextReveal
+              as="h1"
+              text="Axiom ATOM Threat Monitor"
+              accentFromWordIndex={2}
+              triggerOnLoad
+              className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white"
+            />
             <p className="text-sm text-zinc-400 mt-2">
               Real-time adversarial LLM telemetry, MITRE ATLAS attack taxonomy, and automated PQC perimeter defense.
             </p>
@@ -190,6 +210,11 @@ export default function ThreatMonitorDemoPage() {
               Sub-5ms policy enforcement
             </span>
           </div>
+        </div>
+
+        {/* Interactive 3D Orbital Threat Globe (antimatterai.agency/demos/atom-red-team parity) */}
+        <div className="mb-12">
+          <OrbitalThreatGlobe arcs={orbitalArcs} isLive={isLive} />
         </div>
 
         {/* MITRE ATLAS Technique Heatmap */}
@@ -334,7 +359,7 @@ export default function ThreatMonitorDemoPage() {
               Protect your LLM endpoints from adversarial exploits
             </h3>
             <p className="text-sm text-zinc-300">
-              Axiom Labs integrates real-time MITRE ATLAS threat mitigation, Post-Quantum Cryptography, and MCP boundary guardrails.
+              Axiom Studio integrates real-time MITRE ATLAS threat mitigation, Post-Quantum Cryptography, and MCP boundary guardrails.
             </p>
           </div>
           <Link

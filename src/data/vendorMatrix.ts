@@ -100,7 +100,7 @@ export const vendorPlatforms: VendorPlatform[] = [
   },
   {
     name: "vLLM / Open Weights Sovereign",
-    provider: "Self-Hosted (Axiom Architecture)",
+    provider: "Self-Hosted (Axiom Studio Architecture)",
     flagshipModel: "Llama 3.3 70B / Qwen 2.5 72B",
     deploymentModels: ["On-Prem / Self-Hosted"],
     contextWindow: "128k Tokens",
