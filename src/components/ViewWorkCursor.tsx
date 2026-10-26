@@ -7,8 +7,8 @@ interface ViewWorkCursorProps {
 }
 
 /**
- * Exact CSS cubic-bezier(x1, y1, x2, y2) evaluator using Newton-Raphson + bisection fallback.
- * Used for the 450ms enter curve: cubic-bezier(0.22, 1, 0.36, 1) ("power3.out" equivalent).
+ * Exact CSS cubic-bezier(x1, y1, x2, y2) solver (Newton-Raphson + bisection fallback)
+ * for the 450ms enter curve: cubic-bezier(0.22, 1, 0.36, 1) ("power3.out" equivalent).
  */
 function createCubicBezier(x1: number, y1: number, x2: number, y2: number) {
   const cx = 3 * x1;
@@ -52,20 +52,24 @@ function createCubicBezier(x1: number, y1: number, x2: number, y2: number) {
   };
 }
 
-// Tuned Final Constants (documented in Animations.md -> "Case study cursor")
-const LERP_FACTOR_60FPS = 0.15; // ~0.12-0.18 per 60fps frame; trails fast motion & settles cleanly
-const ENTER_DURATION_MS = 450; // ~450ms grow-in from small dot
-const LEAVE_DURATION_MS = 300; // ~300ms shrink-out on leave
-const TEXT_FADE_DELAY_MS = 150; // ~150ms delayed label fade-in after card entry
-const TEXT_FADE_DURATION_MS = 200; // crisp fade duration for "View Work" text
-const ENTER_INITIAL_SCALE = 0.15; // starts as a small dot (~15% scale)
-const GAP_DIP_MAX_SCALE = 0.22; // guarantees visible shrink & re-grow even on a fast swipe across the 24px gap
-const MAX_SQUASH_STRETCH = 0.08; // up to 8% velocity-proportional elongation
-const REDUCED_MOTION_FADE_MS = 160; // quick opacity fade when prefers-reduced-motion is enabled
+// Final Tuned Constants (documented in Animations.md -> "Case study cursor")
+const LERP_FACTOR_60FPS = 0.15;
+const ENTER_DURATION_MS = 450;
+const LEAVE_DURATION_MS = 300;
+const TEXT_FADE_DELAY_MS = 150;
+const TEXT_FADE_DURATION_MS = 200;
+const ENTER_INITIAL_SCALE = 0.15;
+const MAX_SQUASH_STRETCH = 0.08;
+const REDUCED_MOTION_FADE_MS = 160;
 
 const easeEnter = createCubicBezier(0.22, 1, 0.36, 1);
 const easeLeavePower3In = (t: number) => t * t * t;
 
+/**
+ * Card-scoped "View Work" magnetic difference cursor.
+ * Mount directly inside a `relative w-full overflow-hidden` project card `<a>` / `<Link>`.
+ * Strictly bounded and hardware-clipped to 100% of that card image — zero effect ever leaks outside the image.
+ */
 export default function ViewWorkCursor({
   label = "View Work",
 }: ViewWorkCursorProps) {
@@ -89,7 +93,8 @@ export default function ViewWorkCursor({
     const wrapperEl = wrapperRef.current;
     const circleEl = circleRef.current;
     const textEl = textRef.current;
-    if (!wrapperEl || !circleEl || !textEl) return;
+    const cardEl = wrapperEl?.parentElement;
+    if (!wrapperEl || !circleEl || !textEl || !cardEl) return;
 
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -100,7 +105,23 @@ export default function ViewWorkCursor({
     };
     reducedMotionQuery.addEventListener("change", onReducedMotionChange);
 
-    // Pointer & smoothed follower coordinates (no layout reads in RAF)
+    // Cached card origin (updated ONLY on pointerenter & passive scroll/resize while hovered; zero layout reads in RAF)
+    let cardLeft = 0;
+    let cardTop = 0;
+    let cardWidth = 0;
+    let cardHeight = 0;
+    let lastClientX = 0;
+    let lastClientY = 0;
+
+    const refreshCardBounds = () => {
+      const rect = cardEl.getBoundingClientRect();
+      cardLeft = rect.left;
+      cardTop = rect.top;
+      cardWidth = rect.width;
+      cardHeight = rect.height;
+    };
+
+    // Card-local pointer & smoothed follower coordinates
     let targetX = -9999;
     let targetY = -9999;
     let currentX = -9999;
@@ -109,12 +130,10 @@ export default function ViewWorkCursor({
     let prevY = -9999;
     let hasPosition = false;
 
-    // Smoothed velocity & angle for subtle squash-and-stretch without atan2 jitter
     let smoothVx = 0;
     let smoothVy = 0;
     let motionAngle = 0;
 
-    // Tween state machine ("idle" | "entering" | "open" | "leaving")
     type Phase = "idle" | "entering" | "open" | "leaving";
     let phase: Phase = "idle";
     let phaseStartTime = 0;
@@ -127,34 +146,33 @@ export default function ViewWorkCursor({
     let tweenFromScale = ENTER_INITIAL_SCALE;
     let tweenFromOpacity = 0;
 
-    let activeCard: HTMLElement | null = null;
-    let lastHoveredCard: HTMLElement | null = null;
+    const clampToCard = (x: number, y: number) => ({
+      x: Math.max(0, Math.min(cardWidth, x)),
+      y: Math.max(0, Math.min(cardHeight, y)),
+    });
 
-    const startEnter = (card: HTMLElement, clientX: number, clientY: number) => {
+    const onPointerEnter = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      refreshCardBounds();
+      lastClientX = e.clientX;
+      lastClientY = e.clientY;
+
+      const local = clampToCard(e.clientX - cardLeft, e.clientY - cardTop);
       const now = performance.now();
-      const switchedCards = lastHoveredCard !== null && lastHoveredCard !== card;
-      activeCard = card;
-      lastHoveredCard = card;
 
-      const customLabel = card.getAttribute("data-cursor-label") || label;
-      if (textEl.textContent !== customLabel) {
-        textEl.textContent = customLabel;
-      }
-
-      // Initialize position directly at entry point so the circle never flies in from (0, 0)
       if (!hasPosition || phase === "idle" || currentOpacity < 0.02) {
-        targetX = clientX;
-        targetY = clientY;
-        currentX = clientX;
-        currentY = clientY;
-        prevX = clientX;
-        prevY = clientY;
+        targetX = local.x;
+        targetY = local.y;
+        currentX = local.x;
+        currentY = local.y;
+        prevX = local.x;
+        prevY = local.y;
         smoothVx = 0;
         smoothVy = 0;
         hasPosition = true;
       } else {
-        targetX = clientX;
-        targetY = clientY;
+        targetX = local.x;
+        targetY = local.y;
       }
 
       if (prefersReducedMotion) {
@@ -167,18 +185,15 @@ export default function ViewWorkCursor({
         return;
       }
 
-      // Fresh entry starts from small dot (~0.15 scale); rapid card-to-card crossing dips & re-grows
-      if (phase === "idle" || currentScale < ENTER_INITIAL_SCALE) {
-        tweenFromScale = ENTER_INITIAL_SCALE;
-        tweenFromOpacity = 0.08;
+      tweenFromScale =
+        phase === "idle" || currentScale < ENTER_INITIAL_SCALE
+          ? ENTER_INITIAL_SCALE
+          : currentScale;
+      tweenFromOpacity =
+        phase === "idle" ? 0.08 : Math.max(0.08, currentOpacity);
+
+      if (phase === "idle") {
         textOpacity = 0;
-      } else if (switchedCards) {
-        tweenFromScale = Math.min(currentScale, GAP_DIP_MAX_SCALE);
-        tweenFromOpacity = Math.min(currentOpacity, 0.45);
-        textOpacity = 0;
-      } else {
-        tweenFromScale = Math.max(ENTER_INITIAL_SCALE, currentScale);
-        tweenFromOpacity = currentOpacity;
       }
 
       currentScale = tweenFromScale;
@@ -188,79 +203,52 @@ export default function ViewWorkCursor({
       enterStartTime = now;
     };
 
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      if (phase === "idle" || phase === "leaving") return;
+      lastClientX = e.clientX;
+      lastClientY = e.clientY;
+      const local = clampToCard(e.clientX - cardLeft, e.clientY - cardTop);
+      targetX = local.x;
+      targetY = local.y;
+    };
+
     const startLeave = () => {
       if (phase === "idle" || phase === "leaving") return;
-      activeCard = null;
+      // Freeze targetX/targetY inside the image so the circle shrinks in-bounds and never chases the pointer outside
       tweenFromScale = currentScale;
       tweenFromOpacity = currentOpacity;
       phase = "leaving";
       phaseStartTime = performance.now();
     };
 
-    const onWindowPointerMove = (e: PointerEvent) => {
+    const onPointerLeave = (e: PointerEvent) => {
       if (e.pointerType === "touch") return;
-      targetX = e.clientX;
-      targetY = e.clientY;
-      if (!hasPosition) {
-        currentX = e.clientX;
-        currentY = e.clientY;
-        prevX = e.clientX;
-        prevY = e.clientY;
-        hasPosition = true;
+      startLeave();
+    };
+
+    const onViewportShift = () => {
+      if (phase === "entering" || phase === "open") {
+        refreshCardBounds();
+        const rawX = lastClientX - cardLeft;
+        const rawY = lastClientY - cardTop;
+        if (rawX < 0 || rawX > cardWidth || rawY < 0 || rawY > cardHeight) {
+          startLeave();
+        } else {
+          targetX = rawX;
+          targetY = rawY;
+        }
       }
     };
 
-    // Bind pointerenter & pointerleave directly to each [data-cursor="view-work"] card
-    const boundCards = new Set<HTMLElement>();
-    const cardHandlers = new WeakMap<
-      HTMLElement,
-      { enter: (e: PointerEvent) => void; leave: (e: PointerEvent) => void }
-    >();
+    cardEl.addEventListener("pointerenter", onPointerEnter, { passive: true });
+    cardEl.addEventListener("pointermove", onPointerMove, { passive: true });
+    cardEl.addEventListener("pointerleave", onPointerLeave, { passive: true });
+    window.addEventListener("scroll", onViewportShift, { passive: true });
+    window.addEventListener("resize", onViewportShift, { passive: true });
+    window.addEventListener("blur", startLeave);
 
-    const attachCardListeners = () => {
-      const cards = document.querySelectorAll<HTMLElement>(
-        '[data-cursor="view-work"]'
-      );
-      cards.forEach((card) => {
-        if (boundCards.has(card)) return;
-        const enter = (e: PointerEvent) => {
-          if (e.pointerType === "touch") return;
-          startEnter(card, e.clientX, e.clientY);
-        };
-        const leave = (e: PointerEvent) => {
-          if (e.pointerType === "touch") return;
-          if (activeCard === card) {
-            startLeave();
-          }
-        };
-        card.addEventListener("pointerenter", enter, { passive: true });
-        card.addEventListener("pointerleave", leave, { passive: true });
-        boundCards.add(card);
-        cardHandlers.set(card, { enter, leave });
-      });
-    };
-
-    attachCardListeners();
-
-    const mutationObserver = new MutationObserver(() => {
-      attachCardListeners();
-    });
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    const onDocumentLeave = () => {
-      if (activeCard) startLeave();
-    };
-
-    window.addEventListener("pointermove", onWindowPointerMove, {
-      passive: true,
-    });
-    document.documentElement.addEventListener("mouseleave", onDocumentLeave);
-    window.addEventListener("blur", onDocumentLeave);
-
-    // Single 60fps+ requestAnimationFrame loop — transform & opacity writes ONLY
+    // Single 60fps+ RAF loop — ONLY transform & opacity writes
     let rafId = 0;
     let lastFrameTime = performance.now();
 
@@ -270,7 +258,6 @@ export default function ViewWorkCursor({
       const dt = Math.min((now - lastFrameTime) / 1000, 0.064);
       lastFrameTime = now;
 
-      // 1. Update scale & opacity state machine
       if (phase === "entering") {
         const duration = prefersReducedMotion
           ? REDUCED_MOTION_FADE_MS
@@ -307,12 +294,10 @@ export default function ViewWorkCursor({
           currentScale = 0;
           currentOpacity = 0;
           textOpacity = 0;
-          lastHoveredCard = null;
           phase = "idle";
         }
       }
 
-      // 2. Delayed "View Work" label fade (~150ms delay on enter)
       if (phase === "entering" || phase === "open") {
         if (prefersReducedMotion) {
           textOpacity = currentOpacity;
@@ -335,7 +320,6 @@ export default function ViewWorkCursor({
         textOpacity = 0;
       }
 
-      // 3. Early hide when idle (zero GPU overdraw when not over project cards)
       if (phase === "idle" || currentOpacity <= 0.004 || !hasPosition) {
         wrapperEl.style.opacity = "0";
         wrapperEl.style.transform =
@@ -343,7 +327,6 @@ export default function ViewWorkCursor({
         return;
       }
 
-      // 4. Smoothed pointer position (60fps-normalized lerp)
       if (prefersReducedMotion) {
         currentX = targetX;
         currentY = targetY;
@@ -353,7 +336,6 @@ export default function ViewWorkCursor({
         currentY += (targetY - currentY) * lerpAlpha;
       }
 
-      // 5. Velocity-proportional subtle squash & stretch (max 8%, circle stays round & text never shears)
       const instVx = (currentX - prevX) / Math.max(dt * 60, 0.25);
       const instVy = (currentY - prevY) / Math.max(dt * 60, 0.25);
       prevX = currentX;
@@ -373,14 +355,12 @@ export default function ViewWorkCursor({
       const scaleX = (1 + stretch) * currentScale;
       const scaleY = (1 - stretch * 0.85) * currentScale;
 
-      // Exact "1" opacity when settled so mix-blend-mode: difference operates at full strength
       wrapperEl.style.opacity =
         currentOpacity >= 0.996 ? "1" : currentOpacity.toFixed(3);
       wrapperEl.style.transform = `translate3d(${currentX.toFixed(
         2
       )}px, ${currentY.toFixed(2)}px, 0) translate(-50%, -50%)`;
 
-      // Apply directional squash/stretch ONLY to the rotationally symmetric circle; keep label upright
       circleEl.style.transform = `rotate(${motionAngle.toFixed(
         3
       )}rad) scale(${scaleX.toFixed(4)}, ${scaleY.toFixed(4)})`;
@@ -394,24 +374,15 @@ export default function ViewWorkCursor({
 
     return () => {
       cancelAnimationFrame(rafId);
-      mutationObserver.disconnect();
       reducedMotionQuery.removeEventListener("change", onReducedMotionChange);
-      window.removeEventListener("pointermove", onWindowPointerMove);
-      document.documentElement.removeEventListener(
-        "mouseleave",
-        onDocumentLeave
-      );
-      window.removeEventListener("blur", onDocumentLeave);
-      boundCards.forEach((card) => {
-        const handlers = cardHandlers.get(card);
-        if (handlers) {
-          card.removeEventListener("pointerenter", handlers.enter);
-          card.removeEventListener("pointerleave", handlers.leave);
-        }
-      });
-      boundCards.clear();
+      cardEl.removeEventListener("pointerenter", onPointerEnter);
+      cardEl.removeEventListener("pointermove", onPointerMove);
+      cardEl.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("scroll", onViewportShift);
+      window.removeEventListener("resize", onViewportShift);
+      window.removeEventListener("blur", startLeave);
     };
-  }, [enabled, label]);
+  }, [enabled]);
 
   if (!enabled) return null;
 
@@ -419,24 +390,18 @@ export default function ViewWorkCursor({
     <div
       ref={wrapperRef}
       aria-hidden="true"
-      className="fixed top-0 left-0 z-40 pointer-events-none select-none will-change-transform opacity-0"
+      className="absolute top-0 left-0 z-30 pointer-events-none select-none will-change-transform opacity-0"
       style={{
         mixBlendMode: "difference",
         width: "clamp(100px, 10.1vw, 190px)",
         height: "clamp(100px, 10.1vw, 190px)",
       }}
     >
-      {/* Solid #ffffff circle blended via difference:
-          - Over #000000 dark areas -> pure white (#ffffff)
-          - Over #e8e8e8 light areas -> dark near-black (#171717) with inverted imagery underneath
-          - Over mixed edges -> sharp split inversion */}
       <div
         ref={circleRef}
         className="absolute inset-0 rounded-full bg-white will-change-transform"
         style={{ transformOrigin: "50% 50%" }}
       />
-
-      {/* Upright centered label (#000000 inside difference group -> #000 on white circle, #e8e8e8 on dark circle) */}
       <div className="absolute inset-0 flex items-center justify-center">
         <span
           ref={textRef}
