@@ -24,12 +24,31 @@ export default function Hero() {
 
   return (
     <section className="relative w-full min-h-screen bg-[#020108] overflow-hidden flex flex-col justify-between pt-28 pb-12 sm:pb-16 selection:bg-brand-primary selection:text-white">
-      {/* LAYER 2: Centered Giant Ghost Watermark */}
+      {/* LAYER 1B: Centered Radial Precision Micro-Grid Backdrop */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none select-none z-0 opacity-[0.045]"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgba(255, 255, 255, 0.65) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+          backgroundPosition: "center center",
+          maskImage:
+            "radial-gradient(circle at 50% 50%, black 18%, transparent 68%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at 50% 50%, black 18%, transparent 68%)",
+        }}
+      />
+
+      {/* LAYER 2: Centered Giant Ghost Watermark (fits 100% centered inside viewport without edge clipping) */}
       <div
         aria-hidden="true"
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 px-8"
       >
-        <span className="text-[18vw] md:text-[15vw] font-extrabold uppercase tracking-tight text-white/[0.032] whitespace-nowrap leading-none scale-y-110 text-center">
+        <span
+          className="font-extrabold uppercase tracking-[0.03em] text-white/[0.038] whitespace-nowrap leading-none scale-y-110 text-center mx-auto"
+          style={{ fontSize: "clamp(2.25rem, 9.2vw, 9rem)" }}
+        >
           AXIOM STUDIO
         </span>
       </div>

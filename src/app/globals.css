@@ -130,9 +130,11 @@ body {
 .horizon-light-curve {
   position: relative;
   width: 150%;
-  left: -25%;
   height: 150px;
   margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  transform-origin: 50% 50%;
   border-radius: 50% 50% 0 0 / 100% 100% 0 0;
   border-top: 1.5px solid rgba(195, 196, 247, 0.5);
   background: radial-gradient(

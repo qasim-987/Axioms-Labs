@@ -36,8 +36,13 @@ export default function LogoStrip() {
         </div>
       </div>
 
-      {/* Planetary Horizon Rim-Light Arc (clientsLightCurve parity) */}
-      <div aria-hidden="true" className="horizon-light-curve animate-pulse-glow" />
+      {/* Centered Planetary Horizon Rim-Light Arc (clientsLightCurve parity) */}
+      <div
+        aria-hidden="true"
+        className="w-full flex justify-center overflow-hidden pointer-events-none"
+      >
+        <div className="horizon-light-curve animate-pulse-glow shrink-0" />
+      </div>
     </section>
   );
 }
