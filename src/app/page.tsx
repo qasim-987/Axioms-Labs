@@ -8,7 +8,6 @@ import ServicesGrid from "@/components/ServicesGrid";
 import MethodologySection from "@/components/MethodologySection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
-import ViewWorkCursor from "@/components/ViewWorkCursor";
 
 export default function Home() {
   return (
@@ -39,7 +38,6 @@ export default function Home() {
       </main>
 
       <Footer />
-      <ViewWorkCursor label="View Work" />
     </>
   );
 }
