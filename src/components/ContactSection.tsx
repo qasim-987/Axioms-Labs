@@ -139,7 +139,7 @@ export default function ContactSection() {
       id="contact"
       className="py-24 sm:py-32 relative border-t border-white/[0.08] bg-[#030303]"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           {/* Left Column: Context & Studio Coordinates */}
           <div className="lg:col-span-5 flex flex-col justify-between">

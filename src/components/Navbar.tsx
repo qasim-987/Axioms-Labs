@@ -83,63 +83,20 @@ export default function Navbar() {
           : "bg-transparent py-5"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         <div className="flex items-center justify-between">
-          {/* Brand Monogram & Wordmark */}
+          {/* Brand Wordmark matching video reference */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 group focus:outline-none focus:ring-2 focus:ring-brand-primary/50 rounded-lg p-1"
+            className="flex items-center gap-2 group focus:outline-none"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-muted via-brand-primary to-white flex items-center justify-center p-[1px] shadow-lg shadow-brand-primary/20 group-hover:shadow-brand-primary/40 transition-shadow">
-              <div className="w-full h-full bg-[#08080a] rounded-[7px] flex items-center justify-center">
-                <span className="text-white font-mono font-black text-sm tracking-tighter">
-                  AX
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-semibold text-base tracking-tight text-white flex items-center gap-1.5">
-                AXIOM STUDIO
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              </span>
-              <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-400">
-                AI &amp; Systems Architecture
-              </span>
-            </div>
+            <span className="font-extrabold text-base sm:text-lg tracking-wider text-white">
+              AXIOM STUDIO
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
-            {/* Services Mega-Menu Trigger */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setMegaMenuOpen(!megaMenuOpen);
-                  setResourcesOpen(false);
-                }}
-                onMouseEnter={() => {
-                  setMegaMenuOpen(true);
-                  setResourcesOpen(false);
-                }}
-                aria-expanded={megaMenuOpen}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  megaMenuOpen
-                    ? "text-white bg-white/[0.08]"
-                    : "text-zinc-300 hover:text-white hover:bg-white/[0.04]"
-                }`}
-              >
-                Services
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    megaMenuOpen
-                      ? "rotate-180 text-brand-primary"
-                      : "text-zinc-400"
-                  }`}
-                />
-              </button>
-            </div>
-
+          {/* Desktop Navigation: Work, Company, Services v, Resources v */}
+          <nav className="hidden md:flex items-center gap-2 lg:gap-3">
             <Link
               href="/work"
               className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
@@ -154,6 +111,36 @@ export default function Navbar() {
               Company
             </Link>
 
+            {/* Services Mega-Menu Trigger */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setMegaMenuOpen(!megaMenuOpen);
+                  setResourcesOpen(false);
+                }}
+                onMouseEnter={() => {
+                  setMegaMenuOpen(true);
+                  setResourcesOpen(false);
+                }}
+                aria-expanded={megaMenuOpen}
+                className={`flex items-center gap-1 px-3.5 py-2 rounded-full text-sm font-medium transition-colors ${
+                  megaMenuOpen
+                    ? "text-white bg-white/[0.08]"
+                    : "text-zinc-300 hover:text-white hover:bg-white/[0.04]"
+                }`}
+              >
+                Services
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    megaMenuOpen
+                      ? "rotate-180 text-brand-primary"
+                      : "text-zinc-400"
+                  }`}
+                />
+              </button>
+            </div>
+
             {/* Resources Dropdown Trigger */}
             <div className="relative">
               <button
@@ -167,7 +154,7 @@ export default function Navbar() {
                   setMegaMenuOpen(false);
                 }}
                 aria-expanded={resourcesOpen}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1 px-3.5 py-2 rounded-full text-sm font-medium transition-colors ${
                   resourcesOpen
                     ? "text-white bg-white/[0.08]"
                     : "text-zinc-300 hover:text-white hover:bg-white/[0.04]"
@@ -175,7 +162,7 @@ export default function Navbar() {
               >
                 Resources
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
                     resourcesOpen
                       ? "rotate-180 text-brand-primary"
                       : "text-zinc-400"
@@ -283,10 +270,12 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <Link
               href="/contact"
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-primary hover:bg-brand-hover text-white text-xs font-semibold tracking-wide transition-all shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40"
+              className="hidden sm:inline-flex items-center gap-3 pl-5 pr-1.5 py-1.5 rounded-full border border-white/25 bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/40 text-white text-xs font-semibold tracking-wide transition-all duration-200"
             >
               <span>Start Your Project</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center">
+                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              </span>
             </Link>
 
             <button
@@ -315,7 +304,7 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -6, scale: 0.99 }}
             transition={{ duration: 0.22, ease: MOTION_EASE.cinematicOut }}
             onMouseLeave={() => setMegaMenuOpen(false)}
-            className="hidden md:block absolute left-0 right-0 mt-3 px-4 sm:px-6 lg:px-8 z-50"
+            className="hidden md:block absolute left-0 right-0 mt-3 px-8 sm:px-12 lg:px-16 z-50"
           >
             <div className="max-w-6xl mx-auto rounded-3xl bg-[#09090e]/95 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/90 p-6 lg:p-8">
               <div className="grid grid-cols-12 gap-8">

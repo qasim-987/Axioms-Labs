@@ -118,9 +118,9 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
       >
         <LightRays />
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-8">
+          <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-500 mb-8">
             <Link href="/" className="hover:text-white transition-colors">
               Home
             </Link>
@@ -137,14 +137,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             </span>
           </div>
 
-          {/* Hero Section */}
-          <div className="mb-20 max-w-4xl">
+          {/* Centered Hero Section */}
+          <div className="mb-20 max-w-4xl mx-auto text-center flex flex-col items-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-primary/10 border border-brand-primary/30 text-brand-primary text-xs font-mono font-medium mb-6">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{service.badge}</span>
             </div>
 
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center justify-center gap-4 mb-4">
               <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-brand-primary/30 shadow-lg shadow-brand-primary/10 shrink-0">
                 {iconMap[service.iconName] || (
                   <Cpu className="w-8 h-8 text-brand-primary" />
@@ -154,7 +154,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                 as="h1"
                 text={service.title}
                 triggerOnLoad
-                className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight"
+                className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight text-center"
               />
             </div>
 
@@ -162,11 +162,11 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
               {service.heroHeadline}
             </h2>
 
-            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal mb-8">
+            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal mb-8 max-w-3xl mx-auto">
               {service.longDesc}
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
               <span className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-white">
                 Benchmark: {service.metrics}
               </span>

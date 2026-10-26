@@ -151,12 +151,12 @@ export default function InfrastructureAtlasDemoPage() {
 
       <main
         id="main-content"
-        className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex-1"
+        className="relative pt-32 pb-24 px-8 sm:px-12 lg:px-16 max-w-6xl mx-auto w-full flex-1"
       >
         <LightRays />
 
-        {/* Header Block */}
-        <div className="max-w-4xl mb-12 sm:mb-16">
+        {/* Centered Header Block */}
+        <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-mono uppercase tracking-wider text-blue-400 mb-6">
             <Globe2 className="w-3.5 h-3.5" />
             Geospatial Network Telemetry

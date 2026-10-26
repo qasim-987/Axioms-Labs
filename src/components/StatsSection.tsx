@@ -56,7 +56,7 @@ const statItems = [
 export default function StatsSection() {
   return (
     <section className="relative py-16 sm:py-20 border-y border-white/[0.08] bg-black/40 backdrop-blur-sm overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {statItems.map((item, idx) => {
             const Icon = item.icon;

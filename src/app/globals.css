@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --font-sans: "Plus Jakarta Sans";
   --background: #030303;
   --foreground: #f4f4f5;
   --accent-purple: #8587e3;

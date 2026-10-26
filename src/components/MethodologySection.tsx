@@ -50,8 +50,8 @@ export default function MethodologySection() {
       id="capabilities"
       className="py-24 sm:py-32 border-t border-white/[0.08] bg-[#020203] relative overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mb-16">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+        <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-light text-xs font-mono font-medium mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse" />
             <span>OUR METHODOLOGY • 01 — 03</span>
@@ -60,9 +60,9 @@ export default function MethodologySection() {
             as="h2"
             text="Deterministic Engineering Over Guesswork."
             accentFromWordIndex={2}
-            className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight"
+            className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight text-center"
           />
-          <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
             Modern AI implementations frequently fail due to stochastic
             inconsistency and hidden runtime drift. We build deterministic
             guardrails, rigorous automated evaluation loops, and hardened

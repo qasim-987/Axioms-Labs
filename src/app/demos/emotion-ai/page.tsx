@@ -121,11 +121,11 @@ export default function EmotionAIDemoPage() {
 
       <main
         id="main-content"
-        className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex-1"
+        className="relative pt-32 pb-24 px-8 sm:px-12 lg:px-16 max-w-6xl mx-auto w-full flex-1"
       >
         <LightRays />
 
-        <div className="max-w-4xl mb-12 sm:mb-16">
+        <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-xs font-mono uppercase tracking-wider text-pink-400 mb-6">
             <Heart className="w-3.5 h-3.5" />
             Multimodal Sentiment Engine

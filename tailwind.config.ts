@@ -36,6 +36,7 @@ const config: Config = {
         "marquee-reverse": "marquee-reverse 28s linear infinite",
         "pulse-glow": "pulseGlow 6s ease-in-out infinite",
         "beam-sweep": "beamSweep 8s ease-in-out infinite",
+        "beam-pulse": "beamPulse 7s ease-in-out infinite",
         "float": "float 4s ease-in-out infinite",
       },
       keyframes: {
@@ -50,6 +51,10 @@ const config: Config = {
         pulseGlow: {
           "0%, 100%": { opacity: "0.4", transform: "scale(1)" },
           "50%": { opacity: "0.75", transform: "scale(1.04)" },
+        },
+        beamPulse: {
+          "0%, 100%": { opacity: "0.85" },
+          "50%": { opacity: "1.0" },
         },
         beamSweep: {
           "0%, 100%": { transform: "rotate(-15deg)" },

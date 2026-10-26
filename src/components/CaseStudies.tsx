@@ -23,29 +23,27 @@ export default function CaseStudies() {
       id="work"
       className="py-24 sm:py-32 relative border-t border-white/[0.08] bg-[#020202]"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-primary text-xs font-mono font-medium mb-4">
-              <span>CASE STUDIES • PROVEN IMPACT</span>
-            </div>
-            <SplitTextReveal
-              as="h2"
-              text="Selected Systems Engineered in Production."
-              accentFromWordIndex={3}
-              className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight"
-            />
-            <p className="mt-3 text-base text-zinc-400">
-              Proven results, measurable impact—explore how our partners
-              leverage sovereign AI architectures and precision web systems to
-              dominate their sectors.
-            </p>
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+        {/* Centered Section Heading */}
+        <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-primary text-xs font-mono font-medium mb-4">
+            <span>CASE STUDIES • PROVEN IMPACT</span>
           </div>
+          <SplitTextReveal
+            as="h2"
+            text="Selected Systems Engineered in Production."
+            accentFromWordIndex={3}
+            className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight text-center"
+          />
+          <p className="mt-3 text-base text-zinc-400 max-w-2xl mx-auto">
+            Proven results, measurable impact—explore how our partners
+            leverage sovereign AI architectures and precision web systems to
+            dominate their sectors.
+          </p>
 
           <Link
             href="/work"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-brand-primary hover:text-white transition-colors group shrink-0"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-primary hover:text-white transition-colors group"
           >
             <span>View all 7 case studies</span>
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

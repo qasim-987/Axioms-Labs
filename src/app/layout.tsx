@@ -1,4 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import "@fontsource/plus-jakarta-sans/latin-300.css";
+import "@fontsource/plus-jakarta-sans/latin-400.css";
+import "@fontsource/plus-jakarta-sans/latin-500.css";
+import "@fontsource/plus-jakarta-sans/latin-600.css";
+import "@fontsource/plus-jakarta-sans/latin-700.css";
+import "@fontsource/plus-jakarta-sans/latin-800.css";
+import "@fontsource/plus-jakarta-sans/latin-800-italic.css";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
@@ -72,7 +79,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
-      <body className="min-h-screen bg-[#030303] text-zinc-100 antialiased selection:bg-brand-primary selection:text-white font-sans overflow-x-hidden">
+      <body className="font-sans min-h-screen bg-[#020108] text-zinc-100 antialiased selection:bg-brand-primary selection:text-white overflow-x-hidden">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
