@@ -1,7 +1,15 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://axiomstudio.agency"),
@@ -72,7 +80,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
-      <body className="min-h-screen bg-[#030303] text-zinc-100 antialiased selection:bg-brand-primary selection:text-white font-sans overflow-x-hidden">
+      <body className={`${plusJakartaSans.variable} font-sans min-h-screen bg-[#020108] text-zinc-100 antialiased selection:bg-brand-primary selection:text-white overflow-x-hidden`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

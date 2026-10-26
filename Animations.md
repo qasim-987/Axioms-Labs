@@ -6,6 +6,7 @@
 
 ## Table of Contents
 
+0. [Hero 3D Particle Sphere & Cursor Dynamics Specification (Video Ground Truth)](#0-hero-3d-particle-sphere--cursor-dynamics-specification-video-ground-truth)
 1. [Motion Stack & Architecture Overview](#1-motion-stack--architecture-overview)
 2. [Current Axiom Studio vs. `antimatterai.agency` Parity Matrix](#2-current-axiom-studio-vs-antimatteraiagency-parity-matrix)
 3. [Global Smooth Scroll & Timing Tokens (`Lenis` + `GSAP` + `Framer Motion`)](#3-global-smooth-scroll--timing-tokens-lenis--gsap--framer-motion)
@@ -19,6 +20,72 @@
 11. [Animation 08 — Subpage, Canvas Scrub & Interactive Lab Choreographies](#11-animation-08--subpage-canvas-scrub--interactive-lab-choreographies)
 12. [GPU Performance Budget & `prefers-reduced-motion` Compliance](#12-gpu-performance-budget--prefers-reduced-motion-compliance)
 13. [Step-by-Step File Integration Checklist for Axiom Studio](#13-step-by-step-file-integration-checklist-for-axiom-studio)
+
+---
+
+## 0. Hero 3D Particle Sphere & Cursor Dynamics Specification (Video Ground Truth)
+
+The hero section recreates the exact visual identity, atmospheric volumetric lighting, and interactive 3D particle sphere demonstrated in the reference footage.
+
+### 0.1 Scene Architecture & Visual Hierarchy (Back to Front)
+
+1. **Backdrop (`#020108` to `#000000`)**: Deep obsidian canvas, near-black space.
+2. **Ghost Watermark (`AXIOM STUDIO`)**: Huge uppercase brand typography (~40vh height), spanning wider than the viewport and cropped at both screen edges, rendered in static white at 3.5% opacity (`text-white/[0.035]`).
+3. **Top-Left Light Beam / Spotlight (`LightBeam.tsx`)**: Volumetric glow originating from the top-left corner, angled diagonally down-right (~32°), fading to black by ~45% viewport width. Built with a conic gradient (`core: #4b3fd6` at ~68% opacity, fading outward to `#6e5ff0` and transparent) filtered with `blur(140px)` and blended via `mix-blend-mode: screen`. Pulses with a slow breathing loop (opacity 0.85 to 1.0, 7s cycle).
+4. **Hollow 3D Particle Sphere (`ParticleSphereHero.tsx`)**: Positioned at $x \approx 39\%$ of viewport width, $y \approx 45\%$ of hero height (diameter $\approx 320\text{px}$ on 1884px desktop). Semi-transparent shell with visible back particles and faint violet inner core glow.
+5. **Foreground Typography & UI**:
+   - **Headline**: Light geometric sans (Plus Jakarta Sans), 56–68px:
+     - Line 1: `Building ` (*light*) + `Digital` (*bold italic*)
+     - Line 2: `Solutions` (*bold italic*) + ` That Matter` (*light*), indented ~170px to the right.
+   - **Subtext**: Bottom-left, 16px, white at ~85% opacity: *"We empower organizations with AI that turns complex challenges into real-world outcomes."*
+   - **Primary CTA**: Rounded pill button with lavender-violet gradient (`#6b5fd6` to `#8a7ff0`), soft outer glow (`box-shadow: 0 0 28px rgba(107, 95, 214, 0.55)`), white text *"Start Your Project"*.
+   - **Stats Row**: Bottom-right, horizontal row with `50+ Projects Delivered`, `100% Client Satisfaction`, `24/7 Support Available` (32px bold numbers with 2-line labels).
+   - **Floating Chat Badge**: Bottom-right circular badge with glowing gradient avatar and sparkles.
+
+---
+
+### 0.2 Particle Sphere Tunable Constants
+
+| Constant Name | Value | Purpose / Description |
+| :--- | :--- | :--- |
+| `PARTICLE_COUNT` | `7,600` (desktop) / `3,800` (mobile) | Total points distributed on hollow sphere surface |
+| `SPHERE_POSITION_X` | `0.39` (desktop) / `0.50` (mobile) | Center X coordinate as ratio of viewport width |
+| `SPHERE_POSITION_Y` | `0.45` (desktop) / `0.42` (mobile) | Center Y coordinate as ratio of viewport height |
+| `SPHERE_RADIUS_RATIO`| `0.17` (desktop) / `0.35` (mobile) | Sphere radius relative to viewport width (~320px diameter on 1884px) |
+| `BASE_COLOR` | `#dfe3ff` (`rgb(223, 227, 255)`) | Cool white resting particle tint |
+| `TINT_COLOR` | `#8f7fff` to `#a99bff` (`rgb(143, 127, 255)`) | Bright violet-blue attraction & clump tint |
+| `CORE_GLOW_COLOR` | `#5a4fd0` (`rgba(90, 79, 208, 0.26)`) | Faint violet radial core glow at center of sphere |
+| `INFLUENCE_RADIUS` | `118px` (desktop) | Cursor influence radius in screen pixels (range: 90–130px) |
+| `SPRING_STIFFNESS` | `0.078` | Damped spring return stiffness (0.06 – 0.10) |
+| `SPRING_DAMPING` | `0.88` | Damped spring velocity damping (0.85 – 0.90) |
+| `ROTATION_SPEED_Y` | `0.095 rad/s` | Continuous idle rotation around Y axis |
+| `ROTATION_TILT_X` | `0.15 rad` | Fixed slight forward tilt on X axis |
+| `MOUSE_LERP_FACTOR`| `0.12` | Fluid cursor velocity smoothing factor |
+| `POINT_SIZE` | `1.3px - 2.5px` (depth) up to `4.5px` (near cursor) | Base dot size with depth attenuation and proximity bloom |
+
+---
+
+### 0.3 Mathematical & Physics Formulations
+
+1. **Fibonacci Sphere Distribution**:
+   Points are uniformly placed on a sphere surface using the golden angle $\phi = \pi (3 - \sqrt{5}) \approx 2.399963\text{ rad}$:
+   $$y_i = 1 - \frac{2i}{N - 1}, \quad r_i = \sqrt{1 - y_i^2}, \quad \theta_i = i \cdot \phi$$
+   $$x_i = r_i \cos(\theta_i) \cdot (1 + \delta_i), \quad z_i = r_i \sin(\theta_i) \cdot (1 + \delta_i)$$
+   where $\delta_i \in [-0.025, +0.025]$ is organic radial jitter.
+
+2. **Screen-Space Projection**:
+   Local particle coordinates are rotated by $R_x(0.15) R_y(\omega t)$, translated into world coordinates $W_i$, and projected to screen pixel space $(S_{x, i}, S_{y, i})$ via the camera projection matrix.
+
+3. **Cursor Attraction & Swirling Clump Dynamics**:
+   For each particle with screen distance $d = \|S_i - M_\text{lerp}\| < R_\text{influence}$:
+   $$\text{falloff} = \exp\left(-\frac{d}{42}\right) \left(1 - \frac{d}{R}\right)$$
+   $$\vec{u}_\text{pull} = \left(\vec{u}_\text{dir} (0.85 + \text{jitter}) + \vec{u}_\text{tangent} \cdot \omega_\text{swirl}\right) \cdot \text{falloff} \cdot 70\text{px}$$
+   This vector is unprojected into the sphere's local coordinate frame, imparting an attractive force on the particle's velocity vector $\vec{v}_i$.
+
+4. **Damped Spring Relaxation**:
+   Every frame, particles experience a Hookean restoring force proportional to displacement:
+   $$\vec{F}_\text{spring} = -k \cdot \vec{d}_i, \quad \vec{v}_i \leftarrow (\vec{v}_i + \vec{F}_\text{spring}) \cdot c_\text{damping}, \quad \vec{d}_i \leftarrow \vec{d}_i + \vec{v}_i$$
+   When the cursor leaves, displaced streaks and clusters relax back to their home positions over 0.8–1.2s, while color lerps from `#8f7fff` back to `#dfe3ff`.
 
 ---
 
