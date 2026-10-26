@@ -33,7 +33,7 @@ export const clientsData: ClientCaseStudy[] = [
     impactLabel: "Reduction in Mean Time to Resolution (MTTR)",
     year: "2026",
     duration: "4 Months",
-    summary: "Strata Systems manages over 50,000 hybrid-cloud enterprise instances. Axiom Labs architected an autonomous multi-agent triage system that diagnoses cluster anomalies and proposes verified automated remediation in seconds.",
+    summary: "Strata Systems manages over 50,000 hybrid-cloud enterprise instances. Axiom Studio architected an autonomous multi-agent triage system that diagnoses cluster anomalies and proposes verified automated remediation in seconds.",
     challenge: "Engineering teams were paralyzed by alert fatigue across multi-cloud environments, averaging 48 minutes to correlate logs, identify root causes, and deploy patches during critical outages.",
     solution: "We engineered an autonomous triage agent mesh running on local private clusters. When an anomaly triggers, specialized agents ingest distributed traces, map historical incident post-mortems via vector embeddings, and formulate safe canary remediation plans.",
     architectureHighlights: [
@@ -70,7 +70,7 @@ export const clientsData: ClientCaseStudy[] = [
     duration: "6 Months",
     summary: "A private, zero-latency clinical intelligence platform designed for acute care physicians to instantly cross-reference patient lab history, vitals, and peer-reviewed protocols.",
     challenge: "Clinicians spent more time navigating legacy electronic health records (EHRs) than interacting with patients, causing severe documentation bottlenecks and diagnostic delays.",
-    solution: "Axiom Labs crafted a secure, zero-retention EHR copilot interface with sub-100ms search, ambient transcription processing, and automated differential diagnosis suggestions vetted against gold-standard clinical guidelines.",
+    solution: "Axiom Studio crafted a secure, zero-retention EHR copilot interface with sub-100ms search, ambient transcription processing, and automated differential diagnosis suggestions vetted against gold-standard clinical guidelines.",
     architectureHighlights: [
       {
         title: "FHIR / HL7 Native Sync",
@@ -138,7 +138,7 @@ export const clientsData: ClientCaseStudy[] = [
     impactLabel: "Automated Vulnerability Neutralization",
     year: "2025",
     duration: "3 Months",
-    summary: "Helix Cybersecurity provides global defense intelligence to critical infrastructure providers. Axiom Labs designed their unified threat operations platform and MITRE ATLAS telemetry interface.",
+    summary: "Helix Cybersecurity provides global defense intelligence to critical infrastructure providers. Axiom Studio designed their unified threat operations platform and MITRE ATLAS telemetry interface.",
     challenge: "Enterprise security teams were overwhelmed by millions of daily edge security events, struggling to prioritize adversarial AI prompts and novel zero-day attack vectors.",
     solution: "We built an edge-deployed telemetry analysis platform with real-time attack path graphing, post-quantum cryptographic key rotation, and automated WAF rule synthesis.",
     architectureHighlights: [
@@ -210,7 +210,7 @@ export const clientsData: ClientCaseStudy[] = [
     duration: "5 Months",
     summary: "Pulse Matrix operates a fleet of over 6,500 freight transports across North America and Western Europe. We engineered their real-time dispatch dashboard and predictive routing core.",
     challenge: "Unpredictable weather disruptions, volatile diesel pricing, and traffic congestion caused recurring multi-hour delivery delays and millions in deadhead mileage.",
-    solution: "Axiom Labs built a real-time dispatch orchestration hub utilizing combinatorial optimization and weather radar satellite feeds to recalculate optimal multi-stop corridors on the fly.",
+    solution: "Axiom Studio built a real-time dispatch orchestration hub utilizing combinatorial optimization and weather radar satellite feeds to recalculate optimal multi-stop corridors on the fly.",
     architectureHighlights: [
       {
         title: "Combinatorial Route Solver",
@@ -245,7 +245,7 @@ export const clientsData: ClientCaseStudy[] = [
     duration: "4 Months",
     summary: "A cutting-edge creative agency platform enabling creators and digital marketers to generate studio-grade acoustic soundtracks and 4K promotional listing videos from text prompts.",
     challenge: "Manual video and audio production took 3 to 5 business days per asset, pricing out indie creators and dynamic social media marketing campaigns.",
-    solution: "Axiom Labs architected an end-to-end cloud synthesis suite featuring a Web Audio visualizer, multi-track timeline editor, and distributed GPU rendering pipeline.",
+    solution: "Axiom Studio architected an end-to-end cloud synthesis suite featuring a Web Audio visualizer, multi-track timeline editor, and distributed GPU rendering pipeline.",
     architectureHighlights: [
       {
         title: "In-Browser Web Audio Waveform",

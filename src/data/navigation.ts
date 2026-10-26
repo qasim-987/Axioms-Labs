@@ -68,7 +68,7 @@ export const footerLinks = {
     { label: "Multimodal Emotion AI", href: "/demos/emotion-ai" },
   ],
   company: [
-    { label: "About Axiom Labs", href: "/company" },
+    { label: "About Axiom Studio", href: "/company" },
     { label: "Core Beliefs & Philosophy", href: "/company#beliefs" },
     { label: "Engineering Careers", href: "/contact" },
     { label: "Book Technical Consultation", href: "/contact" },

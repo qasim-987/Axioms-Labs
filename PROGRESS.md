@@ -1,14 +1,14 @@
-# Axiom Labs — Project Implementation Progress
+# Axiom Studio — Project Implementation Progress
 
 ## Project Overview
-A complete, clean-room re-implementation of the architectural system analyzed from `antimatterai.agency`, fully branded as **Axiom Labs** with 100% original code, dummy clients, technical blueprints, and zero third-party branding.
+A complete, clean-room re-implementation of the architectural system analyzed from `antimatterai.agency`, fully branded as **Axiom Studio** with 100% original code, dummy clients, technical blueprints, and zero third-party branding.
 
 ---
 
 ## Phase Breakdown & Status
 
 ### Phase 1: Structure & Core Architecture (COMPLETED)
-- [x] **Branding & Metadata Overhaul**: Rebranded entire platform from Anti Quanta to **Axiom Labs** (`Axiom Labs — Enterprise AI Architecture & Digital Engineering`).
+- [x] **Branding & Metadata Overhaul**: Rebranded entire platform to **Axiom Studio** (`Axiom Studio — Enterprise AI Architecture & Digital Engineering`).
 - [x] **Client Dossiers (`src/data/clients.ts`)**: Built 7 comprehensive dummy enterprise client profiles:
   1. *Strata Systems* (Autonomous Cloud Telemetry & Remediation Engine)
   2. *Zenith Health AI* (Clinician Intelligence & Diagnostic Copilot)
@@ -24,7 +24,7 @@ A complete, clean-room re-implementation of the architectural system analyzed fr
 - [x] **7 Case Study Dossiers (`/work/[slug]`)**:
   - Executive summaries, operational challenges, engineered solutions, architecture highlights, verified results, previous/next navigation.
 - [x] **Company Narrative Page (`/company`)**:
-  - Mission hero: *"Companies create products. Axiom Labs Creates Impact."*
+  - Mission hero: *"Companies create products. Axiom Studio Creates Impact."*
   - Origin story & three foundational pillars: Design-First Innovation, Engineering Excellence, Real-World Impact
   - Core Beliefs (01: Code as Deterministic Proof, 02: Human Sovereignty & Privacy, 03: Velocity Through Rigor)
   - Interactive Showcase Reel player simulation

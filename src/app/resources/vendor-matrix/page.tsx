@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
+import SplitTextReveal from "@/components/SplitTextReveal";
 import { vendorPlatforms, VendorPlatform } from "@/data/vendorMatrix";
 import {
   Layers,
@@ -98,14 +99,21 @@ export default function VendorMatrixPage() {
       `"${p.bestFitFor}"`
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
+    const csvBody = [headers.join(","), ...rows.map((e) => e.join(","))].join(
+      "\n"
+    );
+    const blob = new Blob([csvBody], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `axiom_ai_vendor_matrix_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `axiom_ai_vendor_matrix_${new Date().toISOString().slice(0, 10)}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -121,12 +129,13 @@ export default function VendorMatrixPage() {
             <Layers className="w-3.5 h-3.5" />
             Decision Intelligence Matrix
           </div>
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
-            Enterprise AI <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-brand-primary">
-              Vendor &amp; Model Matrix
-            </span>
-          </h1>
+          <SplitTextReveal
+            as="h1"
+            text="Enterprise AI Vendor & Model Matrix"
+            accentFromWordIndex={2}
+            triggerOnLoad
+            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight"
+          />
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
             An objective architectural comparison of premier commercial API providers, private VPC cloud services, and sovereign self-hosted open-weight pipelines across security, latency, and tool reliability.
           </p>
@@ -299,7 +308,7 @@ export default function VendorMatrixPage() {
               Unsure which model topology best suits your security profile?
             </h3>
             <p className="text-sm text-zinc-300">
-              Axiom Labs provides vendor-neutral hardware sizing, VPC deployment architecture, and private weight hosting advisory.
+              Axiom Studio provides vendor-neutral hardware sizing, VPC deployment architecture, and private weight hosting advisory.
             </p>
           </div>
           <Link

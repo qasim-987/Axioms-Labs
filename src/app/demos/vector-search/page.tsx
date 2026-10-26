@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
+import SplitTextReveal from "@/components/SplitTextReveal";
+import { searchVectorsViaApi } from "@/lib/apiClient";
 import {
   Search,
   Zap,
@@ -72,8 +74,32 @@ export default function VectorSearchDemoPage() {
   const [query, setQuery] = useState<string>("autonomous agent orchestration latency");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [latencyMs, setLatencyMs] = useState<number>(24);
+  const [apiResults, setApiResults] = useState<SearchDocument[] | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      const res = await searchVectorsViaApi(query, activeCategory);
+      if (res && res.results) {
+        setLatencyMs(res.latencyMs);
+        setApiResults(
+          res.results.map((r) => ({
+            id: r.id,
+            title: r.title,
+            category: r.category as SearchDocument["category"],
+            excerpt: r.snippet,
+            cosineSimilarity: r.similarity,
+            tokens: Math.max(240, r.snippet.split(/\s+/).length * 16),
+          }))
+        );
+      }
+    }, 180);
+    return () => clearTimeout(timer);
+  }, [query, activeCategory]);
 
   const results = useMemo(() => {
+    if (apiResults && apiResults.length > 0) {
+      return apiResults;
+    }
     let list = corpus;
     if (activeCategory !== "All") {
       list = list.filter((d) => d.category === activeCategory);
@@ -91,7 +117,7 @@ export default function VectorSearchDemoPage() {
       });
     }
     return list.sort((a, b) => b.cosineSimilarity - a.cosineSimilarity);
-  }, [query, activeCategory]);
+  }, [query, activeCategory, apiResults]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -111,12 +137,14 @@ export default function VectorSearchDemoPage() {
             <Database className="w-3.5 h-3.5" />
             Vector Search Simulator
           </div>
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
-            Atom Search: <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-300 to-brand-primary">
-              Sub-50ms Semantic Vector Search
-            </span>
-          </h1>
+          <SplitTextReveal
+            as="h1"
+            text="Atom Search: Sub-50ms Semantic Vector Search"
+            accentFromWordIndex={2}
+            accentClassName="text-teal-300"
+            triggerOnLoad
+            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight"
+          />
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
             Instant vector search across multi-tenant knowledge bases. Experience sub-50ms hybrid dense-sparse retrieval powered by Qdrant embeddings and hardware-accelerated cosine similarity.
           </p>

@@ -4,7 +4,8 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
-import { blogPosts, BlogPost } from "@/data/blog";
+import SplitTextReveal from "@/components/SplitTextReveal";
+import { blogPosts } from "@/data/blog";
 import {
   ArrowLeft,
   Clock,
@@ -29,10 +30,10 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: BlogPostPageProps) {
   const post = blogPosts.find((p) => p.slug === params.slug);
-  if (!post) return { title: "Article Not Found | Axiom Labs" };
+  if (!post) return { title: "Article Not Found | Axiom Studio" };
 
   return {
-    title: `${post.title} | Axiom Labs Engineering`,
+    title: `${post.title} | Axiom Studio Engineering`,
     description: post.excerpt,
   };
 }
@@ -83,9 +84,13 @@ export default function BlogPostDetail({ params }: BlogPostPageProps) {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-6">
-              {post.title}
-            </h1>
+            <SplitTextReveal
+              as="h1"
+              text={post.title}
+              accentFromWordIndex={4}
+              triggerOnLoad
+              className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-6"
+            />
 
             <p className="text-lg sm:text-xl text-zinc-300 leading-relaxed font-light mb-8">
               {post.excerpt}
