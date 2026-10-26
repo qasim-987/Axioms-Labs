@@ -86,15 +86,13 @@ export default function ServicesGrid() {
                   delay: idx * 0.07,
                   ease: MOTION_EASE.cinematicOut,
                 }}
-                data-cursor="view-work"
-                data-cursor-label="View Work"
                 style={
                   {
                     "--mouse-x": `${coords.x}px`,
                     "--mouse-y": `${coords.y}px`,
                   } as React.CSSProperties
                 }
-                className={`group relative overflow-hidden rounded-2xl glass-panel p-7 flex flex-col justify-between transition-all duration-300 cursor-pointer ${
+                className={`group relative overflow-hidden rounded-2xl glass-panel p-7 flex flex-col justify-between transition-all duration-300 ${
                   isActive
                     ? "border-brand-primary/50 bg-[#0c0c14]/90 shadow-2xl shadow-brand-primary/10 -translate-y-1"
                     : "hover:border-brand-primary/40 hover:bg-[#0c0c11]/80 hover:-translate-y-1"

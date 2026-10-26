@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
 import SplitTextReveal from "@/components/SplitTextReveal";
+import ViewWorkCursor from "@/components/ViewWorkCursor";
 import { clientsData, clientCategories } from "@/data/clients";
 import { MOTION_EASE, MOTION_SPRING } from "@/lib/motionTokens";
 import {
@@ -130,6 +131,8 @@ export default function WorkIndexPage() {
                 >
                   <Link
                     href={`/work/${project.slug}`}
+                    data-cursor="view-work"
+                    data-cursor-label="View Work"
                     onMouseMove={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       const x = e.clientX - rect.left;
@@ -260,6 +263,7 @@ export default function WorkIndexPage() {
       </main>
 
       <Footer />
+      <ViewWorkCursor label="View Work" />
     </div>
   );
 }
