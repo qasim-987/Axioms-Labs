@@ -17,7 +17,7 @@ export default function SpotlightCard({
   className = "",
   delay = 0,
   tilt = false,
-  spotlightColor = "rgba(133, 135, 227, 0.14)",
+  spotlightColor = "rgba(49, 134, 255, 0.08)",
 }: SpotlightCardProps) {
   const prefersReduced = useReducedMotion();
   const [coords, setCoords] = useState({ x: 180, y: 120 });

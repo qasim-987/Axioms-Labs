@@ -2,13 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================================
+   GOOGLE ANTIGRAVITY (https://antigravity.google/) COLOR SYSTEM TOKENS
+   ============================================================================ */
 :root {
   --font-sans: "Plus Jakarta Sans";
-  --background: #030303;
-  --foreground: #f4f4f5;
-  --accent-purple: #8587e3;
-  --accent-violet: #696aac;
-  --card-border: rgba(255, 255, 255, 0.08);
+
+  /* Official Antigravity Grey & Surface Scale */
+  --palette-grey-0: #FFFFFF;
+  --palette-grey-10: #F8F9FC;
+  --palette-grey-15: #F0F1F5;
+  --palette-grey-20: #EFF2F7;
+  --palette-grey-50: #E6EAF0;
+  --palette-grey-100: #E1E6EC;
+  --palette-grey-200: #CDD4DC;
+  --palette-grey-300: #B2BBC5;
+  --palette-grey-400: #B7BFD9;
+  --palette-grey-800: #45474D;
+  --palette-grey-900: #2F3034;
+  --palette-grey-1000: #212226;
+  --palette-grey-1100: #18191D;
+  --palette-grey-1200: #121317;
+
+  /* Multicolor Antigravity Brand Spectrum */
+  --ag-blue: #3186FF;
+  --ag-periwinkle: #749BFF;
+  --ag-red: #FC413D;
+  --ag-yellow: #FBBC04;
+  --ag-green: #00B95C;
+
+  /* Semantic Surface & Action Mappings */
+  --theme-surface: var(--palette-grey-0);
+  --theme-surface-container: var(--palette-grey-10);
+  --theme-surface-container-high: var(--palette-grey-20);
+  --theme-surface-container-higher: var(--palette-grey-50);
+  --theme-on-surface: var(--palette-grey-1200);
+  --theme-on-surface-variant: var(--palette-grey-800);
+  --theme-primary: var(--palette-grey-1200);
+  --theme-on-primary: var(--palette-grey-0);
+  --theme-primary-hover: var(--palette-grey-900);
+  --theme-secondary-button: rgba(183, 191, 217, 0.16);
+  --theme-secondary-button-hover: var(--palette-grey-15);
+  --theme-nav-hover: rgba(183, 191, 217, 0.2);
+  --theme-outline: rgba(33, 34, 38, 0.12);
+  --theme-outline-variant: rgba(33, 34, 38, 0.07);
+
+  --background: #FFFFFF;
+  --foreground: #121317;
 }
 
 * {
@@ -17,7 +57,7 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -28,12 +68,13 @@ body {
   min-height: 100vh;
 }
 
-/* Smoked Obsidian Glassmorphism */
+/* Antigravity Crisp Airy Surface Cards (Light Surface + Faint Structural Line) */
 .glass-panel {
-  background: rgba(14, 14, 18, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(33, 34, 38, 0.08);
+  box-shadow: 0 2px 16px -4px rgba(18, 19, 23, 0.04);
 }
 
 .glass-panel-hover {
@@ -41,13 +82,38 @@ body {
 }
 
 .glass-panel-hover:hover {
-  background: rgba(20, 20, 26, 0.85);
-  border-color: rgba(133, 135, 227, 0.35);
-  box-shadow: 0 12px 36px -10px rgba(133, 135, 227, 0.15);
+  background: #FFFFFF;
+  border-color: rgba(49, 134, 255, 0.35);
+  box-shadow: 0 18px 40px -14px rgba(18, 19, 23, 0.09);
   transform: translateY(-2px);
 }
 
-/* Volumetric Conic & Radial Light Rays Backdrop */
+/* Antigravity Primary & Secondary Pill Buttons */
+.ag-btn-primary {
+  background-color: #121317;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  transition: background-color 0.18s ease-out, transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.ag-btn-primary:hover {
+  background-color: #2F3034;
+}
+
+.ag-btn-secondary {
+  background-color: rgba(183, 191, 217, 0.16);
+  color: #121317;
+  border: 1px solid rgba(33, 34, 38, 0.08);
+  border-radius: 9999px;
+  transition: background-color 0.18s ease-out, border-color 0.18s ease-out, transform 0.2s ease-out;
+}
+
+.ag-btn-secondary:hover {
+  background-color: #F0F1F5;
+  border-color: rgba(33, 34, 38, 0.14);
+}
+
+/* Atmospheric Daylight Pastel Aura for Inner Pages */
 .light-rays-bg {
   position: absolute;
   top: 0;
@@ -62,23 +128,23 @@ body {
 
 .ray-conic {
   position: absolute;
-  top: -200px;
+  top: -220px;
   left: 50%;
   margin-left: -600px;
   width: 1200px;
-  height: 900px;
+  height: 860px;
   background: conic-gradient(
     from 180deg at 50% 0%,
-    transparent 40deg,
-    rgba(133, 135, 227, 0.18) 60deg,
-    rgba(105, 106, 172, 0.28) 85deg,
-    rgba(255, 255, 255, 0.38) 90deg,
-    rgba(105, 106, 172, 0.28) 95deg,
-    rgba(133, 135, 227, 0.18) 120deg,
-    transparent 140deg
+    transparent 38deg,
+    rgba(49, 134, 255, 0.11) 62deg,
+    rgba(116, 155, 255, 0.16) 86deg,
+    rgba(251, 188, 4, 0.09) 93deg,
+    rgba(252, 65, 61, 0.08) 108deg,
+    rgba(0, 185, 92, 0.08) 124deg,
+    transparent 145deg
   );
-  filter: blur(55px);
-  opacity: 0.68;
+  filter: blur(60px);
+  opacity: 0.9;
 }
 
 .ray-striations {
@@ -87,13 +153,13 @@ body {
   left: 50%;
   margin-left: -700px;
   width: 1400px;
-  height: 920px;
+  height: 900px;
   background: repeating-conic-gradient(
     from 150deg at 50% 0%,
     transparent 0deg,
-    rgba(195, 196, 247, 0.09) 3.5deg,
+    rgba(49, 134, 255, 0.05) 3.5deg,
     transparent 7deg,
-    rgba(133, 135, 227, 0.12) 11deg,
+    rgba(183, 191, 217, 0.12) 11deg,
     transparent 15deg
   );
   mask-image: radial-gradient(
@@ -107,47 +173,46 @@ body {
     transparent 75%
   );
   filter: blur(18px);
-  mix-blend-mode: screen;
 }
 
 .ray-glow {
   position: absolute;
   top: -120px;
   left: 50%;
-  margin-left: -300px;
-  width: 600px;
-  height: 380px;
+  margin-left: -320px;
+  width: 640px;
+  height: 360px;
   background: radial-gradient(
     ellipse at 50% 20%,
-    rgba(133, 135, 227, 0.45) 0%,
-    rgba(105, 106, 172, 0.2) 50%,
+    rgba(49, 134, 255, 0.14) 0%,
+    rgba(116, 155, 255, 0.08) 52%,
     transparent 80%
   );
-  filter: blur(40px);
+  filter: blur(44px);
 }
 
-/* Planetary Horizon Light Curve */
+/* Antigravity Horizon Light Curve */
 .horizon-light-curve {
   position: relative;
   width: 150%;
-  height: 150px;
-  margin-top: 2rem;
+  height: 120px;
+  margin-top: 1.75rem;
   margin-left: auto;
   margin-right: auto;
   transform-origin: 50% 50%;
   border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-  border-top: 1.5px solid rgba(195, 196, 247, 0.5);
+  border-top: 1.5px solid rgba(49, 134, 255, 0.28);
   background: radial-gradient(
     ellipse 55% 65% at 50% 0%,
-    rgba(133, 135, 227, 0.24) 0%,
-    rgba(105, 106, 172, 0.07) 45%,
+    rgba(49, 134, 255, 0.1) 0%,
+    rgba(116, 155, 255, 0.04) 45%,
     transparent 75%
   );
-  box-shadow: 0 -22px 72px -12px rgba(133, 135, 227, 0.35);
+  box-shadow: 0 -16px 48px -12px rgba(49, 134, 255, 0.16);
   pointer-events: none;
 }
 
-/* Dual Edge Alpha Mask for Partner Marquee */
+/* Dual Edge Alpha Mask for Tech Stack Marquee */
 .marquee-alpha-mask {
   mask-image: linear-gradient(
     to right,
@@ -165,22 +230,21 @@ body {
   );
 }
 
-/* Custom Scrollbar */
+/* Crisp Minimal Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #050506;
+  background: #F8F9FC;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
+  background: #CDD4DC;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(133, 135, 227, 0.4);
+  background: #45474D;
 }
 
-/* Animated Optical Fiber / Hub Arc Dash Stream */
 @keyframes dashFlow {
   0% {
     stroke-dashoffset: 32;
@@ -194,17 +258,6 @@ body {
   animation: dashFlow 1.8s linear infinite;
 }
 
-/* Tabular Numerals for live clock and animated counters */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
-}
-
-/* Reduced motion preference (WCAG 2.1 AA Vestibular Compliance) */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
 }

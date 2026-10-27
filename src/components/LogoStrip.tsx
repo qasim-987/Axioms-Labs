@@ -1,48 +1,55 @@
+"use client";
+
 import React from "react";
+import { motion } from "framer-motion";
 import { clientLogos } from "@/data/navigation";
+import { MOTION_EASE } from "@/lib/motionTokens";
 
 export default function LogoStrip() {
-  const repeatedLogos = [...clientLogos, ...clientLogos, ...clientLogos];
+  const marqueeItems = [...clientLogos, ...clientLogos, ...clientLogos];
 
   return (
     <section
-      className="pt-14 pb-0 border-y border-white/[0.06] bg-[#040405] overflow-hidden relative"
-      aria-label="Core Engineering and Design Stack"
+      aria-label="Modern Engineering & Design Stack"
+      className="relative py-14 sm:py-16 overflow-hidden bg-[#F8F9FC] border-y border-[#212226]/[0.06]"
     >
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 mb-6 text-center">
-        <span className="text-xs font-mono uppercase tracking-widest text-zinc-400 block">
-          Our Core Engineering &amp; Design Stack
-        </span>
-        <span className="text-[11px] text-zinc-500 mt-1 block">
-          Powering Fast Websites, Intuitive UI/UX &amp; Autonomous AI Agents
-        </span>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.6, ease: MOTION_EASE.cinematicOut }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center"
+      >
+        <p className="text-xs sm:text-sm font-mono uppercase tracking-[0.22em] text-[#45474D]">
+          BUILT WITH MODERN PRODUCTION DESIGN &amp; WEB TECHNOLOGIES
+        </p>
+      </motion.div>
 
-      {/* Dual Edge Alpha-Masked Seamless Marquee inside Balanced Container */}
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
-        <div className="relative w-full overflow-hidden flex items-center marquee-alpha-mask">
-          <div className="flex shrink-0 items-center gap-12 sm:gap-16 animate-marquee hover:[animation-play-state:paused] py-3 whitespace-nowrap">
-            {repeatedLogos.map((logo, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2.5 text-zinc-400 hover:text-white transition-colors duration-200 cursor-default select-none"
-              >
-                <span className="font-mono text-sm sm:text-base font-bold tracking-widest uppercase opacity-75 hover:opacity-100 transition-opacity">
-                  {logo.symbol}
-                </span>
-              </div>
-            ))}
-          </div>
+      <div className="relative flex overflow-x-hidden group max-w-6xl mx-auto marquee-alpha-mask">
+        <div className="flex animate-marquee group-hover:[animation-play-state:paused] whitespace-nowrap items-center gap-12 sm:gap-16 py-2">
+          {marqueeItems.map((partner, idx) => (
+            <div
+              key={`${partner.name}-${idx}`}
+              className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.07] text-[#45474D] hover:text-[#121317] hover:border-[#3186FF]/30 shadow-sm transition-all duration-300 select-none cursor-default"
+            >
+              <span className="text-xs sm:text-sm font-mono font-semibold tracking-wider text-[#121317]">
+                {partner.symbol}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Centered Planetary Horizon Rim-Light Arc */}
-      <div
-        aria-hidden="true"
-        className="w-full flex justify-center overflow-hidden pointer-events-none"
+      {/* Antigravity Horizon Light Curve */}
+      <motion.div
+        initial={{ opacity: 0, scaleX: 0.92 }}
+        whileInView={{ opacity: 1, scaleX: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 1.1, ease: MOTION_EASE.cinematicOut }}
+        className="relative w-full flex justify-center overflow-hidden -mb-14"
       >
-        <div className="horizon-light-curve animate-pulse-glow shrink-0" />
-      </div>
+        <div className="horizon-light-curve" aria-hidden="true" />
+      </motion.div>
     </section>
   );
 }

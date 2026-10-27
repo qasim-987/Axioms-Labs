@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#030303",
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -90,8 +90,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className="font-sans min-h-screen bg-[#020108] text-zinc-100 antialiased selection:bg-brand-primary selection:text-white overflow-x-hidden">
+    <html lang="en" className="scroll-smooth">
+      <body className="font-sans min-h-screen bg-[#FFFFFF] text-[#121317] antialiased selection:bg-[#3186FF] selection:text-white overflow-x-hidden">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -100,7 +100,7 @@ export default function RootLayout({
         />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-primary focus:text-white focus:rounded-md focus:shadow-lg focus:outline-none"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#121317] focus:text-white focus:rounded-full focus:shadow-lg focus:outline-none"
         >
           Skip to main content
         </a>

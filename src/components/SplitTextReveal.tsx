@@ -22,7 +22,7 @@ export default function SplitTextReveal({
   className = "",
   charClassName = "",
   accentFromWordIndex,
-  accentClassName = "text-brand-light",
+  accentClassName = "text-[#3186FF]",
   delay = 0,
   stagger = STAGGER.char,
   triggerOnLoad = false,

@@ -1,228 +1,126 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { servicesData } from "@/data/services";
+import SpotlightCard from "./SpotlightCard";
 import SplitTextReveal from "./SplitTextReveal";
 import { MOTION_EASE } from "@/lib/motionTokens";
-import {
-  Cpu,
-  Bot,
-  Globe,
-  Layout,
-  Code,
-  ArrowUpRight,
-  Check,
-} from "lucide-react";
+import { Cpu, Bot, Globe, Layout, Code, ArrowUpRight } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
-  Code: <Code className="w-5 h-5 text-brand-primary" />,
-  Globe: <Globe className="w-5 h-5 text-brand-primary" />,
-  Layout: <Layout className="w-5 h-5 text-brand-primary" />,
-  Bot: <Bot className="w-5 h-5 text-brand-primary" />,
-  Cpu: <Cpu className="w-5 h-5 text-brand-primary" />,
+  Code: <Code className="w-6 h-6 text-[#3186FF]" />,
+  Globe: <Globe className="w-6 h-6 text-[#00B95C]" />,
+  Layout: <Layout className="w-6 h-6 text-[#FC413D]" />,
+  Bot: <Bot className="w-6 h-6 text-[#FBBC04]" />,
+  Cpu: <Cpu className="w-6 h-6 text-[#3186FF]" />,
 };
 
 export default function ServicesGrid() {
-  const [activePillar, setActivePillar] = useState<number>(0);
-  const [mouseCoords, setMouseCoords] = useState<
-    Record<string, { x: number; y: number }>
-  >({});
-
-  const handleCardMouseMove = (
-    id: string,
-    e: React.MouseEvent<HTMLElement>
-  ) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMouseCoords((prev) => ({
-      ...prev,
-      [id]: { x: e.clientX - rect.left, y: e.clientY - rect.top },
-    }));
-  };
-
   return (
-    <section id="services" className="py-24 sm:py-32 relative">
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
-        {/* Centered Section Heading */}
-        <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-primary text-xs font-mono font-medium mb-4">
-            <span>OUR SERVICES • 01 — 04</span>
+    <section
+      id="services"
+      className="relative py-24 sm:py-32 bg-[#F8F9FC] border-t border-[#212226]/[0.07]"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-4 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
+              <span>OUR 4 CORE SERVICES</span>
+            </div>
+            <SplitTextReveal
+              as="h2"
+              text="Focused Craft. Built to Perform."
+              accentFromWordIndex={2}
+              accentClassName="text-[#3186FF]"
+              className="text-3xl sm:text-5xl font-bold tracking-tight text-[#121317]"
+            />
           </div>
-          <SplitTextReveal
-            as="h2"
-            text="Four Focused Capabilities Built for Modern Brands."
-            accentFromWordIndex={4}
-            className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight text-center"
-          />
-          <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            Instead of spreading thin across dozens of buzzwords, we focus deeply
-            on four crafts: custom Web Development, high-converting Web
-            Designing, intuitive UI/UX Design, and autonomous AI Agents.
+          <p className="text-[#45474D] max-w-md text-sm sm:text-base leading-relaxed">
+            We specialize strictly in four disciplines so every line of code,
+            pixel, user flow, and AI workflow gets senior-level focus.
           </p>
         </div>
 
-        {/* Balanced 2x2 Spotlight & Expandable Pillar Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          {servicesData.map((service, idx) => {
-            const isActive = activePillar === idx;
-            const coords = mouseCoords[service.id] || { x: 180, y: 120 };
-            const formattedIdx = String(idx + 1).padStart(2, "0");
-
-            return (
-              <motion.article
-                key={service.id}
-                onMouseEnter={() => setActivePillar(idx)}
-                onFocus={() => setActivePillar(idx)}
-                onClick={() => setActivePillar(idx)}
-                onMouseMove={(e) => handleCardMouseMove(service.id, e)}
-                initial={{ opacity: 0, y: 26 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{
-                  duration: 0.65,
-                  delay: idx * 0.08,
-                  ease: MOTION_EASE.cinematicOut,
-                }}
-                style={
-                  {
-                    "--mouse-x": `${coords.x}px`,
-                    "--mouse-y": `${coords.y}px`,
-                  } as React.CSSProperties
-                }
-                className={`group relative overflow-hidden rounded-2xl glass-panel p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
-                  isActive
-                    ? "border-brand-primary/50 bg-[#0c0c14]/90 shadow-2xl shadow-brand-primary/10 -translate-y-1"
-                    : "hover:border-brand-primary/40 hover:bg-[#0c0c11]/80 hover:-translate-y-1"
-                }`}
+        {/* Clean 2x2 Bento Grid for the 4 Services */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {servicesData.map((service, idx) => (
+            <motion.div
+              key={service.id}
+              initial={{ opacity: 0, y: 26 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 0.65,
+                delay: idx * 0.08,
+                ease: MOTION_EASE.cinematicOut,
+              }}
+            >
+              <SpotlightCard
+                tilt
+                className="group relative h-full rounded-3xl p-8 lg:p-9 bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 shadow-[0_8px_30px_rgba(18,19,23,0.04)] hover:shadow-[0_20px_48px_rgba(18,19,23,0.09)] transition-all duration-300 flex flex-col justify-between"
               >
-                {/* Cursor-Tracked Radial Glass Spotlight */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{
-                    background:
-                      "radial-gradient(500px circle at var(--mouse-x) var(--mouse-y), rgba(133, 135, 227, 0.14), transparent 45%)",
-                  }}
-                />
-
-                <div className="relative z-10">
-                  {/* Header Row: 01 Index + Icon + Badge + Launch Arrow */}
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-xs font-bold tracking-widest px-2.5 py-1 rounded-md bg-brand-primary/15 border border-brand-primary/30 text-brand-light">
-                        {formattedIdx}
+                <div>
+                  <div className="flex items-start justify-between gap-4 mb-6">
+                    <div className="flex items-center gap-3.5">
+                      <div className="p-3.5 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.07] group-hover:scale-105 transition-transform duration-300">
+                        {iconMap[service.iconName]}
+                      </div>
+                      <span className="font-mono text-sm font-bold text-[#6A6A71] group-hover:text-[#3186FF] transition-colors">
+                        0{idx + 1}
                       </span>
-                      <div className="p-2.5 rounded-xl bg-white/[0.05] border border-white/10 group-hover:border-brand-primary/40 group-hover:bg-brand-primary/10 transition-colors">
-                        {iconMap[service.iconName] || (
-                          <Cpu className="w-5 h-5 text-brand-primary" />
-                        )}
-                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300">
-                        {service.badge}
-                      </span>
-                      <Link
-                        href={`/services/${service.slug}`}
-                        aria-label={`Explore ${service.title}`}
-                        className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-300 group-hover:bg-brand-primary group-hover:border-brand-primary group-hover:text-white transition-all duration-300"
-                      >
-                        <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Service Title */}
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2.5 tracking-tight group-hover:text-brand-light transition-colors">
-                    {service.title}
-                  </h3>
-
-                  {/* Short Description */}
-                  <p className="text-sm text-zinc-400 leading-relaxed mb-5">
-                    {service.shortDesc}
-                  </p>
-
-                  {/* Key Deliverables */}
-                  <div className="space-y-2 mb-5 border-t border-white/[0.06] pt-4">
-                    <div className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                      Included Deliverables
-                    </div>
-                    {service.deliverables.slice(0, 4).map((item, dIdx) => (
-                      <div
-                        key={dIdx}
-                        className="flex items-start gap-2 text-xs text-zinc-300"
-                      >
-                        <Check className="w-3.5 h-3.5 text-brand-primary shrink-0 mt-0.5" />
-                        <span className="line-clamp-1">
-                          {typeof item === "string" ? item : item.title}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Smooth Expandable Tools Row */}
-                  <div
-                    className={`grid transition-[grid-template-rows,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      isActive
-                        ? "grid-rows-[1fr] opacity-100 mb-5"
-                        : "grid-rows-[0fr] opacity-0 group-hover:grid-rows-[1fr] group-hover:opacity-100 group-hover:mb-5"
-                    }`}
-                  >
-                    <div className="overflow-hidden">
-                      <div className="pt-3 border-t border-white/[0.05]">
-                        <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                          Stack &amp; Tools
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {service.tools.slice(0, 6).map((tool) => (
-                            <span
-                              key={tool}
-                              className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-300"
-                            >
-                              {tool}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom Card Footer */}
-                <div className="relative z-10 pt-4 border-t border-white/[0.06] flex items-center justify-between">
-                  <div className="text-xs font-mono text-zinc-400">
-                    <span className="text-zinc-500">Target: </span>
-                    <span className="text-white font-medium">
+                    <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#3186FF]/[0.08] text-[#3186FF] border border-[#3186FF]/20 font-medium">
                       {service.metrics}
                     </span>
                   </div>
 
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#6A6A71] block mb-2">
+                    {service.badge}
+                  </span>
+
+                  <h3 className="text-2xl sm:text-3xl font-bold text-[#121317] mb-3 group-hover:text-[#3186FF] transition-colors">
+                    {service.title}
+                  </h3>
+
+                  <p className="text-sm sm:text-base text-[#45474D] leading-relaxed mb-6">
+                    {service.shortDesc}
+                  </p>
+
+                  {/* Tech Stack Pills */}
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {service.tools.slice(0, 5).map((tech) => (
+                      <span
+                        key={tech}
+                        className="text-xs font-mono px-2.5 py-1 rounded-md bg-[#F8F9FC] text-[#45474D] border border-[#212226]/[0.07]"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Deep-link Action */}
+                <div className="pt-5 border-t border-[#212226]/[0.07] flex items-center justify-between">
                   <Link
                     href={`/services/${service.slug}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-primary group-hover:text-white transition-colors"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#121317] group-hover:text-[#3186FF] transition-colors after:absolute after:inset-0"
                   >
-                    <span>Explore Service</span>
-                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    <span>Explore {service.title}</span>
+                    <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </Link>
-                </div>
-              </motion.article>
-            );
-          })}
-        </div>
 
-        {/* Bottom Banner */}
-        <div className="mt-16 text-center">
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            <span>Need help combining design, web engineering, and AI?</span>
-            <span className="text-brand-primary font-semibold underline underline-offset-4">
-              Book a Free Discovery Call →
-            </span>
-          </Link>
+                  <span className="text-xs font-mono text-[#6A6A71]">
+                    0{idx + 1} / 04
+                  </span>
+                </div>
+              </SpotlightCard>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

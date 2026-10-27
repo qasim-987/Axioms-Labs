@@ -33,7 +33,7 @@ export default function CaseStudyScrollShowcase({
         sublabel:
           study.architectureHighlights[0]?.description ||
           "Zero-trust request ingestion with sub-millisecond schema validation.",
-        accent: "#8587e3",
+        accent: "#3186FF",
       },
       {
         index: "02",
@@ -43,7 +43,7 @@ export default function CaseStudyScrollShowcase({
         sublabel:
           study.architectureHighlights[1]?.description ||
           "Isolated tenant execution boundaries with strict policy verification.",
-        accent: "#c3c4f7",
+        accent: "#FC413D",
       },
       {
         index: "03",
@@ -52,13 +52,13 @@ export default function CaseStudyScrollShowcase({
         sublabel:
           study.architectureHighlights[2]?.description ||
           "Continuous canary verification and regression benchmarking before commit.",
-        accent: "#34d399",
+        accent: "#00B95C",
       },
       {
         index: "04",
         label: `Concept Target Benchmark (${study.impactMetric})`,
         sublabel: study.impactLabel,
-        accent: "#60a5fa",
+        accent: "#FBBC04",
       },
     ],
     [study]
@@ -130,12 +130,12 @@ export default function CaseStudyScrollShowcase({
         cy + halfH
       );
       if (isHighlighted) {
-        grad.addColorStop(0, "rgba(133, 135, 227, 0.34)");
-        grad.addColorStop(0.5, "rgba(24, 24, 36, 0.92)");
-        grad.addColorStop(1, "rgba(52, 211, 153, 0.22)");
+        grad.addColorStop(0, "rgba(49, 134, 255, 0.36)");
+        grad.addColorStop(0.5, "rgba(24, 25, 29, 0.94)");
+        grad.addColorStop(1, "rgba(0, 185, 92, 0.24)");
       } else {
-        grad.addColorStop(0, "rgba(255, 255, 255, 0.05)");
-        grad.addColorStop(1, "rgba(12, 12, 18, 0.85)");
+        grad.addColorStop(0, "rgba(255, 255, 255, 0.06)");
+        grad.addColorStop(1, "rgba(18, 19, 23, 0.88)");
       }
 
       ctx.fillStyle = grad;
@@ -144,13 +144,12 @@ export default function CaseStudyScrollShowcase({
       ctx.lineWidth = isHighlighted ? 1.8 : 1;
       ctx.strokeStyle = isHighlighted
         ? accentHex
-        : "rgba(255, 255, 255, 0.14)";
+        : "rgba(255, 255, 255, 0.16)";
       ctx.stroke();
 
-      // Internal isometric grid lines
       ctx.strokeStyle = isHighlighted
-        ? "rgba(195, 196, 247, 0.18)"
-        : "rgba(255, 255, 255, 0.04)";
+        ? "rgba(116, 155, 255, 0.22)"
+        : "rgba(255, 255, 255, 0.05)";
       ctx.lineWidth = 0.75;
       for (let step = 0.25; step < 1; step += 0.25) {
         const sx = cx - halfW + halfW * step;
@@ -161,8 +160,7 @@ export default function CaseStudyScrollShowcase({
         ctx.stroke();
       }
 
-      // Node Beacon + Label
-      ctx.fillStyle = isHighlighted ? "#ffffff" : "rgba(228, 228, 231, 0.55)";
+      ctx.fillStyle = isHighlighted ? "#ffffff" : "rgba(230, 234, 240, 0.65)";
       ctx.font = "600 11px ui-monospace, SFMono-Regular, monospace";
       ctx.fillText(
         `${layerIndex} // ${layerTitle.slice(0, 26)}`,
@@ -187,22 +185,26 @@ export default function CaseStudyScrollShowcase({
       const baseCy = h * 0.52;
       const halfW = Math.min(w * 0.38, 175);
       const halfH = halfW * 0.42;
-      // Vertical explosion separation scrubbed by scroll progress (26px -> 64px)
       const gap = 26 + p * 36;
 
-      // Ambient radial core glow
-      const glow = ctx.createRadialGradient(cx, baseCy, 15, cx, baseCy, halfW * 1.4);
-      glow.addColorStop(0, "rgba(133, 135, 227, 0.18)");
-      glow.addColorStop(1, "rgba(3, 3, 3, 0)");
+      const glow = ctx.createRadialGradient(
+        cx,
+        baseCy,
+        15,
+        cx,
+        baseCy,
+        halfW * 1.4
+      );
+      glow.addColorStop(0, "rgba(49, 134, 255, 0.22)");
+      glow.addColorStop(1, "rgba(18, 19, 23, 0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(cx, baseCy, halfW * 1.4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Central vertical telemetry spine connecting all 4 planes
       const topY = baseCy - 1.5 * gap;
       const botY = baseCy + 1.5 * gap;
-      ctx.strokeStyle = "rgba(133, 135, 227, 0.35)";
+      ctx.strokeStyle = "rgba(116, 155, 255, 0.45)";
       ctx.setLineDash([4, 4]);
       ctx.lineWidth = 1.4;
       ctx.beginPath();
@@ -211,7 +213,6 @@ export default function CaseStudyScrollShowcase({
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Draw bottom-to-top so upper planes overlap lower planes cleanly
       const activeIdx = Math.min(3, Math.floor(p * 4));
       for (let i = 3; i >= 0; i--) {
         const offsetFromCenter = (i - 1.5) * gap;
@@ -230,7 +231,6 @@ export default function CaseStudyScrollShowcase({
         );
       }
 
-      // Traveling optical packet along central bus
       const packetU = (tick * 0.45 + p) % 1;
       const packetY = botY - packetU * (botY - topY);
       ctx.fillStyle = "#ffffff";
@@ -254,28 +254,29 @@ export default function CaseStudyScrollShowcase({
     <section
       ref={runwayRef}
       aria-label="Scroll-Scrubbed Architecture Disassembly"
-      className="mb-20 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-[#08080e] to-[#040407] p-6 sm:p-10"
+      className="mb-20 rounded-3xl border border-[#212226]/[0.08] bg-[#F8F9FC] p-6 sm:p-10"
     >
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
-          <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold block mb-2">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold block mb-2">
             INTERACTIVE SYSTEM DISASSEMBLY • SCROLL SCRUBBED
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#121317] tracking-tight">
             4-Layer Execution Topology
           </h2>
         </div>
-        <span className="text-xs font-mono text-zinc-400">
-          Active Plane: <strong className="text-brand-light">0{activeLayer + 1} / 04</strong>
+        <span className="text-xs font-mono text-[#45474D]">
+          Active Plane:{" "}
+          <strong className="text-[#3186FF]">0{activeLayer + 1} / 04</strong>
         </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Sticky Canvas Viewport */}
-        <div className="lg:col-span-6 lg:sticky lg:top-28 rounded-2xl bg-[#050509] border border-white/[0.08] p-4 shadow-2xl">
-          <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 pb-2 border-b border-white/[0.06] mb-2">
+        {/* Sticky Inverse Dark Canvas Viewport (#121317 Antigravity Obsidian Frame) */}
+        <div className="lg:col-span-6 lg:sticky lg:top-28 rounded-2xl bg-[#121317] border border-[#212226]/20 p-4 shadow-[0_20px_48px_rgba(18,19,23,0.18)]">
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#B2BBC5] pb-2 border-b border-white/10 mb-2">
             <span>AXIOM TOPOLOGY RENDERER • 60FPS</span>
-            <span className="text-emerald-400">LIVE SYNC</span>
+            <span className="text-[#4ADE80]">LIVE SYNC</span>
           </div>
           <canvas
             ref={canvasRef}
@@ -296,22 +297,22 @@ export default function CaseStudyScrollShowcase({
                 }}
                 className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
                   isCurrent
-                    ? "bg-brand-primary/[0.09] border-brand-primary/50 shadow-xl shadow-brand-primary/10 translate-x-1"
-                    : "bg-white/[0.02] border-white/[0.07] hover:border-white/20"
+                    ? "bg-[#FFFFFF] border-[#3186FF] shadow-[0_14px_34px_rgba(49,134,255,0.12)] translate-x-1"
+                    : "bg-[#FFFFFF]/80 border-[#212226]/[0.08] hover:border-[#212226]/20"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-mono text-xs font-bold text-brand-primary">
+                  <span className="font-mono text-xs font-bold text-[#3186FF]">
                     LAYER {stage.index}
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#6A6A71]">
                     {study.techStack[idx % study.techStack.length]}
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">
+                <h3 className="text-lg font-bold text-[#121317] mb-2">
                   {stage.label}
                 </h3>
-                <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#45474D] leading-relaxed">
                   {stage.sublabel}
                 </p>
               </div>

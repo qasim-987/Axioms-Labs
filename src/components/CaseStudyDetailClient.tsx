@@ -14,10 +14,10 @@ import { MOTION_EASE } from "@/lib/motionTokens";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 
 const dialGauges = [
-  { label: "Lighthouse Speed", display: "99/100", pct: 99 },
-  { label: "UI Token Consistency", display: "100%", pct: 100 },
-  { label: "Edge Latency", display: "<85ms", pct: 94 },
-  { label: "Responsive & A11y", display: "WCAG AA", pct: 98 },
+  { label: "Lighthouse Speed", display: "99/100", pct: 99, stroke: "#3186FF" },
+  { label: "UI Token Consistency", display: "100%", pct: 100, stroke: "#00B95C" },
+  { label: "Edge Latency", display: "<85ms", pct: 94, stroke: "#FC413D" },
+  { label: "Responsive & A11y", display: "WCAG AA", pct: 98, stroke: "#FBBC04" },
 ];
 
 export default function CaseStudyDetailClient({
@@ -37,22 +37,25 @@ export default function CaseStudyDetailClient({
 
       <main
         id="main-content"
-        className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#030303] text-zinc-100"
+        className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#FFFFFF] text-[#121317]"
       >
         <LightRays />
 
         <div className="max-w-5xl mx-auto px-8 sm:px-12 lg:px-16">
           {/* Breadcrumbs */}
-          <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-500 mb-8">
-            <Link href="/" className="hover:text-white transition-colors">
+          <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#6A6A71] mb-8">
+            <Link href="/" className="hover:text-[#121317] transition-colors">
               Home
             </Link>
             <span>/</span>
-            <Link href="/work" className="hover:text-white transition-colors">
+            <Link
+              href="/work"
+              className="hover:text-[#121317] transition-colors"
+            >
               Concept Showcase
             </Link>
             <span>/</span>
-            <span className="text-brand-primary font-medium">
+            <span className="text-[#3186FF] font-semibold">
               {study.client}
             </span>
           </div>
@@ -65,13 +68,13 @@ export default function CaseStudyDetailClient({
               transition={{ duration: 0.55, ease: MOTION_EASE.cinematicOut }}
               className="flex flex-wrap items-center justify-center gap-3 mb-5"
             >
-              <span className="text-xs font-mono font-bold text-white px-3 py-1 rounded-md bg-white/[0.08] border border-white/10">
+              <span className="text-xs font-mono font-bold text-[#121317] px-3 py-1 rounded-md bg-[#F8F9FC] border border-[#212226]/[0.08]">
                 {study.client}
               </span>
-              <span className="text-xs font-mono text-brand-primary px-2.5 py-0.5 rounded-full bg-brand-primary/10 border border-brand-primary/20">
+              <span className="text-xs font-mono text-[#3186FF] px-2.5 py-0.5 rounded-full bg-[#3186FF]/[0.08] border border-[#3186FF]/20 font-medium">
                 {study.category}
               </span>
-              <span className="text-xs font-mono text-zinc-400">
+              <span className="text-xs font-mono text-[#6A6A71]">
                 {study.year} • {study.duration}
               </span>
             </motion.div>
@@ -80,8 +83,9 @@ export default function CaseStudyDetailClient({
               as="h1"
               text={study.title}
               accentFromWordIndex={3}
+              accentClassName="text-[#3186FF]"
               triggerOnLoad
-              className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4 leading-tight text-center max-w-4xl mx-auto"
+              className="text-3xl sm:text-5xl font-extrabold text-[#121317] tracking-tight mb-4 leading-tight text-center max-w-4xl mx-auto"
             />
 
             <motion.p
@@ -92,36 +96,36 @@ export default function CaseStudyDetailClient({
                 delay: 0.35,
                 ease: MOTION_EASE.cinematicOut,
               }}
-              className="text-lg text-zinc-300 leading-relaxed font-light max-w-3xl mx-auto"
+              className="text-lg text-[#45474D] leading-relaxed font-normal max-w-3xl mx-auto"
             >
               {study.tagline}
             </motion.p>
           </div>
 
-          {/* Highlight Benchmark Banner + Scroll-Driven Radial Dial Gauges */}
+          {/* Highlight Benchmark Banner (#121317 Inverse Dark Card + Multicolor Antigravity Radial Gauges) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.7, ease: MOTION_EASE.cinematicOut }}
-            className="p-8 sm:p-10 rounded-3xl border border-brand-primary/30 bg-gradient-to-r from-brand-primary/15 via-[#0c0c12] to-transparent mb-16 shadow-2xl shadow-brand-primary/10"
+            className="p-8 sm:p-10 rounded-3xl bg-[#121317] text-white mb-16 shadow-[0_24px_64px_rgba(18,19,23,0.16)]"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 mb-8 border-b border-white/[0.08]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 mb-8 border-b border-white/10">
               <div>
                 <div className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight font-mono tabular-nums">
                   {study.impactMetric}
                 </div>
-                <div className="text-sm text-zinc-300 font-medium mt-1">
+                <div className="text-sm text-[#B2BBC5] font-medium mt-1">
                   {study.impactLabel}
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3.5 py-2 rounded-full border border-emerald-500/20 shrink-0 self-start sm:self-auto">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <div className="flex items-center gap-2 text-xs font-mono text-[#4ADE80] bg-[#00B95C]/15 px-3.5 py-2 rounded-full border border-[#00B95C]/30 shrink-0 self-start sm:self-auto">
+                <CheckCircle2 className="w-4 h-4 text-[#4ADE80]" />
                 <span>Axiom Studio Internal Concept Build</span>
               </div>
             </div>
 
-            {/* 4 Scroll-Driven Radial SVG Dial Gauges */}
+            {/* 4 Scroll-Driven Multicolor Antigravity Radial SVG Dial Gauges */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {dialGauges.map((g, idx) => {
                 const targetOffset = circumference * (1 - g.pct / 100);
@@ -141,7 +145,7 @@ export default function CaseStudyDetailClient({
                           cy="40"
                           r="34"
                           fill="none"
-                          stroke="rgba(255,255,255,0.08)"
+                          stroke="rgba(255,255,255,0.1)"
                           strokeWidth="5"
                         />
                         <motion.circle
@@ -149,7 +153,7 @@ export default function CaseStudyDetailClient({
                           cy="40"
                           r="34"
                           fill="none"
-                          stroke="#8587e3"
+                          stroke={g.stroke}
                           strokeWidth="5"
                           strokeLinecap="round"
                           strokeDasharray={circumference}
@@ -167,7 +171,7 @@ export default function CaseStudyDetailClient({
                         {g.display}
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-zinc-400">
+                    <span className="text-[11px] font-mono text-[#B2BBC5]">
                       {g.label}
                     </span>
                   </div>
@@ -178,10 +182,10 @@ export default function CaseStudyDetailClient({
 
           {/* Concept Overview */}
           <div className="mb-16">
-            <h2 className="text-xs font-mono uppercase tracking-widest text-brand-primary mb-3 font-semibold">
+            <h2 className="text-xs font-mono uppercase tracking-widest text-[#3186FF] mb-3 font-semibold">
               Concept Overview
             </h2>
-            <p className="text-lg text-zinc-200 leading-relaxed">
+            <p className="text-lg text-[#121317] leading-relaxed">
               {study.summary}
             </p>
           </div>
@@ -189,17 +193,17 @@ export default function CaseStudyDetailClient({
           {/* Problem Statement & Studio Execution Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             <SpotlightCard
-              spotlightColor="rgba(251, 191, 36, 0.12)"
-              className="p-8 rounded-2xl bg-white/[0.02] border border-white/[0.08] hover:border-amber-400/35"
+              spotlightColor="rgba(252, 65, 61, 0.08)"
+              className="p-8 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] hover:border-[#FC413D]/35"
             >
               <div>
-                <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-semibold mb-3 block">
+                <span className="text-xs font-mono uppercase tracking-wider text-[#FC413D] font-semibold mb-3 block">
                   The UX &amp; Engineering Problem
                 </span>
-                <h3 className="text-xl font-bold text-white mb-4">
+                <h3 className="text-xl font-bold text-[#121317] mb-4">
                   Why Most Teams Struggle Here
                 </h3>
-                <p className="text-zinc-300 text-sm leading-relaxed">
+                <p className="text-[#45474D] text-sm leading-relaxed">
                   {study.challenge}
                 </p>
               </div>
@@ -207,16 +211,16 @@ export default function CaseStudyDetailClient({
 
             <SpotlightCard
               delay={0.08}
-              className="p-8 rounded-2xl bg-brand-primary/[0.04] border border-brand-primary/20 hover:border-brand-primary/45"
+              className="p-8 rounded-2xl bg-[#3186FF]/[0.05] border border-[#3186FF]/20 hover:border-[#3186FF]/40"
             >
               <div>
-                <span className="text-xs font-mono uppercase tracking-wider text-brand-primary font-semibold mb-3 block">
+                <span className="text-xs font-mono uppercase tracking-wider text-[#3186FF] font-semibold mb-3 block">
                   Our Studio Blueprint
                 </span>
-                <h3 className="text-xl font-bold text-white mb-4">
+                <h3 className="text-xl font-bold text-[#121317] mb-4">
                   How Axiom Studio Built It
                 </h3>
-                <p className="text-zinc-300 text-sm leading-relaxed">
+                <p className="text-[#45474D] text-sm leading-relaxed">
                   {study.solution}
                 </p>
               </div>
@@ -230,10 +234,10 @@ export default function CaseStudyDetailClient({
           {study.architectureHighlights &&
             study.architectureHighlights.length > 0 && (
               <div className="mb-16">
-                <h2 className="text-xs font-mono uppercase tracking-widest text-brand-primary mb-3 font-semibold">
+                <h2 className="text-xs font-mono uppercase tracking-widest text-[#3186FF] mb-3 font-semibold">
                   Craft &amp; Engineering Details
                 </h2>
-                <h3 className="text-2xl font-bold text-white mb-6">
+                <h3 className="text-2xl font-bold text-[#121317] mb-6">
                   Under the Hood: Key Design &amp; Code Decisions
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -242,16 +246,16 @@ export default function CaseStudyDetailClient({
                       key={i}
                       delay={i * 0.08}
                       tilt
-                      className="p-6 rounded-xl bg-[#09090d] border border-white/[0.08] hover:border-brand-primary/40"
+                      className="p-6 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.08] hover:border-[#3186FF]/35"
                     >
                       <div>
-                        <span className="text-xs font-mono text-brand-primary font-bold mb-2 block">
+                        <span className="text-xs font-mono text-[#3186FF] font-bold mb-2 block">
                           0{i + 1}
                         </span>
-                        <h4 className="text-base font-semibold text-white mb-2">
+                        <h4 className="text-base font-semibold text-[#121317] mb-2">
                           {hl.title}
                         </h4>
-                        <p className="text-xs text-zinc-400 leading-relaxed">
+                        <p className="text-xs text-[#45474D] leading-relaxed">
                           {hl.description}
                         </p>
                       </div>
@@ -262,11 +266,11 @@ export default function CaseStudyDetailClient({
             )}
 
           {/* Prototype Benchmarks */}
-          <div className="mb-16 p-8 sm:p-10 rounded-2xl bg-[#08080c] border border-white/[0.08]">
-            <h2 className="text-xs font-mono uppercase tracking-widest text-brand-primary mb-2 font-semibold">
+          <div className="mb-16 p-8 sm:p-10 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08]">
+            <h2 className="text-xs font-mono uppercase tracking-widest text-[#3186FF] mb-2 font-semibold">
               Prototype Benchmarks
             </h2>
-            <h3 className="text-2xl font-bold text-white mb-6">
+            <h3 className="text-2xl font-bold text-[#121317] mb-6">
               What This Architecture Delivers for Clients
             </h3>
             <div className="grid grid-cols-1 gap-4">
@@ -281,10 +285,10 @@ export default function CaseStudyDetailClient({
                     delay: idx * 0.07,
                     ease: MOTION_EASE.cinematicOut,
                   }}
-                  className="flex items-start gap-3.5 p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-emerald-500/30 transition-colors"
+                  className="flex items-start gap-3.5 p-4 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.07] hover:border-[#00B95C]/35 transition-colors shadow-sm"
                 >
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <span className="text-sm text-zinc-200 leading-relaxed">
+                  <CheckCircle2 className="w-5 h-5 text-[#00B95C] shrink-0 mt-0.5" />
+                  <span className="text-sm text-[#121317] leading-relaxed">
                     {result}
                   </span>
                 </motion.div>
@@ -294,14 +298,14 @@ export default function CaseStudyDetailClient({
 
           {/* Tech Stack Pills */}
           <div className="mb-16">
-            <h3 className="text-xs font-mono uppercase tracking-widest text-zinc-400 mb-4">
+            <h3 className="text-xs font-mono uppercase tracking-widest text-[#6A6A71] mb-4">
               Tools &amp; Stack Used in This Concept
             </h3>
             <div className="flex flex-wrap gap-2">
               {study.techStack.map((tech, idx) => (
                 <span
                   key={idx}
-                  className="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/[0.04] text-zinc-300 border border-white/[0.08] hover:border-brand-primary/40 transition-colors"
+                  className="text-xs font-mono px-3 py-1.5 rounded-lg bg-[#F8F9FC] text-[#121317] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 transition-colors"
                 >
                   {tech}
                 </span>
@@ -310,48 +314,48 @@ export default function CaseStudyDetailClient({
           </div>
 
           {/* Previous / Next Concept Navigation */}
-          <div className="pt-10 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-6 mb-16">
+          <div className="pt-10 border-t border-[#212226]/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-6 mb-16">
             <Link
               href={`/work/${prevStudy.slug}`}
-              className="p-5 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:border-brand-primary/40 transition-all group flex flex-col justify-between"
+              className="p-5 rounded-xl border border-[#212226]/[0.08] bg-[#F8F9FC] hover:bg-[#EFF2F7] hover:border-[#3186FF]/35 transition-all group flex flex-col justify-between"
             >
-              <span className="text-xs font-mono text-zinc-500 mb-2 flex items-center gap-1.5">
+              <span className="text-xs font-mono text-[#6A6A71] mb-2 flex items-center gap-1.5">
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
                 Previous Concept Build
               </span>
-              <span className="text-base font-semibold text-white group-hover:text-brand-light transition-colors">
+              <span className="text-base font-semibold text-[#121317] group-hover:text-[#3186FF] transition-colors">
                 {prevStudy.title}
               </span>
             </Link>
 
             <Link
               href={`/work/${nextStudy.slug}`}
-              className="p-5 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:border-brand-primary/40 transition-all group flex flex-col justify-between text-right"
+              className="p-5 rounded-xl border border-[#212226]/[0.08] bg-[#F8F9FC] hover:bg-[#EFF2F7] hover:border-[#3186FF]/35 transition-all group flex flex-col justify-between text-right"
             >
-              <span className="text-xs font-mono text-zinc-500 mb-2 flex items-center justify-end gap-1.5">
+              <span className="text-xs font-mono text-[#6A6A71] mb-2 flex items-center justify-end gap-1.5">
                 Next Concept Build
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </span>
-              <span className="text-base font-semibold text-white group-hover:text-brand-light transition-colors">
+              <span className="text-base font-semibold text-[#121317] group-hover:text-[#3186FF] transition-colors">
                 {nextStudy.title}
               </span>
             </Link>
           </div>
 
           {/* Bottom Consultation CTA */}
-          <div className="p-8 rounded-2xl bg-gradient-to-r from-brand-primary/10 to-transparent border border-brand-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="p-8 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div>
-              <h4 className="text-xl font-bold text-white mb-1">
+              <h4 className="text-xl font-bold text-[#121317] mb-1">
                 Want something like this built for your brand?
               </h4>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-[#45474D]">
                 Book a free discovery call with our team in Kuopio &amp; Lahore
                 to scope your website, UI/UX design, or AI agent.
               </p>
             </div>
             <Link
               href="/contact"
-              className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-white text-black hover:bg-zinc-200 transition-colors shrink-0"
+              className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors shrink-0"
             >
               Start Your Project
             </Link>

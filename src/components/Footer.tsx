@@ -2,239 +2,248 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { footerLinks } from "@/data/navigation";
-import { checkBackendHealth, BackendHealthStatus } from "@/lib/apiClient";
 import SplitTextReveal from "./SplitTextReveal";
-import { Clock, ArrowUp, ArrowRight, Server, MapPin } from "lucide-react";
+import { MOTION_EASE } from "@/lib/motionTokens";
+import { ArrowUpRight, Clock, Activity } from "lucide-react";
 
 export default function Footer() {
-  const [timeString, setTimeString] = useState<string>("--:--:--");
-  const [year, setYear] = useState<number>(2026);
-  const [apiHealth, setApiHealth] = useState<BackendHealthStatus | null>(null);
+  const [studioTime, setStudioTime] = useState<string>("");
+  const [apiOnline, setApiOnline] = useState<boolean>(true);
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setYear(now.getFullYear());
-      setTimeString(
-        now.toLocaleTimeString("en-US", {
-          hour12: true,
+    const updateClock = () => {
+      try {
+        const formatted = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Europe/Helsinki",
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-        })
-      );
+          hour12: true,
+        }).format(new Date());
+        setStudioTime(`${formatted} EET`);
+      } catch {
+        setStudioTime("LIVE");
+      }
     };
 
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-
-    checkBackendHealth().then(setApiHealth);
-
-    return () => clearInterval(interval);
+    updateClock();
+    const timer = setInterval(updateClock, 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleMagneticMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.22;
-    const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.22;
-    e.currentTarget.style.transform = `translate3d(${dx.toFixed(
-      1
-    )}px, ${dy.toFixed(1)}px, 0)`;
-  };
-
-  const handleMagneticLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.currentTarget.style.transform = "translate3d(0px, 0px, 0)";
-  };
+  useEffect(() => {
+    let active = true;
+    fetch("/api/health")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (active && data?.status === "ok") {
+          setApiOnline(true);
+        }
+      })
+      .catch(() => {
+        /* keep default indicator */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
-    <footer className="relative bg-[#020203] border-t border-white/[0.08] pt-20 pb-12 text-zinc-400 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
-        {/* Centered Closing Cinematic Split-Character CTA Stage */}
-        <div className="pb-16 mb-16 border-b border-white/[0.08] flex flex-col items-center text-center gap-7">
-          <div className="max-w-2xl mx-auto">
-            <span className="text-xs font-mono uppercase tracking-widest text-brand-primary block mb-3">
-              READY TO BUILD?
-            </span>
-            <SplitTextReveal
-              as="h2"
-              text="We turn bold ideas into powerful digital realities."
-              accentFromWordIndex={5}
-              className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.1] text-center"
-            />
-          </div>
+    <footer className="relative bg-[#FFFFFF] border-t border-[#212226]/[0.07] pt-16 sm:pt-24 pb-12 overflow-hidden">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Antigravity Signature Inverse Dark Callout Card (#121317 .card.dark before footer) */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.7, ease: MOTION_EASE.cinematicOut }}
+          className="relative overflow-hidden rounded-[28px] sm:rounded-[36px] bg-[#121317] text-[#F8F9FC] p-8 sm:p-14 lg:p-16 mb-20 shadow-[0_24px_64px_rgba(18,19,23,0.16)]"
+        >
+          {/* Ambient Multicolor Antigravity Corner Glow inside Dark Card */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-32 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-45"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(49,134,255,0.5) 0%, rgba(116,155,255,0.22) 48%, transparent 74%)",
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-32 -left-24 w-[360px] h-[360px] rounded-full blur-3xl opacity-30"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(0,185,92,0.4) 0%, rgba(251,188,4,0.18) 52%, transparent 76%)",
+            }}
+          />
 
-          <Link
-            href="/contact"
-            onMouseMove={handleMagneticMove}
-            onMouseLeave={handleMagneticLeave}
-            className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold transition-all duration-200 shadow-xl shadow-brand-primary/25 will-change-transform shrink-0"
-          >
-            <span>Let&apos;s work together</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Studio Lockup + Live 1Hz Local Clock + API Status */}
-        <div className="pb-12 mb-12 border-b border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-muted via-brand-primary to-white flex items-center justify-center p-[1px] shadow-lg shadow-brand-primary/20">
-              <div className="w-full h-full bg-[#08080a] rounded-[10px] flex items-center justify-center">
-                <span className="font-mono font-black text-sm text-white tracking-tighter">
-                  AX
-                </span>
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.08] border border-white/10 text-xs font-mono text-[#B2BBC5] mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
+                <span>READY WHEN YOU ARE</span>
               </div>
-            </div>
-            <div>
-              <span className="font-sans font-bold text-lg text-white tracking-tight flex items-center gap-2">
-                AXIOM STUDIO
-              </span>
-              <p className="text-xs text-zinc-400 font-mono mt-0.5">
-                Kuopio, Finland • Lahore, Pakistan • Serving Clients Globally
+              <SplitTextReveal
+                as="h2"
+                text="We turn bold ideas into powerful digital realities."
+                accentFromWordIndex={5}
+                accentClassName="text-[#749BFF]"
+                className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-[1.12] mb-4"
+              />
+              <p className="text-sm sm:text-base text-[#B2BBC5] max-w-xl leading-relaxed">
+                Partner directly with our Web Development, Web Designing, UI/UX,
+                and AI Agent builders across Kuopio and Lahore.
               </p>
             </div>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Standalone Backend API Telemetry Pill */}
-            <div className="flex items-center gap-2.5 bg-white/[0.03] border border-white/[0.08] px-3.5 py-2.5 rounded-xl text-xs font-mono">
-              <Server className="w-3.5 h-3.5 text-brand-primary" />
-              <span className="text-zinc-400">API:</span>
-              {apiHealth?.status === "operational" ? (
-                <span className="text-emerald-400 font-semibold tabular-nums">
-                  ONLINE ({apiHealth.latencyMs}ms)
-                </span>
-              ) : (
-                <span className="text-zinc-300">STANDBY</span>
-              )}
-            </div>
-
-            {/* Live 1Hz Studio Clock Card */}
-            <div className="flex items-center gap-3.5 bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 rounded-xl">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <Clock className="w-4 h-4 text-zinc-400" />
-                <span className="text-xs font-mono text-zinc-400">
-                  STUDIO TIME
-                </span>
-              </div>
-              <div className="h-4 w-px bg-white/10" />
-              <div className="font-mono font-bold text-sm text-white tabular-nums tracking-wider">
-                {timeString}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Clean 4-Column Directory */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-          <div>
-            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
-              Services
-            </h4>
-            <ul className="space-y-2.5 text-xs">
-              {footerLinks.services.map((item, idx) => (
-                <li key={idx}>
-                  <Link
-                    href={item.href}
-                    className="hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
-              Concept Showcase
-            </h4>
-            <ul className="space-y-2.5 text-xs">
-              {footerLinks.work.map((item, idx) => (
-                <li key={idx}>
-                  <Link
-                    href={item.href}
-                    className="hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
-              Studio
-            </h4>
-            <ul className="space-y-2.5 text-xs">
-              {footerLinks.company.map((item, idx) => (
-                <li key={idx}>
-                  <Link
-                    href={item.href}
-                    className="hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
-              Locations &amp; Direct
-            </h4>
-            <ul className="space-y-2.5 text-xs">
-              <li className="flex items-center gap-2 text-zinc-300">
-                <MapPin className="w-3.5 h-3.5 text-brand-primary shrink-0" />
-                <span>Kuopio, Finland</span>
-              </li>
-              <li className="flex items-center gap-2 text-zinc-300">
-                <MapPin className="w-3.5 h-3.5 text-brand-primary shrink-0" />
-                <span>Lahore, Pakistan</span>
-              </li>
-            </ul>
-            <div className="mt-5 pt-4 border-t border-white/[0.06] text-xs font-mono text-zinc-400">
+            <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-4 shrink-0">
+              {/* Inverse Primary Pill Button: White Fill + #121317 Ink */}
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2.5 px-7 py-4 rounded-full text-sm font-semibold bg-[#FFFFFF] hover:bg-[#F0F1F5] text-[#121317] shadow-lg transition-all hover:scale-[1.02]"
+              >
+                <span>Let&apos;s Work Together</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
               <a
                 href="mailto:contact@axiomstudio.agency"
-                className="hover:text-brand-light transition-colors break-all"
+                className="text-sm font-mono text-[#B2BBC5] hover:text-white transition-colors"
               >
                 contact@axiomstudio.agency
               </a>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Legal & Back-to-Top Bottom Bar */}
-        <div className="pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <div className="flex flex-wrap items-center gap-3">
-            <span>© {year} Axiom Studio. All rights reserved.</span>
-            <span className="hidden sm:inline text-zinc-700">•</span>
-            {footerLinks.legal.map((item, idx) => (
-              <Link
-                key={idx}
-                href={item.href}
-                className="hover:text-zinc-300 transition-colors"
+        {/* Clean Airy White Directory Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-14 border-b border-[#212226]/[0.08]">
+          {/* Studio Hubs & Live Clock */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                className="w-5 h-5 rounded-md flex items-center justify-center p-[2px]"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #3186FF 0%, #FC413D 45%, #FBBC04 75%, #00B95C 100%)",
+                }}
               >
-                {item.label}
-              </Link>
-            ))}
+                <span className="w-full h-full rounded-[4px] bg-white flex items-center justify-center font-mono text-[9px] font-black text-[#121317]">
+                  A
+                </span>
+              </span>
+              <span className="font-bold text-lg tracking-tight text-[#202124]">
+                Axiom Studio
+              </span>
+            </div>
+
+            <p className="text-sm text-[#45474D] max-w-sm leading-relaxed">
+              Kuopio, Finland • Lahore, Pakistan — Designing and engineering
+              high-converting websites, product UI/UX, and AI agents for clients
+              worldwide.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#121317]">
+                <Clock className="w-3.5 h-3.5 text-[#3186FF]" />
+                <span>KUOPIO STUDIO TIME:</span>
+                <span className="text-[#3186FF] font-semibold tabular-nums">
+                  {studioTime || "LOADING..."}
+                </span>
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#00B95C]/[0.08] border border-[#00B95C]/20 text-xs font-mono text-[#00B95C] font-medium">
+                <Activity className="w-3.5 h-3.5" />
+                <span>{apiOnline ? "API GATEWAY ONLINE" : "API STANDBY"}</span>
+              </div>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white font-mono text-[11px] transition-colors"
+          {/* 4 Services Column */}
+          <div className="lg:col-span-3">
+            <h3 className="text-xs font-mono uppercase tracking-widest text-[#121317] font-semibold mb-4">
+              Services
+            </h3>
+            <ul className="space-y-2.5">
+              {footerLinks.services.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-[#45474D] hover:text-[#121317] transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Concept Builds Column */}
+          <div className="lg:col-span-2">
+            <h3 className="text-xs font-mono uppercase tracking-widest text-[#121317] font-semibold mb-4">
+              Concepts
+            </h3>
+            <ul className="space-y-2.5">
+              {footerLinks.work.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-[#45474D] hover:text-[#121317] transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Studio Links Column */}
+          <div className="lg:col-span-2">
+            <h3 className="text-xs font-mono uppercase tracking-widest text-[#121317] font-semibold mb-4">
+              Studio
+            </h3>
+            <ul className="space-y-2.5">
+              {footerLinks.company.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-[#45474D] hover:text-[#121317] transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Oversized Antigravity Wordmark Anchor */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.85, ease: MOTION_EASE.cinematicOut }}
+          className="pt-10 pb-6 text-center select-none overflow-hidden"
+          aria-hidden="true"
+        >
+          <span
+            className="block font-extrabold uppercase tracking-tighter leading-[0.88] text-[#202124]"
+            style={{ fontSize: "clamp(2.8rem, 11.2vw, 10.5rem)" }}
           >
-            <span>TOP</span>
-            <ArrowUp className="w-3.5 h-3.5" />
-          </button>
+            AXIOM STUDIO
+          </span>
+        </motion.div>
+
+        {/* Bottom Copyright */}
+        <div className="pt-6 border-t border-[#212226]/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6A6A71]">
+          <p>
+            Axiom Studio © {new Date().getFullYear()}. All rights reserved.
+          </p>
+          <div className="flex items-center gap-6">
+            <span>Web Dev • Web Design • UI/UX • AI Agents</span>
+          </div>
         </div>
       </div>
     </footer>

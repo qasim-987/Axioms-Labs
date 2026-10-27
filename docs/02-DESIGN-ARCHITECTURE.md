@@ -2,19 +2,20 @@
 
 - **Document ID**: `AXS-DES-002`
 - **Platform**: **Axiom Studio** (`https://axiomstudio.agency`)
-- **Aesthetic Benchmark**: `https://antimatterai.agency` ("Obsidian Vault + Volumetric Indigo/Violet Light")
+- **Color Benchmark**: `https://antigravity.google/` (Crisp `#FFFFFF` / `#F8F9FC` Daylight Surfaces + `#121317` Obsidian Primary Ink/Pills + Multicolor Antigravity Spectrum)
+- **Motion Benchmark**: `https://antimatterai.agency` (Kinetic Split Text, 3D Particle Sphere, Odometer Counters & Difference-Blend Project Cursor)
 - **Motion Companion Spec**: `/Animations.md`
 
 ---
 
 ## 1. Design Philosophy & Aesthetic Direction
 
-**Axiom Studio** synthesizes the theatrical, dark-room keynote atmosphere of `antimatterai.agency` with the information precision of mission-critical telemetry consoles. Every visual decision adheres to four foundational design axioms:
+**Axiom Studio** pairs the crisp, airy editorial color architecture of **`https://antigravity.google/`** with the signature choreographed motion mechanics of **`https://antimatterai.agency`**. Every visual decision adheres to four foundational design axioms:
 
-1. **Obsidian Vault Depth (`#030303`)**: Pure `#000000` flattens depth and causes OLED smearing; warm charcoal `#18181b` feels washed out. Axiom Studio anchors its canvas at `#030303` / `#020203`, layering translucent smoky glass (`rgba(14, 14, 18, 0.65)`) and hairline `1px` specular borders (`rgba(255, 255, 255, 0.08)`) so elevation is perceived through light refraction rather than heavy drop shadows.
-2. **Directional Volumetric Light**: Light always originates from a deliberate physical source—either top-down volumetric god-rays (`LightRays`) illuminating the Hero stage, a sweeping planetary horizon rim-light (`clientsLightCurve` in `LogoStrip`), or a cursor-tracked `520px` radial spotlight gliding across interactive service cards.
-3. **Editorial Display Meets Tabular Telemetry**: High-impact geometric sans-serif headlines (`tracking-tight`, `leading-[1.08]`, character-split 3D entrance) contrast sharply against crisp uppercase monospace metadata (`font-mono`, `tracking-widest`, `tabular-nums`) for indices (`01`–`06`), live clocks, latency readouts, and ROI metrics.
-4. **Choreographed Physicality**: Nothing teleports. Scroll wheel input carries subtle velvet inertia (`Lenis lerp: 0.06`), numbers roll on physical `0–9` vertical strips, mega-menus settle on damped springs, and every motion curve shares the signature deceleration `cubic-bezier(0.16, 1, 0.3, 1)`.
+1. **Crisp Daylight Surfaces (`#FFFFFF` & `#F8F9FC`)**: Pure `#FFFFFF` (`--palette-grey-0`) anchors the page canvas, alternating with cool off-white containers (`#F8F9FC`, `#EFF2F7`, `#E6EAF0`) and subtle `1px` structural outlines (`rgba(33, 34, 38, 0.08)`). Strategic `#121317` inverse dark callout cards (`.card.dark`) create dramatic visual punctuation before the clean white footer.
+2. **Multicolor Antigravity Particle & Atmospheric Spectrum**: Centered 3D Fibonacci sphere particles (`THREE.NormalBlending`) and pastel atmospheric halos blend Electric Blue (`#3186FF`), Periwinkle (`#749BFF`), Coral Red (`#FC413D`), Signal Yellow (`#FBBC04`), and Vivid Green (`#00B95C`).
+3. **Obsidian Ink & Pill Actions (`#121317`)**: High-impact geometric sans-serif headlines (`#121317`, `tracking-tight`, `leading-[1.08]`) and solid `#121317` primary pill buttons (`hover: #2F3034`) pair with cool slate body text (`#45474D`) and tonal secondary pills (`rgba(183, 191, 217, 0.16)`).
+4. **Choreographed Physicality**: Nothing teleports. Scroll wheel input carries subtle velvet inertia (`Lenis lerp: 0.05`), numbers roll on physical `0–9` vertical strips, `100%`-width concept cards clip a `mix-blend-mode: difference` `"View Work"` cursor strictly inside each card visual, and every motion curve shares `cubic-bezier(0.16, 1, 0.3, 1)`.
 
 ---
 
@@ -24,27 +25,24 @@
 
 | Token Name | CSS / Tailwind Token | Hex / RGBA Value | Architectural Usage |
 | :--- | :--- | :--- | :--- |
-| **Canvas Primary** | `bg-background` / `--background` | `#030303` | Global `<body>` background and primary page canvas |
-| **Canvas Deep** | `bg-[#020203]` | `#020203` | Alternating section wells (`Methodology`, `CaseStudies`, `Footer`) |
-| **Surface 400** | `bg-surface-400` | `#050506` | Scrollbar track, recessed terminal wells |
-| **Surface 300** | `bg-surface-300` | `#08080a` | Logo monogram inner plate, code blocks |
-| **Surface 200** | `bg-surface-200` | `#0d0d0f` | Active hovered card base |
-| **Surface 100** | `bg-surface-100` | `#121215` | Elevated modal / dropdown panels |
-| **Surface 50** | `bg-surface-50` | `#18181b` | Secondary interactive pills and subtle badges |
-| **Glass Surface** | `.glass-panel` | `rgba(14, 14, 18, 0.65)` | Primary card fill paired with `backdrop-filter: blur(16px)` |
-| **Brand Light** | `text-brand-light` | `#c3c4f7` | High-luminance violet-white highlights, ray striations, active titles |
-| **Brand Primary** | `bg-brand-primary` / `--accent-purple` | `#8587e3` | Primary CTAs, active indicators, icons, light-ray midtones |
-| **Brand Hover** | `hover:bg-brand-hover` | `#9b9de9` | Primary button hover illumination |
-| **Brand Muted** | `text-brand-muted` / `--accent-violet` | `#696aac` | Deep atmospheric gradients, secondary conic ray stops |
-| **Brand Dark** | `bg-brand-dark` | `#3d3e75` | Deep badge borders and recessed accent fills |
-| **Brand Glow** | `brand.glow` | `rgba(133, 135, 227, 0.25)` | CTA shadows (`shadow-brand-primary/25`) and card hover halos |
-| **Ink Primary** | `text-white` / `--foreground` | `#ffffff` / `#f4f4f5` | Display headlines, stat counters, primary labels (`> 18:1` contrast) |
-| **Ink Secondary** | `text-zinc-300` / `text-zinc-400` | `#d4d4d8` / `#a1a1aa` | Body copy, descriptions, navigation links (`> 7.5:1` WCAG AA contrast) |
-| **Ink Muted** | `text-zinc-500` | `#71717a` | Decorative dividers, secondary captions, inactive indices |
-| **Hairline Border** | `border-white/[0.08]` | `rgba(255, 255, 255, 0.08)` | Default structural section dividers and `.glass-panel` borders |
-| **Status Operational** | `bg-emerald-500` / `text-emerald-400` | `#10b981` / `#34d399` | Live studio pulse LED, verified compliance checks |
-| **Status Warning** | `text-amber-400` | `#fbbf24` | High-priority telemetry vectors, uptime/latency highlights |
-| **Status Critical** | `text-rose-400` / `bg-rose-500/15` | `#fb7185` | Critical adversarial threat cells in `/demos/threat-monitor` |
+| **Canvas Primary** | `bg-background` / `--palette-grey-0` | `#FFFFFF` | Global `<body>` background and primary page surface |
+| **Surface Container** | `bg-surface-10` / `--palette-grey-10` | `#F8F9FC` | Alternating section bands & elevated tonal cards |
+| **Secondary Hover** | `bg-surface-15` / `--palette-grey-15` | `#F0F1F5` | Secondary pill button hover surface |
+| **Surface High** | `bg-surface-20` / `--palette-grey-20` | `#EFF2F7` | Active hover tiles & light studio showcase canvas |
+| **Surface Higher** | `bg-surface-50` / `--palette-grey-50` | `#E6EAF0` | Dividers, progress tracks, screen borders |
+| **Inverse Dark Card** | `bg-surface-dark` / `--palette-grey-1200` | `#121317` | Solid primary pill buttons, headlines & `.card.dark` callouts |
+| **Primary Pill Hover** | `bg-ink-hover` / `--palette-grey-900` | `#2F3034` | Solid `#121317` pill hover fill |
+| **Wordmark Charcoal** | `text-ink-charcoal` | `#202124` | Brand wordmark & oversized footer anchor |
+| **Body Slate Ink** | `text-ink-secondary` / `--palette-grey-800` | `#45474D` | Body copy, subtitles, navigation links |
+| **Muted Caption Ink** | `text-ink-muted` | `#6A6A71` | Monospace indices, timestamps, helper captions |
+| **Inverse Muted Ink** | `text-surface-300` / `--palette-grey-300` | `#B2BBC5` | Muted copy inside `#121317` dark cards |
+| **Secondary Pill Tint** | `--theme-secondary-button` | `rgba(183, 191, 217, 0.16)` | Secondary pill fill & nav hover tint (`0.20`) |
+| **Structural Hairline** | `--theme-outline-variant` | `rgba(33, 34, 38, 0.08)` | Default section dividers and card borders |
+| **Antigravity Blue** | `text-brand-primary` / `--ag-blue` | `#3186FF` | Primary brand accent, active states, sphere particles |
+| **Periwinkle Blue** | `text-brand-light` / `--ag-periwinkle` | `#749BFF` | Soft highlights & dark-card accent text |
+| **Coral Red** | `text-ag-red` / `--ag-red` | `#FC413D` | Spectrum accent, UI/UX icon chip & error states |
+| **Signal Yellow** | `text-ag-yellow` / `--ag-yellow` | `#FBBC04` | Spectrum accent & AI Agents icon chip |
+| **Vivid Green** | `text-ag-green` / `--ag-green` | `#00B95C` | Spectrum accent, verified status & live telemetry |
 
 ### 2.2 Surface, Glassmorphism & Volumetric Shader Recipes
 

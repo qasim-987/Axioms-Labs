@@ -25,12 +25,14 @@ const studioHubs = [
     region: "Nordics & EU Client Hub",
     timezone: "EET / UTC+2",
     focus: "Product Strategy, UI/UX Discovery & European Partnerships",
+    dotColor: "text-[#3186FF]",
   },
   {
     city: "Lahore, Pakistan",
     region: "Engineering & Design Studio",
     timezone: "PKT / UTC+5",
     focus: "Full-Stack Web Development, Web Designing & AI Agent Engineering",
+    dotColor: "text-[#00B95C]",
   },
 ];
 
@@ -110,14 +112,14 @@ export default function DedicatedContactPage() {
 
       <main
         id="main-content"
-        className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#030303] text-zinc-100"
+        className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#FFFFFF] text-[#121317]"
       >
         <LightRays />
 
         <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
           {/* Centered Character-Split Hero */}
           <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-primary text-xs font-mono font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-[#3186FF] text-xs font-mono font-semibold mb-6">
               <span>START YOUR PROJECT • &lt;24H RESPONSE</span>
             </div>
 
@@ -125,10 +127,10 @@ export default function DedicatedContactPage() {
               as="h1"
               text="Let's Connect"
               triggerOnLoad
-              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight mb-5 text-center"
+              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#121317] tracking-tight mb-5 text-center"
             />
 
-            <p className="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-[#45474D] leading-relaxed max-w-2xl mx-auto">
               Tell us about the website, UI/UX system, web application, or AI
               agent you want to launch. Our team in Kuopio &amp; Lahore responds
               within one business day with a clear scope and estimate.
@@ -142,60 +144,64 @@ export default function DedicatedContactPage() {
                 <SpotlightCard
                   key={hub.city}
                   delay={idx * 0.08}
-                  className="p-6 rounded-2xl glass-panel border border-white/10"
+                  className="p-6 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08]"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2 text-white font-bold text-lg">
-                        <MapPin className="w-4 h-4 text-brand-primary" />
+                      <div className="flex items-center gap-2 text-[#121317] font-bold text-lg">
+                        <MapPin className={`w-4 h-4 ${hub.dotColor}`} />
                         <span>{hub.city}</span>
                       </div>
-                      <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-brand-primary/10 border border-brand-primary/25 text-brand-light">
+                      <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-[#3186FF]/[0.08] border border-[#3186FF]/20 text-[#3186FF] font-medium">
                         {hub.timezone}
                       </span>
                     </div>
-                    <p className="text-xs font-mono text-zinc-500 mb-2">
+                    <p className="text-xs font-mono text-[#6A6A71] mb-2">
                       {hub.region}
                     </p>
-                    <p className="text-xs text-zinc-300 leading-relaxed">
+                    <p className="text-xs text-[#45474D] leading-relaxed">
                       {hub.focus}
                     </p>
                   </div>
                 </SpotlightCard>
               ))}
 
-              <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-3 text-xs font-mono text-zinc-300">
+              <div className="p-6 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] space-y-3 text-xs font-mono text-[#45474D]">
                 <div className="flex items-center gap-2.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>100% IP Ownership &amp; NDA Available Upon Request</span>
+                  <ShieldCheck className="w-4 h-4 text-[#00B95C] shrink-0" />
+                  <span className="text-[#121317]">
+                    100% IP Ownership &amp; NDA Available Upon Request
+                  </span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <Clock className="w-4 h-4 text-brand-primary shrink-0" />
+                  <Clock className="w-4 h-4 text-[#FBBC04] shrink-0" />
                   <span>Response Time: Within 24 Hours</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <Mail className="w-4 h-4 text-brand-primary shrink-0" />
-                  <span>contact@axiomstudio.agency</span>
+                  <Mail className="w-4 h-4 text-[#3186FF] shrink-0" />
+                  <span className="text-[#121317]">
+                    contact@axiomstudio.agency
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Right Column: Scoping Form */}
-            <div className="lg:col-span-7 rounded-3xl glass-panel border border-white/10 p-7 sm:p-10 shadow-2xl shadow-black/80">
+            <div className="lg:col-span-7 rounded-3xl bg-[#FFFFFF] border border-[#212226]/[0.09] p-7 sm:p-10 shadow-[0_24px_64px_rgba(18,19,23,0.07)]">
               {isSuccess ? (
                 <div className="py-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-5">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                  <div className="w-16 h-16 rounded-full bg-[#00B95C]/10 border border-[#00B95C]/25 flex items-center justify-center mx-auto mb-5">
+                    <CheckCircle2 className="w-8 h-8 text-[#00B95C]" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
+                  <h2 className="text-2xl font-bold text-[#121317] mb-2">
                     Project Inquiry Received
                   </h2>
                   {inquiryId && (
-                    <div className="inline-block px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-xs font-mono text-brand-light mb-4">
+                    <div className="inline-block px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#3186FF] mb-4">
                       Reference ID: {inquiryId}
                     </div>
                   )}
-                  <p className="text-sm text-zinc-400 max-w-md mx-auto mb-8">
+                  <p className="text-sm text-[#45474D] max-w-md mx-auto mb-8">
                     Thank you for reaching out to Axiom Studio! Our team will
                     review your project requirements and reply within 24 hours.
                   </p>
@@ -206,7 +212,7 @@ export default function DedicatedContactPage() {
                       setInquiryId(null);
                       setFormLoadedAt(Date.now());
                     }}
-                    className="px-6 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs font-mono text-white transition-colors"
+                    className="px-6 py-2.5 rounded-full bg-[#B7BFD9]/[0.18] hover:bg-[#F0F1F5] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] transition-colors"
                   >
                     Send Another Inquiry
                   </button>
@@ -238,7 +244,7 @@ export default function DedicatedContactPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-xs font-mono text-zinc-400 mb-2">
+                      <label className="block text-xs font-mono text-[#45474D] mb-2">
                         First Name *
                       </label>
                       <input
@@ -252,11 +258,11 @@ export default function DedicatedContactPage() {
                           })
                         }
                         placeholder="Alex"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
+                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-mono text-zinc-400 mb-2">
+                      <label className="block text-xs font-mono text-[#45474D] mb-2">
                         Last Name
                       </label>
                       <input
@@ -266,14 +272,14 @@ export default function DedicatedContactPage() {
                           setFormData({ ...formData, lastName: e.target.value })
                         }
                         placeholder="Lindholm"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
+                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-xs font-mono text-zinc-400 mb-2">
+                      <label className="block text-xs font-mono text-[#45474D] mb-2">
                         Email Address *
                       </label>
                       <input
@@ -284,11 +290,11 @@ export default function DedicatedContactPage() {
                           setFormData({ ...formData, email: e.target.value })
                         }
                         placeholder="alex@company.com"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
+                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-mono text-zinc-400 mb-2">
+                      <label className="block text-xs font-mono text-[#45474D] mb-2">
                         Company / Brand
                       </label>
                       <input
@@ -298,14 +304,14 @@ export default function DedicatedContactPage() {
                           setFormData({ ...formData, company: e.target.value })
                         }
                         placeholder="Your Brand"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
+                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-xs font-mono text-zinc-400 mb-2">
+                      <label className="block text-xs font-mono text-[#45474D] mb-2">
                         Service Needed *
                       </label>
                       <select
@@ -313,7 +319,7 @@ export default function DedicatedContactPage() {
                         onChange={(e) =>
                           setFormData({ ...formData, service: e.target.value })
                         }
-                        className="w-full px-4 py-3 rounded-xl bg-[#0b0b10] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
+                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF]"
                       >
                         <option value="">Select a Service...</option>
                         {servicesData.map((s) => (
@@ -324,7 +330,7 @@ export default function DedicatedContactPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-mono text-zinc-400 mb-2">
+                      <label className="block text-xs font-mono text-[#45474D] mb-2">
                         Estimated Budget
                       </label>
                       <select
@@ -332,7 +338,7 @@ export default function DedicatedContactPage() {
                         onChange={(e) =>
                           setFormData({ ...formData, budget: e.target.value })
                         }
-                        className="w-full px-4 py-3 rounded-xl bg-[#0b0b10] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
+                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF]"
                       >
                         <option value="$1,000 - $2,500">$1,000 – $2,500</option>
                         <option value="$2,500 - $5,000">$2,500 – $5,000</option>
@@ -343,7 +349,7 @@ export default function DedicatedContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono text-zinc-400 mb-2">
+                    <label className="block text-xs font-mono text-[#45474D] mb-2">
                       Project Brief &amp; Goals *
                     </label>
                     <textarea
@@ -353,12 +359,12 @@ export default function DedicatedContactPage() {
                         setFormData({ ...formData, message: e.target.value })
                       }
                       placeholder="Describe the website, UI/UX design, web application, or AI agent you want to build and your target timeline..."
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
+                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                     />
                   </div>
 
                   {errorMsg && (
-                    <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 flex items-center gap-2">
+                    <div className="p-3.5 rounded-xl bg-[#FC413D]/[0.08] border border-[#FC413D]/25 text-xs text-[#FC413D] font-medium flex items-center gap-2">
                       <AlertCircle className="w-4 h-4 shrink-0" />
                       <span>{errorMsg}</span>
                     </div>
@@ -367,7 +373,7 @@ export default function DedicatedContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold transition-all shadow-xl shadow-brand-primary/25 disabled:opacity-50"
+                    className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#121317] hover:bg-[#2F3034] text-white text-sm font-semibold transition-all shadow-[0_8px_24px_rgba(18,19,23,0.16)] disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>

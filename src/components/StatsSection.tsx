@@ -4,118 +4,100 @@ import React from "react";
 import { motion } from "framer-motion";
 import RollingNumber from "./RollingNumber";
 import { MOTION_EASE } from "@/lib/motionTokens";
-import { Gauge, Sparkles, Layers, Clock } from "lucide-react";
+import { Layers, Gauge, Smartphone, Sparkles } from "lucide-react";
 
-const statItems = [
+const metrics = [
   {
-    icon: Gauge,
-    iconColor: "text-brand-primary",
-    label: "Performance Target",
-    value: 99,
-    decimals: 0,
-    duration: 1800,
-    suffix: "+",
-    staticValue: null as string | null,
-    desc: "Engineered for sub-second Core Web Vitals, SEO visibility, and smooth 60fps motion.",
-  },
-  {
-    icon: Sparkles,
-    iconColor: "text-emerald-400",
-    label: "Custom Craft",
-    value: 100,
-    decimals: 0,
-    duration: 2000,
-    suffix: "%",
-    staticValue: null as string | null,
-    desc: "Zero bloated page-builder themes—every website, UI system, and AI agent is custom built.",
-  },
-  {
-    icon: Layers,
-    iconColor: "text-brand-light",
-    label: "Core Services",
+    id: "disciplines",
     value: 4,
-    decimals: 0,
-    duration: 1500,
     suffix: "",
-    staticValue: null as string | null,
-    desc: "Dedicated mastery across Web Development, Web Designing, UI/UX Design, and AI Agents.",
+    decimals: 0,
+    label: "Core Studio Disciplines",
+    detail: "Web Dev, Web Design, UI/UX Design, and custom AI Agents.",
+    icon: <Layers className="w-5 h-5 text-[#3186FF]" />,
+    chipBg: "bg-[#3186FF]/10 border-[#3186FF]/20",
   },
   {
-    icon: Clock,
-    iconColor: "text-amber-400",
-    label: "Nordic & PK Sync",
-    value: 0,
+    id: "lighthouse",
+    value: 99,
+    suffix: "+",
     decimals: 0,
-    duration: 1800,
-    suffix: "",
-    staticValue: "24/7",
-    desc: "Direct founder & engineer communication across Kuopio, Finland and Lahore, Pakistan.",
+    label: "Lighthouse Target Score",
+    detail: "Engineered for Core Web Vitals, accessibility, and fast loads.",
+    icon: <Gauge className="w-5 h-5 text-[#00B95C]" />,
+    chipBg: "bg-[#00B95C]/10 border-[#00B95C]/20",
+  },
+  {
+    id: "responsive",
+    value: 100,
+    suffix: "%",
+    decimals: 0,
+    label: "Responsive Breakpoints",
+    detail: "Pixel-accurate layouts across desktop, tablet, and mobile screens.",
+    icon: <Smartphone className="w-5 h-5 text-[#FC413D]" />,
+    chipBg: "bg-[#FC413D]/10 border-[#FC413D]/20",
+  },
+  {
+    id: "turnaround",
+    value: 24,
+    suffix: "h",
+    decimals: 0,
+    label: "Proposal Response Time",
+    detail: "Clear scope, timeline, and architecture breakdown within 24 hours.",
+    icon: <Sparkles className="w-5 h-5 text-[#FBBC04]" />,
+    chipBg: "bg-[#FBBC04]/15 border-[#FBBC04]/30",
   },
 ];
 
 export default function StatsSection() {
   return (
-    <section className="relative py-16 sm:py-20 border-y border-white/[0.08] bg-black/40 backdrop-blur-sm overflow-hidden">
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-          {statItems.map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, y: 22 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{
-                  duration: 0.65,
-                  delay: idx * 0.08,
-                  ease: MOTION_EASE.cinematicOut,
-                }}
-                className="relative flex flex-col pt-5 group"
-              >
-                {/* Animated Top Hairline Sweep */}
-                <motion.span
-                  aria-hidden="true"
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{
-                    duration: 0.85,
-                    delay: 0.1 + idx * 0.09,
-                    ease: MOTION_EASE.cinematicOut,
-                  }}
-                  style={{ transformOrigin: "0% 50%" }}
-                  className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-brand-primary/60 via-white/15 to-transparent"
-                />
-
-                <div className="flex items-center gap-2 mb-2.5 text-zinc-400">
-                  <Icon className={`w-4 h-4 ${item.iconColor}`} />
-                  <span className="text-xs uppercase font-mono tracking-wider">
-                    {item.label}
+    <section
+      aria-label="Axiom Studio Standards"
+      className="relative py-20 sm:py-24 bg-[#FFFFFF] border-b border-[#212226]/[0.07]"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x lg:divide-[#212226]/[0.08]">
+          {metrics.map((m, idx) => (
+            <motion.div
+              key={m.id}
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{
+                duration: 0.65,
+                delay: idx * 0.08,
+                ease: MOTION_EASE.cinematicOut,
+              }}
+              className="lg:px-8 first:lg:pl-0 last:lg:pr-0 flex flex-col justify-between group"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-mono uppercase tracking-widest text-[#6A6A71]">
+                    0{idx + 1} / STANDARD
                   </span>
+                  <div
+                    className={`p-2 rounded-xl border transition-transform duration-300 group-hover:scale-105 ${m.chipBg}`}
+                  >
+                    {m.icon}
+                  </div>
                 </div>
-
-                <div className="flex items-baseline text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight">
-                  {item.staticValue ? (
-                    <span className="font-mono tabular-nums">
-                      {item.staticValue}
-                    </span>
-                  ) : (
-                    <RollingNumber
-                      value={item.value}
-                      decimals={item.decimals}
-                      duration={item.duration}
-                      suffix={item.suffix}
-                    />
-                  )}
+                <div className="text-4xl sm:text-5xl font-extrabold tracking-tight text-[#121317] mb-2">
+                  <RollingNumber
+                    value={m.value}
+                    prefix=""
+                    suffix={m.suffix}
+                    decimals={m.decimals}
+                  />
                 </div>
-
-                <p className="text-xs text-zinc-400 mt-2.5 leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            );
-          })}
+                <h3 className="text-base font-semibold text-[#121317] mb-1.5">
+                  {m.label}
+                </h3>
+              </div>
+              <p className="text-sm text-[#45474D] leading-relaxed">
+                {m.detail}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

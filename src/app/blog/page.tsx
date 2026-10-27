@@ -33,7 +33,7 @@ export default function BlogIndexPage() {
   );
 
   return (
-    <div className="relative min-h-screen bg-[#030303] text-zinc-100 flex flex-col justify-between">
+    <div className="relative min-h-screen bg-[#FFFFFF] text-[#121317] flex flex-col justify-between">
       <Navbar />
 
       <main
@@ -48,7 +48,7 @@ export default function BlogIndexPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: MOTION_EASE.cinematicOut }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono uppercase tracking-wider text-brand-primary mb-6"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono uppercase tracking-wider text-[#3186FF] font-semibold mb-6"
           >
             <FileText className="w-3.5 h-3.5" />
             Axiom Studio Notes &amp; Guides
@@ -58,20 +58,21 @@ export default function BlogIndexPage() {
             as="h1"
             text="Insights on Web, UI/UX & Practical AI"
             accentFromWordIndex={4}
+            accentClassName="text-[#3186FF]"
             triggerOnLoad
-            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight text-center"
+            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-[#121317] mb-6 leading-tight text-center"
           />
 
-          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-[#45474D] leading-relaxed max-w-2xl mx-auto">
             Practical guides from our design and engineering team on modern web
             development, high-converting web design, scalable UI/UX systems,
             and AI agents.
           </p>
         </div>
 
-        {/* Category Filters Bar with Spring Sliding Pill */}
-        <div className="flex items-center gap-2 border-b border-white/[0.08] pb-6 mb-12 overflow-x-auto no-scrollbar">
-          <Filter className="w-4 h-4 text-zinc-400 mr-2 shrink-0 hidden sm:inline" />
+        {/* Category Filters Bar with Spring Sliding #121317 Pill */}
+        <div className="flex items-center gap-2 border-b border-[#212226]/[0.08] pb-6 mb-12 overflow-x-auto no-scrollbar">
+          <Filter className="w-4 h-4 text-[#6A6A71] mr-2 shrink-0 hidden sm:inline" />
           {blogCategories.map((cat) => {
             const isSelected = activeCategory === cat;
             return (
@@ -81,15 +82,15 @@ export default function BlogIndexPage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`relative px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                   isSelected
-                    ? "text-black"
-                    : "bg-white/[0.03] text-zinc-400 hover:text-white border border-white/[0.06]"
+                    ? "text-white"
+                    : "bg-[#B7BFD9]/[0.16] text-[#45474D] hover:bg-[#F0F1F5] hover:text-[#121317] border border-[#212226]/[0.07]"
                 }`}
               >
                 {isSelected && (
                   <motion.span
                     layoutId="blogCategoryPill"
                     transition={MOTION_SPRING.snappy}
-                    className="absolute inset-0 rounded-full bg-white shadow-lg shadow-white/15 -z-0"
+                    className="absolute inset-0 rounded-full bg-[#121317] shadow-md -z-0"
                   />
                 )}
                 <span className="relative z-10">{cat}</span>
@@ -103,52 +104,52 @@ export default function BlogIndexPage() {
           <div className="mb-16">
             <SpotlightCard
               tilt
-              className="rounded-3xl bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent border border-white/[0.1] hover:border-brand-primary/45 p-8 sm:p-12 hover:shadow-2xl hover:shadow-brand-primary/10"
+              className="rounded-3xl bg-[#F8F9FC] hover:bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 p-8 sm:p-12 shadow-sm hover:shadow-[0_20px_56px_rgba(18,19,23,0.08)] transition-all"
             >
-              <Link href={`/blog/${featuredPost.slug}`} className="block">
-                <div className="absolute top-0 right-0 p-8 sm:p-12 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                  <Sparkles className="w-40 h-40 text-brand-primary" />
+              <Link href={`/blog/${featuredPost.slug}`} className="block group">
+                <div className="absolute top-0 right-0 p-8 sm:p-12 opacity-[0.06] group-hover:opacity-[0.12] transition-opacity pointer-events-none">
+                  <Sparkles className="w-40 h-40 text-[#3186FF]" />
                 </div>
 
                 <div className="max-w-3xl relative z-10">
                   <div className="flex items-center gap-3 mb-6">
-                    <span className="text-[11px] font-mono uppercase px-2.5 py-1 rounded-full bg-brand-primary/20 text-brand-primary border border-brand-primary/30 font-semibold">
+                    <span className="text-[11px] font-mono uppercase px-2.5 py-1 rounded-full bg-[#3186FF]/[0.1] text-[#3186FF] border border-[#3186FF]/20 font-semibold">
                       Featured Blueprint
                     </span>
-                    <span className="text-xs font-mono text-zinc-400">
+                    <span className="text-xs font-mono text-[#45474D]">
                       {featuredPost.category}
                     </span>
-                    <span className="text-zinc-600">•</span>
-                    <span className="text-xs font-mono text-zinc-400 flex items-center gap-1">
+                    <span className="text-[#CDD4DC]">•</span>
+                    <span className="text-xs font-mono text-[#6A6A71] flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
                       {featuredPost.readingTime}
                     </span>
                   </div>
 
-                  <h2 className="text-2xl sm:text-4xl font-extrabold text-white mb-4 group-hover:text-brand-light transition-colors leading-tight">
+                  <h2 className="text-2xl sm:text-4xl font-extrabold text-[#121317] mb-4 group-hover:text-[#3186FF] transition-colors leading-tight">
                     {featuredPost.title}
                   </h2>
 
-                  <p className="text-sm sm:text-base text-zinc-300 leading-relaxed mb-8">
+                  <p className="text-sm sm:text-base text-[#45474D] leading-relaxed mb-8">
                     {featuredPost.excerpt}
                   </p>
 
-                  <div className="flex items-center justify-between pt-6 border-t border-white/[0.08]">
+                  <div className="flex items-center justify-between pt-6 border-t border-[#212226]/[0.08]">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center font-mono text-xs text-white">
+                      <div className="w-8 h-8 rounded-full bg-[#121317] flex items-center justify-center font-mono text-xs text-white font-bold">
                         {featuredPost.author.avatar}
                       </div>
                       <div>
-                        <span className="text-xs font-semibold text-white block">
+                        <span className="text-xs font-semibold text-[#121317] block">
                           {featuredPost.author.name}
                         </span>
-                        <span className="text-[11px] text-zinc-400">
+                        <span className="text-[11px] text-[#6A6A71]">
                           {featuredPost.author.role}
                         </span>
                       </div>
                     </div>
 
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-white group-hover:text-brand-primary transition-colors">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#121317] group-hover:text-[#3186FF] transition-colors">
                       Read Article
                       <ArrowRight className="w-3.5 h-3.5" />
                     </span>
@@ -181,37 +182,37 @@ export default function BlogIndexPage() {
                 >
                   <SpotlightCard
                     tilt
-                    className="h-full rounded-2xl bg-white/[0.02] border border-white/[0.08] hover:border-brand-primary/40 p-6 sm:p-8"
+                    className="h-full rounded-2xl bg-[#F8F9FC] hover:bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 p-6 sm:p-8 shadow-sm"
                   >
                     <Link
                       href={`/blog/${post.slug}`}
-                      className="flex flex-col justify-between h-full"
+                      className="flex flex-col justify-between h-full group"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-4">
-                          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/[0.06] text-zinc-300">
+                          <span className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-[#FFFFFF] border border-[#212226]/[0.07] text-[#3186FF] font-medium">
                             {post.category}
                           </span>
-                          <span className="text-xs font-mono text-zinc-400 flex items-center gap-1">
+                          <span className="text-xs font-mono text-[#6A6A71] flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {post.readingTime}
                           </span>
                         </div>
 
-                        <h3 className="text-lg sm:text-xl font-bold text-white mb-3 group-hover:text-brand-light transition-colors leading-snug">
+                        <h3 className="text-lg sm:text-xl font-bold text-[#121317] mb-3 group-hover:text-[#3186FF] transition-colors leading-snug">
                           {post.title}
                         </h3>
 
-                        <p className="text-xs sm:text-sm text-zinc-400 line-clamp-3 leading-relaxed mb-6">
+                        <p className="text-xs sm:text-sm text-[#45474D] line-clamp-3 leading-relaxed mb-6">
                           {post.excerpt}
                         </p>
                       </div>
 
-                      <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                        <span className="text-zinc-400 font-mono">
+                      <div className="pt-4 border-t border-[#212226]/[0.07] flex items-center justify-between text-xs">
+                        <span className="text-[#6A6A71] font-mono">
                           {post.publishedAt}
                         </span>
-                        <span className="text-white group-hover:text-brand-primary font-semibold flex items-center gap-1">
+                        <span className="text-[#121317] group-hover:text-[#3186FF] font-semibold flex items-center gap-1">
                           Read
                           <ArrowUpRight className="w-3.5 h-3.5" />
                         </span>
@@ -224,25 +225,25 @@ export default function BlogIndexPage() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Newsletter & Project Inquiry Footer */}
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-brand-primary/10 to-transparent border border-brand-primary/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+        {/* Project Inquiry Banner */}
+        <div className="p-8 sm:p-12 rounded-3xl bg-[#F8F9FC] border border-[#212226]/[0.08] flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold mb-2 block">
               STAY INFORMED
             </span>
-            <h3 className="text-2xl font-bold text-white mb-2">
-              Have a technical project in mind?
+            <h3 className="text-2xl font-bold text-[#121317] mb-2">
+              Have a digital project in mind?
             </h3>
-            <p className="text-sm text-zinc-300">
-              Our engineering team publishes real-world post-mortems and
-              architecture blueprints regularly.
+            <p className="text-sm text-[#45474D]">
+              Our design and engineering team shares practical guides and helps
+              ambitious brands launch faster.
             </p>
           </div>
           <Link
             href="/contact"
-            className="px-6 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-white text-black hover:bg-zinc-200 transition-colors shrink-0"
+            className="px-6 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors shrink-0"
           >
-            Consult With Our Architects
+            Start Your Project
           </Link>
         </div>
       </main>
