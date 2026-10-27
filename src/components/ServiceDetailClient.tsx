@@ -16,8 +16,7 @@ import {
   Bot,
   Globe,
   Layout,
-  Cloud,
-  Shield,
+  Code,
   Sparkles,
   ChevronDown,
   Send,
@@ -28,12 +27,11 @@ import {
 } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
+  Code: <Code className="w-8 h-8 text-brand-primary" />,
   Layout: <Layout className="w-8 h-8 text-brand-primary" />,
   Globe: <Globe className="w-8 h-8 text-brand-primary" />,
   Cpu: <Cpu className="w-8 h-8 text-brand-primary" />,
   Bot: <Bot className="w-8 h-8 text-brand-primary" />,
-  Shield: <Shield className="w-8 h-8 text-brand-primary" />,
-  Cloud: <Cloud className="w-8 h-8 text-brand-primary" />,
 };
 
 interface Props {
@@ -53,7 +51,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
     name: "",
     email: "",
     company: "",
-    budget: "$25k - $50k",
+    budget: "$2,500 - $5,000",
     message: "",
     botField: "",
   });
@@ -168,11 +166,11 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
 
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
               <span className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-white">
-                Benchmark: {service.metrics}
+                Target Benchmark: {service.metrics}
               </span>
               <span className="text-emerald-400 flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Production SLA Ready
+                100% Ownership &amp; Production Ready
               </span>
             </div>
           </div>
@@ -181,7 +179,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
           <div className="mb-24">
             <div className="mb-10">
               <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
-                COMPREHENSIVE SCOPE • 01 — 06
+                INCLUDED DELIVERABLES • 01 — 06
               </span>
               <SplitTextReveal
                 as="h2"
@@ -215,11 +213,11 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             </div>
           </div>
 
-          {/* "How We Work" — Scroll-Scrubbed 4-Phase Timeline (Animations.md §11.2) */}
+          {/* "How We Work" — Scroll-Scrubbed 4-Phase Timeline */}
           <div className="mb-24">
             <div className="mb-12">
               <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
-                EXECUTION ROADMAP
+                DELIVERY WORKFLOW
               </span>
               <SplitTextReveal
                 as="h2"
@@ -229,9 +227,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             </div>
 
             <div ref={timelineRef} className="relative pl-8 sm:pl-12">
-              {/* Background Track */}
               <div className="absolute left-3 sm:left-4 top-2 bottom-2 w-[2px] bg-white/[0.08]" />
-              {/* Scroll-Linked Indigo Progress Beam */}
               <motion.div
                 style={{ scaleY: scrollYProgress, transformOrigin: "top" }}
                 className="absolute left-3 sm:left-4 top-2 bottom-2 w-[2px] bg-gradient-to-b from-brand-light via-brand-primary to-emerald-400 shadow-[0_0_12px_rgba(133,135,227,0.8)]"
@@ -280,7 +276,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
           <div className="mb-24 p-8 rounded-2xl glass-panel border border-white/[0.08]">
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-brand-primary mb-4">
               <Wrench className="w-4 h-4" />
-              <span>Built With</span>
+              <span>Tools &amp; Stack We Use</span>
             </div>
             <div className="flex flex-wrap gap-2.5">
               {service.tools.map((tool) => (
@@ -294,14 +290,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             </div>
           </div>
 
-          {/* Zero-Jank CSS Grid FAQ Accordion */}
+          {/* FAQ Accordion */}
           <div className="mb-24">
             <div className="mb-8">
               <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
-                FREQUENTLY ASKED
+                COMMON QUESTIONS
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                Technical &amp; Delivery FAQs
+                {service.title} FAQs
               </h2>
             </div>
 
@@ -347,18 +343,18 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             </div>
           </div>
 
-          {/* Dedicated Inline Service Scoping Form (Wired to Standalone Backend) */}
+          {/* Dedicated Inline Service Scoping Form */}
           <div className="mb-24 p-8 sm:p-12 rounded-3xl bg-[#08080d] border border-brand-primary/30 shadow-2xl shadow-brand-primary/10">
             <div className="max-w-2xl mb-8">
               <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
-                PROJECT SCOPING
+                START YOUR PROJECT
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                Scope Your {service.title} Engagement
+                Discuss Your {service.title} Project
               </h2>
               <p className="text-sm text-zinc-400">
-                Share your architectural requirements. An Axiom Studio principal
-                architect will reply with a scoping brief within 24 hours.
+                Tell us what you are building and our team in Kuopio &amp;
+                Lahore will send back a clear roadmap and quote within 24 hours.
               </p>
             </div>
 
@@ -366,7 +362,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
               <div className="p-8 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center max-w-xl mx-auto">
                 <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">
-                  Scoping Inquiry Logged
+                  Project Inquiry Received
                 </h3>
                 {inquiryId && (
                   <p className="text-xs font-mono text-brand-light mb-2">
@@ -374,9 +370,8 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                   </p>
                 )}
                 <p className="text-xs text-zinc-300 leading-relaxed">
-                  Thank you. An Axiom Studio engineering lead specializing in{" "}
-                  {service.title} will review your parameters and follow up
-                  within one business day.
+                  Thank you! Our {service.title} team will review your project
+                  details and follow up within one business day.
                 </p>
               </div>
             ) : (
@@ -408,14 +403,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    placeholder="Marcus Vance"
+                    placeholder="Alex Lindholm"
                     className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
                   />
                 </div>
 
                 <div>
                   <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
-                    Work Email *
+                    Email Address *
                   </label>
                   <input
                     type="email"
@@ -424,14 +419,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    placeholder="marcus@company.com"
+                    placeholder="alex@company.com"
                     className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
                   />
                 </div>
 
                 <div>
                   <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
-                    Company / Organization
+                    Company / Brand
                   </label>
                   <input
                     type="text"
@@ -439,14 +434,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     onChange={(e) =>
                       setFormData({ ...formData, company: e.target.value })
                     }
-                    placeholder="Acme Systems Inc."
+                    placeholder="Your Brand"
                     className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
                   />
                 </div>
 
                 <div>
                   <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
-                    Expected Budget Tier
+                    Estimated Budget
                   </label>
                   <select
                     value={formData.budget}
@@ -455,16 +450,16 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     }
                     className="w-full px-4 py-3 rounded-xl bg-[#0d0d12] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
                   >
-                    <option value="< $25k">&lt; $25,000</option>
-                    <option value="$25k - $50k">$25,000 – $50,000</option>
-                    <option value="$50k - $100k">$50,000 – $100,000</option>
-                    <option value="$100k+">$100,000+</option>
+                    <option value="$1,000 - $2,500">$1,000 – $2,500</option>
+                    <option value="$2,500 - $5,000">$2,500 – $5,000</option>
+                    <option value="$5,000 - $15,000">$5,000 – $15,000</option>
+                    <option value="$15,000+">$15,000+ Custom Scope</option>
                   </select>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
-                    Project Details &amp; Objectives *
+                    Project Details &amp; Goals *
                   </label>
                   <textarea
                     required
@@ -474,7 +469,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     onChange={(e) =>
                       setFormData({ ...formData, message: e.target.value })
                     }
-                    placeholder={`Tell us about your ${service.title} requirements, timeline, or current technical bottlenecks...`}
+                    placeholder={`Tell us about your ${service.title} goals, desired features, and target launch timeline...`}
                     className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
                   />
                 </div>
@@ -495,11 +490,11 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     {submitting ? (
                       <>
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        <span>Transmitting Scoping Brief...</span>
+                        <span>Sending Inquiry...</span>
                       </>
                     ) : (
                       <>
-                        <span>Submit Scoping Inquiry</span>
+                        <span>Request Project Quote</span>
                         <Send className="w-3.5 h-3.5" />
                       </>
                     )}
@@ -509,13 +504,13 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             )}
           </div>
 
-          {/* Other Services Switcher */}
+          {/* Other Services Switcher (All remaining 3 services) */}
           <div className="pt-10 border-t border-white/[0.08]">
             <h3 className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-6">
-              Explore Complementary Capabilities
+              Explore Our Other Services
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {otherServices.slice(0, 3).map((other) => (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {otherServices.map((other) => (
                 <Link
                   key={other.id}
                   href={`/services/${other.slug}`}

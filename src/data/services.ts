@@ -32,475 +32,485 @@ export interface ServiceItem {
 
 export const servicesData: ServiceItem[] = [
   {
+    id: "web-development",
+    slug: "web-development",
+    title: "Web Development",
+    badge: "Full-Stack Engineering",
+    heroHeadline: "Fast, Scalable Web Applications Engineered for Growth",
+    shortDesc:
+      "Custom Next.js and React web applications, SaaS platforms, clean REST APIs, and modern full-stack architectures built for speed and reliability.",
+    longDesc:
+      "We engineer production-ready web platforms, SaaS dashboards, portals, and custom e-commerce storefronts using modern TypeScript stacks. Every codebase is structured for sub-second load times, SEO authority, security, and effortless future scaling.",
+    iconName: "Code",
+    metrics: "99+ Lighthouse Performance",
+    deliverables: [
+      {
+        title: "Custom Next.js & React Applications",
+        description:
+          "Server-rendered and static-hybrid frontends utilizing App Router, TypeScript, and clean modular architecture.",
+      },
+      {
+        title: "Scalable Backend & API Integration",
+        description:
+          "Type-safe Node.js/Express APIs, PostgreSQL & Supabase databases, authentication, and third-party webhook integrations.",
+      },
+      {
+        title: "SaaS Dashboards & Client Portals",
+        description:
+          "Role-based user portals, real-time analytics views, Stripe billing flows, and responsive admin panels.",
+      },
+      {
+        title: "Headless CMS & E-Commerce",
+        description:
+          "Flexible content management workflows and high-conversion custom storefronts tailored to your product catalog.",
+      },
+      {
+        title: "Core Web Vitals & Technical SEO",
+        description:
+          " Asset optimization, semantic HTML5 structure, OpenGraph metadata, JSON-LD schema, and sub-second page transitions.",
+      },
+      {
+        title: "Cloud Deployment & CI/CD Setup",
+        description:
+          "Automated GitHub preview builds, Vercel/cloud hosting, environment security, and zero-downtime production releases.",
+      },
+    ],
+    processPhases: [
+      {
+        number: "01",
+        title: "Architecture & Technical Scope",
+        duration: "Week 1",
+        description:
+          "Defining database schemas, API contracts, authentication requirements, and clear sprint milestones.",
+        deliverables: [
+          "System Architecture Brief",
+          "Database & API Schema",
+          "Milestone Roadmap",
+        ],
+      },
+      {
+        number: "02",
+        title: "Core Frontend & API Build",
+        duration: "Weeks 2-4",
+        description:
+          "Developing modular React components, backend endpoints, and responsive layouts on live preview URLs.",
+        deliverables: [
+          "Live Staging Preview",
+          "Typed REST/Server Endpoints",
+          "Responsive UI Implementation",
+        ],
+      },
+      {
+        number: "03",
+        title: "Integrations, QA & Speed Tuning",
+        duration: "Week 5",
+        description:
+          "Connecting payments, emails, CMS, and running cross-browser QA plus Lighthouse performance optimization.",
+        deliverables: [
+          "99+ Lighthouse Audit",
+          "End-to-End QA Verification",
+          "Security & Rate-Limit Checks",
+        ],
+      },
+      {
+        number: "04",
+        title: "Production Launch & Handover",
+        duration: "Week 6",
+        description:
+          "Custom domain cutover, SSL/DNS setup, analytics configuration, and full source-code documentation.",
+        deliverables: [
+          "100% Source Code Ownership",
+          "Production Deployment",
+          "Post-Launch Support Window",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What tech stack do you use for Web Development?",
+        answer:
+          "Our primary stack is Next.js, React, TypeScript, Tailwind CSS, Node.js/Express, and Supabase/PostgreSQL—deployed on Vercel or your preferred cloud provider.",
+      },
+      {
+        question: "Do I get full ownership of the code after launch?",
+        answer:
+          "Yes, 100%. Once delivered, your repository, custom components, backend services, and deployment accounts belong entirely to you with zero vendor lock-in.",
+      },
+      {
+        question: "Can you rebuild or modernize our existing slow website?",
+        answer:
+          "Absolutely. We regularly migrate legacy WordPress, Wix, or outdated React sites to clean Next.js architectures while preserving your SEO rankings and URLs.",
+      },
+    ],
+    tools: [
+      "Next.js 14",
+      "React",
+      "TypeScript",
+      "Node.js",
+      "Supabase",
+      "PostgreSQL",
+      "Vercel",
+    ],
+  },
+  {
+    id: "web-designing",
+    slug: "web-designing",
+    title: "Web Designing",
+    badge: "Brand & Motion",
+    heroHeadline: "High-Converting Websites That Make Your Brand Unforgettable",
+    shortDesc:
+      "Bespoke marketing websites, landing pages, interactive motion storytelling, and responsive visual layouts crafted to turn visitors into clients.",
+    longDesc:
+      "Your website is your first impression. We design modern, visually striking websites that combine strong brand identity, crisp typography, smooth Framer Motion & GSAP animations, and clear conversion architecture—never generic off-the-shelf templates.",
+    iconName: "Globe",
+    metrics: "< 1.2s LCP Load Speed",
+    deliverables: [
+      {
+        title: "Custom Brand Website Design",
+        description:
+          "Tailor-made visual direction, color palettes, typography pairings, and layout composition aligned with your brand.",
+      },
+      {
+        title: "High-Converting Landing Pages",
+        description:
+          "Conversion-focused hero sections, clear value propositions, social-proof blocks, and friction-free CTAs.",
+      },
+      {
+        title: "Interactive Motion & Scroll Effects",
+        description:
+          "Tasteful 60fps animations, smooth Lenis scrolling, subtle 3D/WebGL accents, and hover micro-interactions.",
+      },
+      {
+        title: "Mobile-First Responsive Layouts",
+        description:
+          "Fluid layouts carefully tuned for mobile phones, tablets, laptops, and ultra-wide desktop displays.",
+      },
+      {
+        title: "Visual Assets & Custom Graphics",
+        description:
+          "Bespoke section illustrations, bento cards, glassmorphic UI previews, and crisp SVG iconography.",
+      },
+      {
+        title: "Conversion & Copy Hierarchy",
+        description:
+          "Structured messaging flow that immediately communicates what you do, why it matters, and how to take action.",
+      },
+    ],
+    processPhases: [
+      {
+        number: "01",
+        title: "Brand Discovery & Moodboard",
+        duration: "Days 1-4",
+        description:
+          "Understanding your audience, brand personality, visual references, and conversion goals.",
+        deliverables: [
+          "Visual Direction & Moodboard",
+          "Typography & Color Palette",
+          "Site Sitemap & Page Flow",
+        ],
+      },
+      {
+        number: "02",
+        title: "Wireframing & Content Structure",
+        duration: "Week 2",
+        description:
+          "Structuring every section from Hero to CTA so visitors effortlessly understand your offer.",
+        deliverables: [
+          "Page-by-Page Wireframes",
+          "CTA & Conversion Map",
+          "Responsive Grid Blueprint",
+        ],
+      },
+      {
+        number: "03",
+        title: "High-Fidelity Visual & Motion Design",
+        duration: "Weeks 3-4",
+        description:
+          "Designing polished desktop and mobile screens along with interactive hover and scroll motion concepts.",
+        deliverables: [
+          "Full Desktop & Mobile Mockups",
+          "Interactive Motion Prototype",
+          "Custom Visual Assets",
+        ],
+      },
+      {
+        number: "04",
+        title: "Responsive Polish & Launch Readiness",
+        duration: "Week 5",
+        description:
+          "Final visual QA across devices ensuring pixel-accurate spacing, contrast, and smooth animation timing.",
+        deliverables: [
+          "Organized Figma Master File",
+          "Style Guide & Asset Kit",
+          "Developer-Ready Specs",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Do you use pre-made themes or design everything from scratch?",
+        answer:
+          "Every website we design is custom-crafted from scratch around your brand positioning, target customers, and business goals—no recycled templates.",
+      },
+      {
+        question: "Can you both design and develop our website end-to-end?",
+        answer:
+          "Yes! Most clients pair our Web Designing and Web Development services so our team takes your site from initial Figma concept all the way to a live Vercel deployment.",
+      },
+      {
+        question: "Will animations slow down our website on mobile?",
+        answer:
+          "No. We use GPU-accelerated transforms and respect reduced-motion preferences so animations stay silky-smooth without hurting mobile speed.",
+      },
+    ],
+    tools: [
+      "Figma",
+      "Tailwind CSS",
+      "Framer Motion",
+      "GSAP",
+      "Lenis",
+      "Three.js",
+    ],
+  },
+  {
     id: "ui-ux-design",
     slug: "ui-ux-design",
     title: "UI/UX Design",
-    badge: "Product Strategy",
-    heroHeadline: "Precision Interfaces for High-Cognition Workflows",
-    shortDesc: "Human-centered interfaces, dense telemetry dashboards, and multi-brand design systems built for speed and clarity.",
-    longDesc: "We design software interfaces for high-consequence environments—from financial trading desks to AI copilots—where ergonomics, information hierarchy, and sub-100ms feedback loops are paramount.",
+    badge: "Product Experience",
+    heroHeadline: "Intuitive Product Interfaces & Scalable Design Systems",
+    shortDesc:
+      "User research, wireframes, clickable Figma prototypes, and reusable component libraries for SaaS products, mobile apps, and web platforms.",
+    longDesc:
+      "Great software feels effortless to use. We turn complex workflows into clean, intuitive user experiences backed by structured user flows, interactive Figma prototypes, accessibility standards, and tokenized design systems your developers love.",
     iconName: "Layout",
-    metrics: "100% WCAG 2.1 AA Compliant",
+    metrics: "100% WCAG 2.1 AA Accessible",
     deliverables: [
       {
-        title: "User Research & Cognitive Mapping",
-        description: "Task-flow audits, operator mental model interviews, and journey optimization for high-density applications."
+        title: "UX Audits & User Journey Mapping",
+        description:
+          "Identifying friction points, drop-offs, and navigation bottlenecks across new or existing digital products.",
       },
       {
-        title: "UX Flows & Low-Fidelity Wireframes",
-        description: "Exhaustive state diagrams covering edge cases, network disconnects, latency spikes, and error boundaries."
+        title: "Information Architecture & Wireframes",
+        description:
+          "Clear user flows, onboarding sequences, and low-fidelity wireframes covering every state and edge case.",
       },
       {
-        title: "UI Systems & Interactive Prototypes",
-        description: "Design-tokenized component libraries in Figma synced directly to production code via automated git webhooks."
+        title: "Interactive Clickable Prototypes",
+        description:
+          "Realistic Figma prototypes you can test with stakeholders, investors, and real users before writing code.",
       },
       {
-        title: "Visual Design & Brand Architecture",
-        description: "Dark-mode optimized color palettes, tabular typography scales, and high-contrast accessibility standards."
+        title: "Scalable Design Systems",
+        description:
+          "Reusable buttons, inputs, modals, tables, color tokens, and spacing scales documented for fast development.",
       },
       {
-        title: "Micro-Interaction & Motion Design",
-        description: "Physics-based Framer Motion transitions and GPU-accelerated canvas feedback states that orient the user without latency."
+        title: "SaaS & Dashboard UI Craft",
+        description:
+          "Clean data visualization, dark and light themes, clear visual hierarchy, and scannable workspace layouts.",
       },
       {
-        title: "Design Ops & Production Handoff",
-        description: "Pixel-perfect React component specs, responsive breakpoint grids, and zero-ambiguity documentation."
-      }
+        title: "Developer Handoff & Design QA",
+        description:
+          "Annotated component specs, auto-layout tokens, and collaborative review with frontend engineers.",
+      },
     ],
     processPhases: [
       {
         number: "01",
-        title: "Discover & Scope",
-        duration: "Weeks 1-2",
-        description: "Deep dive into existing user journeys, telemetry bottlenecks, and product requirements.",
-        deliverables: ["Product Requirements Document (PRD)", "Information Architecture Map", "User Personas & Heuristic Audit"]
-      },
-      {
-        number: "02",
-        title: "Architecture & Wireframes",
-        duration: "Weeks 3-4",
-        description: "Mapping end-to-end navigational flows, low-fidelity wireframes, and validation experiments.",
-        deliverables: ["Interactive Clickable Wireframe", "State Transition Diagram", "Accessibility Baseline Checklist"]
-      },
-      {
-        number: "03",
-        title: "Visual System & High-Fi Prototyping",
-        duration: "Weeks 5-6",
-        description: "Crafting polished interface components, bespoke iconography, and fluid physics-based transitions.",
-        deliverables: ["Tokenized Figma Design System", "High-Fidelity Prototype", "Component Variant Matrix"]
-      },
-      {
-        number: "04",
-        title: "Design Ops & Engineering Handoff",
-        duration: "Weeks 7-8",
-        description: "Connecting Figma tokens to Tailwind CSS variables, reviewing edge builds, and conducting QA audits.",
-        deliverables: ["Exported React Components", "Storybook Catalog", "Accessibility Compliance Certification"]
-      }
-    ],
-    faqs: [
-      {
-        question: "How do your design systems synchronize with our frontend codebase?",
-        answer: "We use automated design token pipelines (via Tokens Studio and GitHub Actions) that export Figma color variables, typography scales, and spacing tokens directly into Tailwind CSS configuration files and CSS custom properties."
-      },
-      {
-        question: "Can you design for complex, data-heavy enterprise platforms?",
-        answer: "Yes. Our core specialty is high-density interfaces—such as financial dashboards, real-time telemetry monitors, and AI model orchestration consoles—designed for fast scanning and zero visual fatigue."
-      },
-      {
-        question: "What is your typical project timeline for an end-to-end design engagement?",
-        answer: "Most product design engagements span 6 to 10 weeks depending on scope, progressing from initial cognitive audits to complete design systems and interactive high-fidelity prototypes."
-      }
-    ],
-    tools: ["Figma", "Tailwind CSS", "Storybook", "Radix UI", "Tokens Studio", "Framer Motion"]
-  },
-  {
-    id: "website-design",
-    slug: "website-design",
-    title: "Website Design",
-    badge: "Brand & Motion",
-    heroHeadline: "Digital Flagships That Convert From First Load",
-    shortDesc: "Award-caliber digital brand experiences engineered with cinematic motion, editorial typography, and conversion science.",
-    longDesc: "We build digital flagship websites for ambitious technology companies. Every layout balances bold visual storytelling with ruthless conversion architecture, responsive ergonomics, and sub-second load times.",
-    iconName: "Globe",
-    metrics: "42% Average Conversion Lift",
-    deliverables: [
-      {
-        title: "Brand Identity & Visual Direction",
-        description: "Positioning narrative, bespoke glyph design, typography pairings, and digital-first color systems."
-      },
-      {
-        title: "Editorial Storytelling & Layouts",
-        description: "High-impact narrative flow designed to establish undeniable enterprise authority and clarity of value."
-      },
-      {
-        title: "Cinematic Motion & Interactions",
-        description: "Scroll-linked visual reveals, WebGL light-ray shaders, and responsive physics animations."
-      },
-      {
-        title: "Conversion Funnel Optimization",
-        description: "Sticky contextual CTAs, friction-free booking modals, and intent-driven navigation architectures."
-      },
-      {
-        title: "Core Web Vitals & Performance",
-        description: "Zero Cumulative Layout Shift (CLS), instantaneous Largest Contentful Paint (LCP), and minimal DOM overhead."
-      },
-      {
-        title: "User-Tested Iterative Refinement",
-        description: "Heatmap analytics, live A/B session validation, and continuous conversion funnel calibration."
-      }
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Positioning & Strategy",
+        title: "Product Discovery & User Flows",
         duration: "Week 1",
-        description: "Clarifying your competitive edge, target audience personas, and primary conversion objectives.",
-        deliverables: ["Creative Brief", "Moodboard & Typography Pairings", "Sitemap & User Flow Hierarchy"]
+        description:
+          "Mapping user personas, core tasks, and end-to-end product journeys to eliminate unnecessary clicks.",
+        deliverables: [
+          "User Flow Diagrams",
+          "Information Architecture",
+          "UX Audit Notes",
+        ],
       },
       {
         number: "02",
-        title: "Creative Concepting",
-        duration: "Weeks 2-3",
-        description: "Exploring bold visual styles, editorial grid directions, and bespoke 3D/canvas visual motifs.",
-        deliverables: ["Three Distinct Art Directions", "Hero Prototype Exploration", "Content Narrative Drafts"]
+        title: "Wireframing & Rapid Iteration",
+        duration: "Week 2",
+        description:
+          "Validating screen layouts, navigation patterns, and empty/loading/error states quickly.",
+        deliverables: [
+          "Low-Fidelity Wireframes",
+          "Core Screen Blueprints",
+          "Navigation Prototype",
+        ],
       },
       {
         number: "03",
-        title: "Full Responsive Layouts",
-        duration: "Weeks 4-5",
-        description: "Designing all desktop, tablet, and mobile breakpoints with bespoke motion choreography.",
-        deliverables: ["Full Responsive Page Layouts", "Motion Specification Guide", "Asset Production Pipeline"]
-      },
-      {
-        number: "04",
-        title: "Build Integration & QA",
-        duration: "Weeks 6-7",
-        description: "Collaborating with our engineering team to ensure 100% fidelity to the approved design vision.",
-        deliverables: ["Design QA Audit", "Lighthouse 95+ Verification", "Cross-Browser Testing Signoff"]
-      }
-    ],
-    faqs: [
-      {
-        question: "How do you ensure cinematic websites still achieve top Lighthouse scores?",
-        answer: "We build all visual shaders using lightweight WebGL/Canvas pipelines that pause execution when off-screen, alongside modern responsive image formats (AVIF/WebP), pre-rendered critical CSS, and zero bloated third-party analytics bundles."
-      },
-      {
-        question: "Do you write original copy and produce bespoke imagery?",
-        answer: "Yes, our team handles technical copywriting, brand positioning, and custom SVG iconography, ensuring your product's unique technical advantages are communicated with razor-sharp precision."
-      }
-    ],
-    tools: ["Next.js", "Three.js / WebGL", "Tailwind CSS", "Figma", "GSAP", "Lenis Scroll"]
-  },
-  {
-    id: "website-development",
-    slug: "website-development",
-    title: "Web Development",
-    badge: "Next.js & Edge",
-    heroHeadline: "Modern Software Engineered to Ship & Scale",
-    shortDesc: "Next.js App Router engineering, server components, distributed edge caching, and rock-solid headless CMS integrations.",
-    longDesc: "We build enterprise-grade modern web applications and platforms. Combining React Server Components, TypeScript type-safety, edge compute, and resilient headless data sources for sub-second global responses.",
-    iconName: "Cpu",
-    metrics: "< 250ms Global Time-to-First-Byte",
-    deliverables: [
-      {
-        title: "Next.js App Router Architecture",
-        description: "Streaming React Server Components (RSC) with zero-bundle-size server logic and instant client hydration."
-      },
-      {
-        title: "Headless CMS & Commerce Integrations",
-        description: "Robust data connectors for Sanity, Contentful, Shopify Plus, and localized multi-region headless stores."
-      },
-      {
-        title: "API Microservices & WebSockets",
-        description: "Low-latency tRPC, GraphQL, and WebSocket backends supporting real-time collaborative state."
-      },
-      {
-        title: "Cross-Platform & Progressive Web Apps",
-        description: "Offline-first caching, mobile-touch ergonomics, and seamless responsive behavior across all viewports."
-      },
-      {
-        title: "Edge Caching & SEO Architecture",
-        description: "Dynamic OpenGraph generation, semantic JSON-LD structured schemas, and instant CDN propagation."
-      },
-      {
-        title: "Zero-Trust Security & Compliance",
-        description: "Strict Content Security Policies (CSP), automated dependency audits, and SOC2-compliant CI/CD pipelines."
-      }
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Architecture & Scaffolding",
-        duration: "Week 1",
-        description: "Establishing repository standards, TypeScript configurations, automated linting, and CI pipelines.",
-        deliverables: ["Monorepo Setup", "Database Schema Models", "CI/CD Deployment Pipelines"]
-      },
-      {
-        number: "02",
-        title: "Component & Data Layer Build",
-        duration: "Weeks 2-4",
-        description: "Engineering reusable UI primitives, edge API endpoints, and caching strategies.",
-        deliverables: ["Modular React Components", "Type-Safe API Contracts", "CMS Data Hydration"]
-      },
-      {
-        number: "03",
-        title: "Integration & Performance Tuning",
-        duration: "Weeks 5-6",
-        description: "Eliminating render waterfalls, implementing optimistic UI updates, and benchmarking under load.",
-        deliverables: ["Load Testing Reports", "Edge Cache Verification", "SEO & OpenGraph Validation"]
-      },
-      {
-        number: "04",
-        title: "Production Deployment & Handoff",
-        duration: "Week 7",
-        description: "Executing DNS cutover, configuring automated preview branches, and providing operator documentation.",
-        deliverables: ["Zero-Downtime Production Cutover", "Technical Architecture Docs", "24/7 Monitoring Alarms"]
-      }
-    ],
-    faqs: [
-      {
-        question: "Why do you build on Next.js App Router rather than older single-page architectures?",
-        answer: "Next.js App Router with Server Components reduces client JavaScript bundles by up to 70%, streams HTML directly from the edge, optimizes Core Web Vitals automatically, and provides unmatched developer ergonomics."
-      },
-      {
-        question: "Can you integrate with our existing backend microservices and databases?",
-        answer: "Absolutely. We routinely connect Next.js frontends to enterprise PostgreSQL, ClickHouse, REST APIs, gRPC backends, and authenticated corporate single sign-on (SSO) systems."
-      }
-    ],
-    tools: ["Next.js 14", "React 18", "TypeScript", "Tailwind CSS", "PostgreSQL", "Cloudflare Edge", "Docker"]
-  },
-  {
-    id: "ai-development",
-    slug: "ai-development",
-    title: "AI Development",
-    badge: "Foundation Models",
-    heroHeadline: "Production AI with Deterministic Reliability",
-    shortDesc: "Custom LLM applications, private RAG pipelines, fine-tuning, and automated evals engineered for zero-hallucination compliance.",
-    longDesc: "Moving machine learning from research proofs-of-concept into resilient production environments. We design, benchmark, and deploy enterprise AI pipelines with strict safety guardrails and sub-100ms latency.",
-    iconName: "Bot",
-    metrics: "< 85ms Median Token Latency",
-    deliverables: [
-      {
-        title: "Custom RAG Pipelines & Vector Search",
-        description: "Hybrid dense-sparse retrieval, multi-stage reranking, and semantic chunking for proprietary knowledge bases."
-      },
-      {
-        title: "Model Fine-Tuning & Quantization",
-        description: "LoRA/QLoRA adaptation of open weights (Llama 3, Mistral, Qwen) for domain-specific accuracy and lower hosting costs."
-      },
-      {
-        title: "Automated Model Evals & Guardrails",
-        description: "Continuous benchmarking against gold-standard test suites to catch regressions, drift, and jailbreaks."
-      },
-      {
-        title: "Multimodal Vision, Speech & NLP",
-        description: "Real-time acoustic transcription, document OCR parsing, and visual scene understanding at scale."
-      },
-      {
-        title: "Observability & Latency Monitoring",
-        description: "End-to-end token tracing, cost-per-query dashboards, and automated alert policies for anomalous queries."
-      },
-      {
-        title: "AI Strategy & Infrastructure Sizing",
-        description: "GPU hardware allocation advisory, private VPC deployment models, and Post-Quantum cryptographic encryption."
-      }
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Data Audit & Feasibility",
-        duration: "Weeks 1-2",
-        description: "Auditing enterprise documents, assessing data hygiene, and formulating quantitative baseline evaluation targets.",
-        deliverables: ["Data Cleansing Pipeline", "Evaluation Test Suite (Golden Dataset)", "Architecture Feasibility Report"]
-      },
-      {
-        number: "02",
-        title: "Prototype & Architecture Sizing",
+        title: "UI Design System & High-Fi Screens",
         duration: "Weeks 3-4",
-        description: "Testing foundation models, configuring vector embeddings, and running comparative latency/cost benchmarks.",
-        deliverables: ["Working RAG Sandbox", "Model Comparison Matrix", "Retrieval Recall Benchmark"]
-      },
-      {
-        number: "03",
-        title: "Hardening & Guardrails",
-        duration: "Weeks 5-7",
-        description: "Implementing deterministic safety filters, PII redaction, structured output schemas, and fallback models.",
-        deliverables: ["Guardrail Middleware", "PII Redaction Layer", "Automated Regression Evals"]
+        description:
+          "Building a cohesive component library and applying polished UI across every product screen.",
+        deliverables: [
+          "Tokenized Figma UI Kit",
+          "High-Fidelity Product Screens",
+          "Clickable User Prototype",
+        ],
       },
       {
         number: "04",
-        title: "Production Scaling & Telemetry",
-        duration: "Weeks 8-9",
-        description: "Deploying to private enterprise VPCs with auto-scaling inference endpoints and full telemetry dashboards.",
-        deliverables: ["High-Throughput vLLM / TensorRT Cluster", "OpenTelemetry Dashboard", "SLA Guarantee Signoff"]
-      }
+        title: "Engineering Handoff & Walkthrough",
+        duration: "Week 5",
+        description:
+          "Delivering clean spacing tokens, states, and responsive rules directly aligned with Tailwind/React.",
+        deliverables: [
+          "Component Documentation",
+          "Exported Icons & Tokens",
+          "Implementation Review",
+        ],
+      },
     ],
     faqs: [
       {
-        question: "How do you prevent proprietary enterprise data from training public AI models?",
-        answer: "We deploy strictly inside your isolated cloud perimeter (AWS VPC, Azure, or on-premises GPU clusters) using open-weights models and zero-data-retention enterprise enterprise APIs where inputs are never logged or stored for model training."
+        question: "What is the difference between Web Designing and UI/UX Design?",
+        answer:
+          "Web Designing focuses on brand websites and conversion-driven landing pages, while UI/UX Design focuses on interactive software products—such as SaaS dashboards, web apps, mobile apps, onboarding flows, and reusable component systems.",
       },
       {
-        question: "When should we choose fine-tuning versus Retrieval-Augmented Generation (RAG)?",
-        answer: "RAG is best for injecting dynamic, up-to-date knowledge and citing specific source documents. Fine-tuning is best for teaching a model specific stylistic tones, specialized syntax (e.g., proprietary code or medical notation), and compressing latency."
-      }
+        question: "Can you create a clickable prototype for our MVP or pitch?",
+        answer:
+          "Yes. Interactive Figma prototypes are one of our most popular deliverables for founders validating an MVP with customers or investors prior to full development.",
+      },
+      {
+        question: "How do you hand off UI/UX files to developers?",
+        answer:
+          "Every Figma file uses clean Auto Layout, named color/spacing variables, component variants, and Tailwind-friendly scales so frontend build time is cut dramatically.",
+      },
     ],
-    tools: ["PyTorch", "vLLM", "Qdrant", "Ollama", "LangChain", "TensorRT-LLM", "HuggingFace"]
+    tools: [
+      "Figma",
+      "Auto Layout & Variables",
+      "FigJam",
+      "Radix UI",
+      "Tailwind CSS",
+      "Framer Motion",
+    ],
   },
   {
     id: "ai-agents",
     slug: "ai-agents",
     title: "AI Agents",
-    badge: "Autonomous Systems",
-    heroHeadline: "Autonomous Agents That Plan, Reason & Execute",
-    shortDesc: "Multi-agent networks with MCP tool calling, supervisory verification, memory persistence, and human-in-the-loop controls.",
-    longDesc: "Transform static software into self-executing autonomous agent clusters capable of planning, verifying decisions, interacting with external legacy systems, and self-correcting in production without hallucination.",
+    badge: "Autonomous Workflows",
+    heroHeadline: "Custom AI Agents That Automate Real Business Operations",
+    shortDesc:
+      "Intelligent AI assistants, lead-qualification bots, RAG knowledge copilots, and multi-step workflow agents connected directly to your tools.",
+    longDesc:
+      "We build practical, reliable AI agents tailored to your business workflows—from 24/7 website sales & support concierges and internal knowledge-base assistants (RAG) to automated CRM, email, and operations agents with strict accuracy guardrails.",
     iconName: "Bot",
-    metrics: "95.6% Tool-Call Execution Accuracy",
+    metrics: "24/7 Autonomous Execution",
     deliverables: [
       {
-        title: "Voice Agents & Real-Time Call Centers",
-        description: "Sub-400ms speech-to-speech telephony agents with interrupt handling and empathetic tone calibration."
+        title: "Website Sales & Support AI Agents",
+        description:
+          "Custom-branded conversational agents that answer customer questions, qualify leads, and book meetings 24/7.",
       },
       {
-        title: "Tool-Using LLM Agents (MCP)",
-        description: "Standardized Model Context Protocol (MCP) integrations connecting agents safely to databases, APIs, and tools."
+        title: "RAG Knowledge-Base Assistants",
+        description:
+          "AI copilots grounded strictly in your PDFs, docs, Notion pages, and product catalog with cited answers.",
       },
       {
-        title: "Multi-Agent Orchestration & Planning",
-        description: "Hierarchical agent networks where planner agents supervise specialized executor, researcher, and QA agents."
+        title: "Workflow & CRM Automation Agents",
+        description:
+          "Multi-step agents integrated with Slack, HubSpot, Gmail, Calendly, Supabase, and custom APIs.",
       },
       {
-        title: "Long-Term Knowledge & Episodic Memory",
-        description: "Persistent vector memory allowing agents to recall past interactions, user preferences, and enterprise policies."
+        title: "Structured Tool-Calling & Guardrails",
+        description:
+          "Schema-validated tool execution (Zod/MCP) and human-in-the-loop approvals so agents never go off-script.",
       },
       {
-        title: "Workflow Automation & Sandbox Execution",
-        description: "Isolated container environments where agents execute code and verify outcomes before touching production."
+        title: "Custom Agent UI & Admin Logs",
+        description:
+          "Clean chat interfaces, conversation history dashboards, and prompt/performance monitoring.",
       },
       {
-        title: "Human-in-the-Loop Supervisory Handoff",
-        description: "Intuitive operator consoles with confidence score thresholds that escalate ambiguous edge cases to humans."
-      }
+        title: "Model Selection & Cost Optimization",
+        description:
+          "Smart routing across OpenAI, Claude, Gemini, or open-weight models to keep responses fast and API costs low.",
+      },
     ],
     processPhases: [
       {
         number: "01",
-        title: "Workflow Deconstruction",
-        duration: "Weeks 1-2",
-        description: "Mapping existing human operator SOPs, decision trees, and required API permissions.",
-        deliverables: ["Agent Capability Matrix", "Tool-Calling Schema Spec", "Risk & Escalation Policy"]
+        title: "Workflow Audit & Use-Case Mapping",
+        duration: "Week 1",
+        description:
+          "Identifying the highest-ROI repetitive tasks, data sources, and safety boundaries for your AI agent.",
+        deliverables: [
+          "Agent Scope & Tool Map",
+          "Knowledge Source Inventory",
+          "Guardrail & Escalation Rules",
+        ],
       },
       {
         number: "02",
-        title: "Agent Mesh Architecture",
-        duration: "Weeks 3-4",
-        description: "Building the planning-execution-verification cycle with isolated tool calling and state persistence.",
-        deliverables: ["Orchestrator Sandbox", "MCP Server Endpoints", "Deterministic Unit Tests"]
+        title: "Knowledge Indexing & Agent Core",
+        duration: "Weeks 2-3",
+        description:
+          "Building the retrieval pipeline, structured tool integrations, and prompt orchestration logic.",
+        deliverables: [
+          "Working Agent Prototype",
+          "Vector Search / RAG Pipeline",
+          "Typed API Tool Connectors",
+        ],
       },
       {
         number: "03",
-        title: "Supervisory UI & Safety Verification",
-        duration: "Weeks 5-6",
-        description: "Designing the human operator dashboard, execution log replay, and manual override controls.",
-        deliverables: ["Supervisory Web Console", "Audit Log Ledger", "Automated Canary Testing"]
+        title: "Testing, Guardrails & UI Integration",
+        duration: "Week 4",
+        description:
+          "Testing edge cases, preventing hallucinations, and embedding the agent cleanly into your website or workspace.",
+        deliverables: [
+          "Accuracy & Safety Test Suite",
+          "Embedded Web/Slack Interface",
+          "Human Handoff Triggers",
+        ],
       },
       {
         number: "04",
-        title: "Pilot Rollout & Autonomous Scaling",
-        duration: "Weeks 7-8",
-        description: "Deploying in shadow mode alongside human operators, benchmarking accuracy, and gradually ramping traffic.",
-        deliverables: ["Shadow Deployment Report", "Production Traffic Handoff", "Continuous Evaluation Pipeline"]
-      }
+        title: "Deployment & Iteration",
+        duration: "Week 5",
+        description:
+          "Launching to production with conversation logging so responses improve continuously from real usage.",
+        deliverables: [
+          "Live Production AI Agent",
+          "Usage & Cost Telemetry",
+          "Team Training & Playbook",
+        ],
+      },
     ],
     faqs: [
       {
-        question: "What prevents an autonomous agent from making catastrophic errors?",
-        answer: "We implement multi-layered safety guardrails: strict sandboxed execution, read-only permissions by default, dual-agent verification (a critic agent must approve the executor's plan), and configurable blast-radius limits that mandate human approval for sensitive actions."
+        question: "How do you prevent an AI agent from giving wrong or made-up answers?",
+        answer:
+          "We ground agents strictly on your verified documents (RAG), enforce typed JSON schemas for tool calls, and configure clear fallback rules to hand over uncertain queries to your human team.",
       },
       {
-        question: "What is Model Context Protocol (MCP) and why do you use it?",
-        answer: "MCP is the open standard for connecting AI models to external tools and data sources. It provides a secure, versioned protocol so agents can query databases, execute code, and call APIs with zero vendor lock-in."
-      }
+        question: "Can you embed an AI agent directly into our existing website or CRM?",
+        answer:
+          "Yes. We build custom web chat widgets, full-page AI workspaces, Slack bots, and backend webhook agents that connect directly with your current site and tools.",
+      },
+      {
+        question: "Which AI models do you build with?",
+        answer:
+          "We work across OpenAI (GPT-4o), Anthropic (Claude), Google Gemini, and open-source models—selecting the best fit for your speed, accuracy, and monthly API budget.",
+      },
     ],
-    tools: ["MCP Protocol", "CrewAI", "Temporal", "Docker", "Python", "FastAPI", "Redis"]
+    tools: [
+      "OpenAI API",
+      "Anthropic Claude",
+      "LangGraph",
+      "Vercel AI SDK",
+      "Supabase pgvector",
+      "MCP",
+      "TypeScript",
+    ],
   },
-  {
-    id: "healthcare-apps",
-    slug: "healthcare-apps",
-    title: "Healthcare Apps",
-    badge: "HIPAA & Clinical",
-    heroHeadline: "Clinical-Grade Platforms Built for Care & Compliance",
-    shortDesc: "HIPAA-compliant clinician copilots, EHR interoperability (FHIR/HL7), telehealth portals, and verifiable clinical decision support.",
-    longDesc: "Engineering digital health platforms where human life and data privacy are at stake. We design clinical-grade software featuring zero-knowledge encryption, FHIR interoperability, and clinician-tested workflows.",
-    iconName: "Shield",
-    metrics: "100% HIPAA & SOC2 Type II Certified",
-    deliverables: [
-      {
-        title: "HIPAA & PHI Compliance Architecture",
-        description: "End-to-end encryption at rest and in transit, automated audit trails, and strict role-based access controls (RBAC)."
-      },
-      {
-        title: "Telehealth & Patient Portals",
-        description: "Low-latency WebRTC video consultations, asynchronous messaging, and secure digital prescription workflows."
-      },
-      {
-        title: "EHR Interoperability (FHIR / HL7)",
-        description: "Seamless bidirectional syncing with major EHR providers including Epic, Cerner, AthenaHealth, and Allscripts."
-      },
-      {
-        title: "Clinician Decision Support & Dashboards",
-        description: "Real-time vital trend monitors, lab result correlation, and ambient documentation generation."
-      },
-      {
-        title: "Immutable Audit Logging & Access Controls",
-        description: "Cryptographically verified access logs meeting all HHS Office for Civil Rights compliance requirements."
-      },
-      {
-        title: "Clinical-Grade Reliability & SLA",
-        description: "99.999% high-availability multi-region active-active architectures designed for emergency care zero-downtime."
-      }
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Compliance & Clinical Scope",
-        duration: "Weeks 1-2",
-        description: "Establishing regulatory baselines (HIPAA, BAA agreements, SOC2), clinical safety protocols, and FHIR resource schemas.",
-        deliverables: ["HIPAA Architecture Blueprint", "BAA Agreement Template", "Clinical Workflow Specification"]
-      },
-      {
-        number: "02",
-        title: "Secure Scaffolding & EHR Sandbox",
-        duration: "Weeks 3-5",
-        description: "Building zero-retention data pipelines, FHIR SMART on FHIR authorization, and mock clinician testbeds.",
-        deliverables: ["SMART on FHIR Auth Gateway", "End-to-End Encrypted Data Lake", "Clinician Test Harness"]
-      },
-      {
-        number: "03",
-        title: "Clinical Validation & Usability",
-        duration: "Weeks 6-8",
-        description: "Testing with board-certified physicians, measuring cognitive load, and conducting penetration testing audits.",
-        deliverables: ["Third-Party Security Pen Test", "Clinician Usability Report", "HIPAA Compliance Attestation"]
-      },
-      {
-        number: "04",
-        title: "Production Deployment & BAA Execution",
-        duration: "Weeks 9-10",
-        description: "Deploying to HITRUST-certified cloud environments with continuous monitoring and automated disaster recovery.",
-        deliverables: ["Production Cloud Launch", "Disaster Recovery Runbook", "24/7 Security Incident Response Plan"]
-      }
-    ],
-    faqs: [
-      {
-        question: "Do you sign Business Associate Agreements (BAA)?",
-        answer: "Yes, we sign comprehensive BAAs for all healthcare and health-tech engagements, guaranteeing that all architecture and cloud resources strictly comply with HIPAA and HITECH security standards."
-      },
-      {
-        question: "How do you handle bidirectional EHR integration without breaking hospital systems?",
-        answer: "We utilize modern HL7 FHIR RESTful APIs and SMART on FHIR OAuth profiles with strict idempotency keys, ensuring updates are atomic, verifiable, and cannot corrupt hospital records."
-      }
-    ],
-    tools: ["FHIR R4", "HL7", "React", "TypeScript", "Next.js", "WebRTC", "AWS HealthLake", "PostgreSQL"]
-  }
 ];

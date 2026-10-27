@@ -126,7 +126,7 @@ body {
   filter: blur(40px);
 }
 
-/* Planetary Horizon Light Curve (antimatterai.agency clientsLightCurve parity) */
+/* Planetary Horizon Light Curve */
 .horizon-light-curve {
   position: relative;
   width: 150%;

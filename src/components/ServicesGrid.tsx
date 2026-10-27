@@ -11,19 +11,17 @@ import {
   Bot,
   Globe,
   Layout,
-  Cloud,
-  Shield,
+  Code,
   ArrowUpRight,
   Check,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
-  Layout: <Layout className="w-5 h-5 text-brand-primary" />,
+  Code: <Code className="w-5 h-5 text-brand-primary" />,
   Globe: <Globe className="w-5 h-5 text-brand-primary" />,
-  Cpu: <Cpu className="w-5 h-5 text-brand-primary" />,
+  Layout: <Layout className="w-5 h-5 text-brand-primary" />,
   Bot: <Bot className="w-5 h-5 text-brand-primary" />,
-  Shield: <Shield className="w-5 h-5 text-brand-primary" />,
-  Cloud: <Cloud className="w-5 h-5 text-brand-primary" />,
+  Cpu: <Cpu className="w-5 h-5 text-brand-primary" />,
 };
 
 export default function ServicesGrid() {
@@ -49,23 +47,23 @@ export default function ServicesGrid() {
         {/* Centered Section Heading */}
         <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-primary text-xs font-mono font-medium mb-4">
-            <span>OUR SERVICES • 01 — 06</span>
+            <span>OUR SERVICES • 01 — 04</span>
           </div>
           <SplitTextReveal
             as="h2"
-            text="Specialized Engineering Pillars Built for Extreme Demands."
+            text="Four Focused Capabilities Built for Modern Brands."
             accentFromWordIndex={4}
             className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight text-center"
           />
           <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            We don&apos;t build cookie-cutter templates. Each engagement is an
-            intensive technical partnership designed to eliminate operational
-            bottlenecks and build permanent technical moats.
+            Instead of spreading thin across dozens of buzzwords, we focus deeply
+            on four crafts: custom Web Development, high-converting Web
+            Designing, intuitive UI/UX Design, and autonomous AI Agents.
           </p>
         </div>
 
-        {/* 6 Interactive Spotlight & Expandable Pillar Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* Balanced 2x2 Spotlight & Expandable Pillar Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {servicesData.map((service, idx) => {
             const isActive = activePillar === idx;
             const coords = mouseCoords[service.id] || { x: 180, y: 120 };
@@ -83,7 +81,7 @@ export default function ServicesGrid() {
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{
                   duration: 0.65,
-                  delay: idx * 0.07,
+                  delay: idx * 0.08,
                   ease: MOTION_EASE.cinematicOut,
                 }}
                 style={
@@ -92,7 +90,7 @@ export default function ServicesGrid() {
                     "--mouse-y": `${coords.y}px`,
                   } as React.CSSProperties
                 }
-                className={`group relative overflow-hidden rounded-2xl glass-panel p-7 flex flex-col justify-between transition-all duration-300 ${
+                className={`group relative overflow-hidden rounded-2xl glass-panel p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
                   isActive
                     ? "border-brand-primary/50 bg-[#0c0c14]/90 shadow-2xl shadow-brand-primary/10 -translate-y-1"
                     : "hover:border-brand-primary/40 hover:bg-[#0c0c11]/80 hover:-translate-y-1"
@@ -137,7 +135,7 @@ export default function ServicesGrid() {
                   </div>
 
                   {/* Service Title */}
-                  <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-brand-light transition-colors">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2.5 tracking-tight group-hover:text-brand-light transition-colors">
                     {service.title}
                   </h3>
 
@@ -146,10 +144,10 @@ export default function ServicesGrid() {
                     {service.shortDesc}
                   </p>
 
-                  {/* Capabilities & Tools (antimatterai.agency Services + Tools structure) */}
+                  {/* Key Deliverables */}
                   <div className="space-y-2 mb-5 border-t border-white/[0.06] pt-4">
                     <div className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                      Services
+                      Included Deliverables
                     </div>
                     {service.deliverables.slice(0, 4).map((item, dIdx) => (
                       <div
@@ -175,10 +173,10 @@ export default function ServicesGrid() {
                     <div className="overflow-hidden">
                       <div className="pt-3 border-t border-white/[0.05]">
                         <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                          Tools
+                          Stack &amp; Tools
                         </div>
                         <div className="flex flex-wrap gap-1.5">
-                          {service.tools.slice(0, 5).map((tool) => (
+                          {service.tools.slice(0, 6).map((tool) => (
                             <span
                               key={tool}
                               className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-300"
@@ -195,7 +193,7 @@ export default function ServicesGrid() {
                 {/* Bottom Card Footer */}
                 <div className="relative z-10 pt-4 border-t border-white/[0.06] flex items-center justify-between">
                   <div className="text-xs font-mono text-zinc-400">
-                    <span className="text-zinc-500">SLA: </span>
+                    <span className="text-zinc-500">Target: </span>
                     <span className="text-white font-medium">
                       {service.metrics}
                     </span>
@@ -205,7 +203,7 @@ export default function ServicesGrid() {
                     href={`/services/${service.slug}`}
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-primary group-hover:text-white transition-colors"
                   >
-                    <span>Explore Pillar</span>
+                    <span>Explore Service</span>
                     <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </Link>
                 </div>
@@ -217,12 +215,12 @@ export default function ServicesGrid() {
         {/* Bottom Banner */}
         <div className="mt-16 text-center">
           <Link
-            href="/services/ai-development"
+            href="/contact"
             className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
           >
-            <span>Need a custom architecture assessment?</span>
+            <span>Need help combining design, web engineering, and AI?</span>
             <span className="text-brand-primary font-semibold underline underline-offset-4">
-              Explore Our AI Development Blueprint →
+              Book a Free Discovery Call →
             </span>
           </Link>
         </div>

@@ -4,52 +4,52 @@ import React from "react";
 import { motion } from "framer-motion";
 import RollingNumber from "./RollingNumber";
 import { MOTION_EASE } from "@/lib/motionTokens";
-import { Award, CheckCircle2, TrendingUp, Clock } from "lucide-react";
+import { Gauge, Sparkles, Layers, Clock } from "lucide-react";
 
 const statItems = [
   {
-    icon: Award,
+    icon: Gauge,
     iconColor: "text-brand-primary",
-    label: "Production Deployments",
-    value: 74,
+    label: "Performance Target",
+    value: 99,
     decimals: 0,
     duration: 1800,
     suffix: "+",
     staticValue: null as string | null,
-    desc: "High-concurrency systems delivered across enterprise AI, fintech & healthcare.",
+    desc: "Engineered for sub-second Core Web Vitals, SEO visibility, and smooth 60fps motion.",
   },
   {
-    icon: CheckCircle2,
+    icon: Sparkles,
     iconColor: "text-emerald-400",
-    label: "Client Satisfaction",
-    value: 99.4,
-    decimals: 1,
+    label: "Custom Craft",
+    value: 100,
+    decimals: 0,
     duration: 2000,
     suffix: "%",
     staticValue: null as string | null,
-    desc: "Measured post-deployment partner retention and NPS benchmark over 36 months.",
+    desc: "Zero bloated page-builder themes—every website, UI system, and AI agent is custom built.",
   },
   {
-    icon: TrendingUp,
+    icon: Layers,
     iconColor: "text-brand-light",
-    label: "Agent Accuracy",
-    value: 94.8,
-    decimals: 1,
-    duration: 2200,
-    suffix: "%",
+    label: "Core Services",
+    value: 4,
+    decimals: 0,
+    duration: 1500,
+    suffix: "",
     staticValue: null as string | null,
-    desc: "Autonomous tool execution fidelity validated through continuous automated eval suites.",
+    desc: "Dedicated mastery across Web Development, Web Designing, UI/UX Design, and AI Agents.",
   },
   {
     icon: Clock,
     iconColor: "text-amber-400",
-    label: "Telemetry & Uptime",
+    label: "Nordic & PK Sync",
     value: 0,
     decimals: 0,
     duration: 1800,
     suffix: "",
     staticValue: "24/7",
-    desc: "Autonomous self-healing infrastructure monitoring and proactive telemetry guards.",
+    desc: "Direct founder & engineer communication across Kuopio, Finland and Lahore, Pakistan.",
   },
 ];
 

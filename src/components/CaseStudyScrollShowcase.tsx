@@ -56,7 +56,7 @@ export default function CaseStudyScrollShowcase({
       },
       {
         index: "04",
-        label: `Verified Production Output (${study.impactMetric})`,
+        label: `Concept Target Benchmark (${study.impactMetric})`,
         sublabel: study.impactLabel,
         accent: "#60a5fa",
       },

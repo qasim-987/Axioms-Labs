@@ -16,32 +16,25 @@ import {
   Bot,
   Globe,
   Layout,
-  Cloud,
-  Shield,
-  Layers,
-  FileText,
-  Activity,
   Code,
-  TrendingUp,
+  Sparkles,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
-  Layout: <Layout className="w-5 h-5 text-brand-primary" />,
+  Code: <Code className="w-5 h-5 text-brand-primary" />,
   Globe: <Globe className="w-5 h-5 text-brand-primary" />,
-  Cpu: <Cpu className="w-5 h-5 text-brand-primary" />,
+  Layout: <Layout className="w-5 h-5 text-brand-primary" />,
   Bot: <Bot className="w-5 h-5 text-brand-primary" />,
-  Shield: <Shield className="w-5 h-5 text-brand-primary" />,
-  Cloud: <Cloud className="w-5 h-5 text-brand-primary" />,
+  Cpu: <Cpu className="w-5 h-5 text-brand-primary" />,
 };
 
 export default function Navbar() {
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
-  const [resourcesOpen, setResourcesOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
 
-  const latestWork = clientsData[0];
+  const featuredConcept = clientsData[0];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,14 +48,12 @@ export default function Navbar() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setMegaMenuOpen(false);
-        setResourcesOpen(false);
         setMobileMenuOpen(false);
       }
     };
     const handleClickOutside = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
         setMegaMenuOpen(false);
-        setResourcesOpen(false);
       }
     };
 
@@ -85,7 +76,7 @@ export default function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         <div className="flex items-center justify-between">
-          {/* Brand Wordmark matching video reference */}
+          {/* Brand Wordmark */}
           <Link
             href="/"
             className="flex items-center gap-2 group focus:outline-none"
@@ -95,34 +86,14 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation: Work, Company, Services v, Resources v */}
+          {/* Focused Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-2 lg:gap-3">
-            <Link
-              href="/work"
-              className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
-            >
-              Work
-            </Link>
-
-            <Link
-              href="/company"
-              className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
-            >
-              Company
-            </Link>
-
             {/* Services Mega-Menu Trigger */}
             <div className="relative">
               <button
                 type="button"
-                onClick={() => {
-                  setMegaMenuOpen(!megaMenuOpen);
-                  setResourcesOpen(false);
-                }}
-                onMouseEnter={() => {
-                  setMegaMenuOpen(true);
-                  setResourcesOpen(false);
-                }}
+                onClick={() => setMegaMenuOpen(!megaMenuOpen)}
+                onMouseEnter={() => setMegaMenuOpen(true)}
                 aria-expanded={megaMenuOpen}
                 className={`flex items-center gap-1 px-3.5 py-2 rounded-full text-sm font-medium transition-colors ${
                   megaMenuOpen
@@ -141,122 +112,26 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Resources Dropdown Trigger */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setResourcesOpen(!resourcesOpen);
-                  setMegaMenuOpen(false);
-                }}
-                onMouseEnter={() => {
-                  setResourcesOpen(true);
-                  setMegaMenuOpen(false);
-                }}
-                aria-expanded={resourcesOpen}
-                className={`flex items-center gap-1 px-3.5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  resourcesOpen
-                    ? "text-white bg-white/[0.08]"
-                    : "text-zinc-300 hover:text-white hover:bg-white/[0.04]"
-                }`}
-              >
-                Resources
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    resourcesOpen
-                      ? "rotate-180 text-brand-primary"
-                      : "text-zinc-400"
-                  }`}
-                />
-              </button>
+            <Link
+              href="/work"
+              className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
+            >
+              Work
+            </Link>
 
-              <AnimatePresence>
-                {resourcesOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -6, scale: 0.985 }}
-                    transition={{ duration: 0.2, ease: MOTION_EASE.cinematicOut }}
-                    onMouseLeave={() => setResourcesOpen(false)}
-                    className="absolute right-0 mt-3 w-80 rounded-2xl bg-[#09090d]/95 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/90 p-3 z-50"
-                  >
-                    <div className="space-y-1">
-                      <Link
-                        href="/resources/vendor-matrix"
-                        onClick={() => setResourcesOpen(false)}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group"
-                      >
-                        <div className="p-2 rounded-lg bg-brand-primary/10 text-brand-primary mt-0.5">
-                          <Layers className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white group-hover:text-brand-primary transition-colors">
-                            AI Vendor Matrix
-                          </div>
-                          <p className="text-xs text-zinc-400 mt-0.5">
-                            Compare latency, VPC &amp; HIPAA compliance
-                          </p>
-                        </div>
-                      </Link>
+            <Link
+              href="/company"
+              className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
+            >
+              Company
+            </Link>
 
-                      <Link
-                        href="/open-axiom"
-                        onClick={() => setResourcesOpen(false)}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group"
-                      >
-                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5">
-                          <Code className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white group-hover:text-emerald-400 transition-colors">
-                            Open Axiom
-                          </div>
-                          <p className="text-xs text-zinc-400 mt-0.5">
-                            9 permissive open-source skills &amp; templates
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/blog"
-                        onClick={() => setResourcesOpen(false)}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group"
-                      >
-                        <div className="p-2 rounded-lg bg-brand-primary/10 text-brand-primary mt-0.5">
-                          <FileText className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white group-hover:text-brand-primary transition-colors">
-                            Engineering Blog
-                          </div>
-                          <p className="text-xs text-zinc-400 mt-0.5">
-                            Production blueprints, evals &amp; AI economics
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/demos/threat-monitor"
-                        onClick={() => setResourcesOpen(false)}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group"
-                      >
-                        <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 mt-0.5">
-                          <Activity className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white group-hover:text-amber-400 transition-colors">
-                            Interactive Labs (6 Demos)
-                          </div>
-                          <p className="text-xs text-zinc-400 mt-0.5">
-                            3D threat globe, vector search &amp; voice AI
-                          </p>
-                        </div>
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            <Link
+              href="/blog"
+              className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
+            >
+              Blog
+            </Link>
 
             <Link
               href="/contact"
@@ -295,7 +170,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Spring-Animated Services Mega-Menu with "OUR LATEST WORK" Spotlight Card */}
+      {/* Spring-Animated 4-Service Mega-Menu + Featured Studio Concept Card */}
       <AnimatePresence>
         {megaMenuOpen && (
           <motion.div
@@ -308,14 +183,14 @@ export default function Navbar() {
           >
             <div className="max-w-6xl mx-auto rounded-3xl bg-[#09090e]/95 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/90 p-6 lg:p-8">
               <div className="grid grid-cols-12 gap-8">
-                {/* 6 Service Pillars (8 Cols) */}
-                <div className="col-span-8 grid grid-cols-2 gap-3">
+                {/* 4 Core Services (8 Cols, clean 2x2 grid) */}
+                <div className="col-span-8 grid grid-cols-2 gap-4">
                   {servicesData.map((service, idx) => (
                     <Link
                       key={service.id}
                       href={`/services/${service.slug}`}
                       onClick={() => setMegaMenuOpen(false)}
-                      className="group p-3.5 rounded-2xl hover:bg-white/[0.04] border border-transparent hover:border-white/[0.08] transition-all flex items-start gap-3.5"
+                      className="group p-4 rounded-2xl hover:bg-white/[0.04] border border-white/[0.04] hover:border-white/[0.1] transition-all flex items-start gap-3.5"
                     >
                       <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 group-hover:border-brand-primary/40 group-hover:bg-brand-primary/10 transition-colors shrink-0">
                         {iconMap[service.iconName] || (
@@ -339,34 +214,34 @@ export default function Navbar() {
                   ))}
                 </div>
 
-                {/* Featured "OUR LATEST WORK" Preview Card (4 Cols — antimatterai.agency mega-menu parity) */}
+                {/* Featured Studio Concept Preview Card (4 Cols) */}
                 <div className="col-span-4 border-l border-white/[0.08] pl-7 flex flex-col justify-between">
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-widest text-brand-primary font-semibold block mb-3">
-                      OUR LATEST WORK
+                      STUDIO CONCEPT SHOWCASE
                     </span>
                     <Link
-                      href={`/work/${latestWork.slug}`}
+                      href={`/work/${featuredConcept.slug}`}
                       onClick={() => setMegaMenuOpen(false)}
                       className="group block rounded-2xl p-5 bg-gradient-to-br from-brand-primary/15 via-white/[0.03] to-transparent border border-brand-primary/25 hover:border-brand-primary/50 transition-all"
                     >
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-mono font-bold text-white">
-                          {latestWork.client}
+                        <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-brand-primary" />
+                          {featuredConcept.client}
                         </span>
                         <ArrowUpRight className="w-4 h-4 text-brand-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                       </div>
                       <div className="flex items-baseline gap-2 mb-2">
                         <span className="text-3xl font-extrabold font-mono text-white tabular-nums">
-                          {latestWork.impactMetric}
+                          {featuredConcept.impactMetric}
                         </span>
-                        <TrendingUp className="w-4 h-4 text-emerald-400" />
                       </div>
                       <p className="text-xs text-zinc-300 font-medium mb-2">
-                        {latestWork.title}
+                        {featuredConcept.title}
                       </p>
                       <p className="text-[11px] text-zinc-400 line-clamp-2">
-                        {latestWork.impactLabel}
+                        {featuredConcept.impactLabel}
                       </p>
                     </Link>
                   </div>
@@ -377,14 +252,14 @@ export default function Navbar() {
                       onClick={() => setMegaMenuOpen(false)}
                       className="text-zinc-300 hover:text-white font-medium transition-colors"
                     >
-                      Browse all 7 dossiers →
+                      Explore 4 Concept Builds →
                     </Link>
                     <Link
-                      href="/demos/threat-monitor"
+                      href="/contact"
                       onClick={() => setMegaMenuOpen(false)}
                       className="text-brand-primary hover:text-brand-light font-mono"
                     >
-                      Live Labs
+                      Book Call
                     </Link>
                   </div>
                 </div>
@@ -407,7 +282,7 @@ export default function Navbar() {
             <div className="px-4 pt-4 pb-8 space-y-6 max-h-[82vh] overflow-y-auto">
               <div>
                 <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2 px-2">
-                  Services
+                  Our 4 Core Services
                 </div>
                 <div className="grid grid-cols-1 gap-1">
                   {servicesData.map((s, idx) => (
@@ -435,7 +310,7 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
                 >
-                  Case Studies
+                  Concept Work
                 </Link>
                 <Link
                   href="/company"
@@ -445,32 +320,18 @@ export default function Navbar() {
                   Company
                 </Link>
                 <Link
-                  href="/resources/vendor-matrix"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
-                >
-                  Vendor Matrix
-                </Link>
-                <Link
-                  href="/open-axiom"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
-                >
-                  Open Axiom
-                </Link>
-                <Link
                   href="/blog"
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
                 >
-                  Engineering Blog
+                  Insights Blog
                 </Link>
                 <Link
-                  href="/demos/threat-monitor"
+                  href="/contact"
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-brand-light"
                 >
-                  Interactive Labs
+                  Contact Us
                 </Link>
               </div>
 
