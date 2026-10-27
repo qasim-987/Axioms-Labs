@@ -4,35 +4,35 @@ import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import SplitTextReveal from "./SplitTextReveal";
 import SpotlightCard from "./SpotlightCard";
-import { Terminal, Shield, RefreshCw } from "lucide-react";
+import { Layers, Code2, Bot } from "lucide-react";
 
 const pillars = [
   {
     index: "01",
-    icon: Terminal,
-    badge: "MCP JSON-RPC",
-    title: "Autonomous Tool Protocol",
+    icon: Layers,
+    badge: "FIGMA → CODE",
+    title: "Design-First Clarity",
     description:
-      "We integrate structured Model Context Protocol (MCP) servers, granting AI models typed, authenticated, and bounded access to enterprise backends.",
-    telemetry: "DETERMINISTIC SCHEMA VALIDATED",
+      "Every project starts with clean UX user flows, wireframes, and interactive Figma prototypes—so you see and approve the exact look and feel before development begins.",
+    telemetry: "PIXEL-ACCURATE UI SYSTEM",
   },
   {
     index: "02",
-    icon: Shield,
-    badge: "AIR-GAPPED VPC",
-    title: "Zero-Knowledge Isolation",
+    icon: Code2,
+    badge: "NEXT.JS & TYPESCRIPT",
+    title: "Fast, Clean Web Engineering",
     description:
-      "Proprietary algorithms and customer data never leave your private VPC. We deploy air-gapped models and edge inference engines with complete data sovereignty.",
-    telemetry: "ZERO-RETENTION CRYPTO ENFORCED",
+      "We write maintainable TypeScript, React, and Next.js codebases optimized for 99+ Lighthouse performance, mobile responsiveness, and strong search rankings.",
+    telemetry: "SUB-SECOND EDGE PERFORMANCE",
   },
   {
     index: "03",
-    icon: RefreshCw,
-    badge: "CI/CD EVAL HARNESS",
-    title: "Continuous Automated Evals",
+    icon: Bot,
+    badge: "GROUNDED AI AGENTS",
+    title: "Practical AI Automation",
     description:
-      "Every code change, prompt iteration, and fine-tuned weight checkpoint is automatically tested against regression test sets before reaching production.",
-    telemetry: "99.4% REGRESSION GATE FIDELITY",
+      "Our AI agents connect directly to your documents, website, and CRM with strict schema validation and human handoff rules—automating real work without hallucinations.",
+    telemetry: "SCHEMA-VALIDATED WORKFLOWS",
   },
 ];
 
@@ -54,19 +54,18 @@ export default function MethodologySection() {
         <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-light text-xs font-mono font-medium mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse" />
-            <span>OUR METHODOLOGY • 01 — 03</span>
+            <span>HOW WE WORK • 01 — 03</span>
           </div>
           <SplitTextReveal
             as="h2"
-            text="Deterministic Engineering Over Guesswork."
-            accentFromWordIndex={2}
+            text="Craft, Speed & Practical AI Under One Roof."
+            accentFromWordIndex={4}
             className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight text-center"
           />
           <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            Modern AI implementations frequently fail due to stochastic
-            inconsistency and hidden runtime drift. We build deterministic
-            guardrails, rigorous automated evaluation loops, and hardened
-            sandboxes into every deployment.
+            You work directly with the designers and engineers building your
+            product—combining Nordic quality standards from Kuopio with fast
+            full-stack execution from Lahore.
           </p>
         </div>
 

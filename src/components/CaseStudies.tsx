@@ -11,24 +11,43 @@ export default function CaseStudies() {
   return (
     <section
       id="work"
-      aria-label="Selected Case Studies"
+      aria-label="Axiom Studio Concept Showcase"
       className="relative w-full bg-[#000000] text-white border-t border-white/15 pt-10 sm:pt-14 pb-20 sm:pb-28"
     >
       <div className="max-w-[1640px] mx-auto px-6 sm:px-10 lg:px-14 w-full">
+        {/* Honest Concept Builds Eyebrow */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-light text-[11px] font-mono uppercase tracking-widest">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
+            <span>Studio Concept Builds • Internal Prototypes</span>
+          </div>
+          <Link
+            href="/work"
+            className="text-xs font-mono text-zinc-400 hover:text-white transition-colors"
+          >
+            Explore All 4 Concept Builds →
+          </Link>
+        </div>
+
         {/* 50/50 Two-Card Grid with ~24px (gap-6) gutter */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start w-full">
           {/* ==============================================================
-              PROJECT CARD 01 — 100% WIDTH FULL-BLEED DARK IMAGE CARD
-              (Axiom Studio: Strata Systems)
+              CONCEPT CARD 01 — 100% WIDTH FULL-BLEED DARK IMAGE CARD
+              (Nexus SaaS & Commerce Platform — Web Development + AI Agents)
              ============================================================== */}
           <div className="flex flex-col w-full">
-            <span className="block text-[20px] leading-none font-light text-white tracking-tight mb-3.5 select-none">
-              01
-            </span>
+            <div className="flex items-baseline justify-between mb-3.5 select-none">
+              <span className="text-[20px] leading-none font-light text-white tracking-tight">
+                01
+              </span>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+                Concept • Web Development &amp; AI Agent
+              </span>
+            </div>
 
             {/* 100% width image link — cursor effect is strictly clipped inside this image */}
             <Link
-              href="/work/strata-systems"
+              href="/work/nexus-commerce-os"
               onPointerEnter={() => setHoveredCard(1)}
               onPointerLeave={() =>
                 setHoveredCard((prev) => (prev === 1 ? null : prev))
@@ -40,11 +59,10 @@ export default function CaseStudies() {
               className="group relative block w-full h-[460px] sm:h-[520px] md:h-[580px] lg:h-[660px] bg-[#050302] overflow-hidden cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/85 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
             >
               <span className="sr-only">
-                View Work — Strata Systems Autonomous Cloud Supervision Case
-                Study
+                View Work — Nexus SaaS and Headless Commerce Concept Build
               </span>
 
-              {/* Tool Icon Badge ("Ps", 26x26px) at top-left under "01", fades in over 200ms ONLY while hovered */}
+              {/* Tool Icon Badge ("Fg", 26x26px) at top-left under "01", fades in over 200ms ONLY while hovered */}
               <div
                 aria-hidden="true"
                 className={`absolute top-3.5 left-3.5 z-20 w-[26px] h-[26px] rounded-[5px] bg-[#001e36] border border-[#31a8ff]/35 flex items-center justify-center pointer-events-none transition-opacity duration-200 ease-out ${
@@ -84,48 +102,48 @@ export default function CaseStudies() {
 
                 {/* Full-Width 100% Display Bezel spanning edge-to-edge across the card */}
                 <div className="relative z-10 w-full flex-1 mt-12 sm:mt-14 border-t border-white/[0.12] bg-gradient-to-b from-white/[0.02] to-transparent flex flex-col justify-between overflow-hidden">
-                  {/* Top Web Navigation Bar inside Strata Systems Mockup */}
+                  {/* Top Web Navigation Bar inside Nexus Mockup */}
                   <div className="w-full flex items-center justify-between px-5 sm:px-8 pt-4 sm:pt-5 pb-3 text-[10px] sm:text-[11px] text-amber-100/75 border-b border-white/[0.06]">
                     <span className="font-mono font-semibold tracking-[0.24em] uppercase text-amber-100/90">
-                      STRATA•OS
+                      NEXUS•OS
                     </span>
                     <div className="hidden md:flex items-center gap-6 text-[10px] text-amber-100/55">
-                      <span>About</span>
-                      <span>Platform</span>
-                      <span>Mesh</span>
-                      <span>Telemetry</span>
+                      <span>Storefront</span>
+                      <span>Dashboard</span>
+                      <span>AI Concierge</span>
+                      <span>Analytics</span>
                     </div>
                     <span className="px-3 py-1 rounded-md bg-white/[0.06] border border-amber-200/20 text-[9px] sm:text-[10px] text-amber-100/85">
-                      Get Started
+                      Concept Preview
                     </span>
                   </div>
 
                   {/* Center Display Headline */}
                   <div className="text-center px-5 sm:px-10 my-auto pt-4">
                     <h3 className="text-2xl sm:text-3xl lg:text-[40px] font-light text-white tracking-tight leading-[1.14]">
-                      Autonomous Mesh for
+                      Next.js SaaS &amp; AI Agent
                       <br />
                       <span className="font-normal text-white">
-                        Modern Supervision.
+                        Commerce Architecture.
                       </span>
                     </h3>
                   </div>
 
-                  {/* Sculpted Obsidian Smart Telemetry Hardware Unit Cropped at Bottom */}
+                  {/* Sculpted Obsidian Smart Device Unit Cropped at Bottom */}
                   <div className="mx-auto mt-auto pt-4 flex justify-center w-full">
                     <div className="relative w-[200px] sm:w-[245px] h-[150px] sm:h-[185px] translate-y-4 rounded-t-[40px] bg-gradient-to-b from-[#2a2420] via-[#110f0e] to-[#050505] p-[3px] shadow-[0_-10px_45px_rgba(217,119,36,0.28)]">
                       <div className="w-full h-full rounded-t-[37px] bg-gradient-to-b from-[#171412] via-[#090808] to-[#020202] border-t border-x border-amber-200/25 flex flex-col items-center justify-start pt-5 sm:pt-7 px-5 relative overflow-hidden">
                         <div className="absolute -right-1 top-12 w-1.5 h-8 rounded-l bg-zinc-600/60" />
                         <span className="text-[8px] sm:text-[9px] font-mono tracking-[0.32em] uppercase text-amber-200/55">
-                          S T R A T A
+                          N E X U S
                         </span>
                         <span className="mt-2 text-2xl sm:text-[30px] font-semibold font-mono tracking-wider text-white tabular-nums">
-                          10:15
+                          99/100
                         </span>
                         <div className="mt-2.5 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/25">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                           <span className="text-[8px] font-mono text-amber-100/80 uppercase tracking-wider">
-                            99.99% SLA
+                            LIGHTHOUSE SPEED
                           </span>
                         </div>
                       </div>
@@ -140,17 +158,22 @@ export default function CaseStudies() {
           </div>
 
           {/* ==============================================================
-              PROJECT CARD 02 — 100% WIDTH LIGHT GRAY #e8e8e8 IMAGE CARD
-              (Axiom Studio: Zenith Health)
+              CONCEPT CARD 02 — 100% WIDTH LIGHT GRAY #e8e8e8 IMAGE CARD
+              (Aura Interactive Web Designing & UI/UX System Concept)
              ============================================================== */}
           <div className="flex flex-col w-full">
-            <span className="block text-[20px] leading-none font-light text-white tracking-tight mb-3.5 select-none">
-              02
-            </span>
+            <div className="flex items-baseline justify-between mb-3.5 select-none">
+              <span className="text-[20px] leading-none font-light text-white tracking-tight">
+                02
+              </span>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+                Concept • Web Designing &amp; UI/UX
+              </span>
+            </div>
 
             {/* 100% width image link — cursor effect is strictly clipped inside this image */}
             <Link
-              href="/work/zenith-health"
+              href="/work/aura-web-experience"
               onPointerEnter={() => setHoveredCard(2)}
               onPointerLeave={() =>
                 setHoveredCard((prev) => (prev === 2 ? null : prev))
@@ -162,8 +185,8 @@ export default function CaseStudies() {
               className="group relative block w-full h-[460px] sm:h-[520px] md:h-[580px] lg:h-[660px] bg-[#e8e8e8] overflow-hidden cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/85 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
             >
               <span className="sr-only">
-                View Work — Zenith Health Autonomous Clinical Diagnostics Case
-                Study
+                View Work — Aura Interactive Web Designing and UI/UX Concept
+                Build
               </span>
 
               {/* Tool Icon Badge ("Ps", 26x26px) at top-left under "02", fades in over 200ms ONLY while hovered */}
@@ -197,7 +220,7 @@ export default function CaseStudies() {
 
                     {/* Active Screen Viewport */}
                     <div className="relative w-full h-[240px] sm:h-[285px] md:h-[315px] lg:h-[355px] bg-[#0c131c] overflow-hidden flex flex-col justify-between">
-                      {/* Multi-Tone Industrial / Clinical Robotics Lab Perspective Scene */}
+                      {/* Multi-Tone Architectural Perspective Studio Scene */}
                       <svg
                         aria-hidden="true"
                         viewBox="0 0 600 380"
@@ -206,7 +229,7 @@ export default function CaseStudies() {
                       >
                         <defs>
                           <linearGradient
-                            id="zenithCeiling"
+                            id="auraCeiling"
                             x1="0"
                             y1="0"
                             x2="0"
@@ -217,7 +240,7 @@ export default function CaseStudies() {
                             <stop offset="100%" stopColor="#0c1117" />
                           </linearGradient>
                           <linearGradient
-                            id="zenithRailLight"
+                            id="auraRailLight"
                             x1="0"
                             y1="0"
                             x2="1"
@@ -231,7 +254,7 @@ export default function CaseStudies() {
                         <rect
                           width="600"
                           height="380"
-                          fill="url(#zenithCeiling)"
+                          fill="url(#auraCeiling)"
                         />
                         <g stroke="#2c3e52" strokeWidth="1.5" opacity="0.55">
                           <line x1="0" y1="58" x2="600" y2="58" />
@@ -257,12 +280,12 @@ export default function CaseStudies() {
                         />
                         <polygon
                           points="95,380 252,202 276,202 158,380"
-                          fill="url(#zenithRailLight)"
+                          fill="url(#auraRailLight)"
                           opacity="0.7"
                         />
                         <polygon
                           points="505,380 348,202 324,202 442,380"
-                          fill="url(#zenithRailLight)"
+                          fill="url(#auraRailLight)"
                           opacity="0.7"
                         />
                         <g stroke="#64748b" strokeWidth="2" opacity="0.55">
@@ -284,8 +307,8 @@ export default function CaseStudies() {
                           cx="196"
                           cy="205"
                           r="7"
-                          fill="#eab308"
-                          opacity="0.85"
+                          fill="#8587e3"
+                          opacity="0.9"
                         />
                         <rect
                           x="432"
@@ -303,41 +326,41 @@ export default function CaseStudies() {
                         className="absolute inset-0 bg-gradient-to-b from-[#070d14]/90 via-[#0a121b]/45 to-[#070b10]/70 pointer-events-none"
                       />
 
-                      {/* Dark Top Navbar inside Screen (produces sharp split-circle inversion on #e8e8e8 card) */}
+                      {/* Dark Top Navbar inside Screen */}
                       <div className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-2.5 bg-[#080e16]/90 border-b border-white/10 text-[9px] sm:text-[10px]">
                         <div className="flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-full bg-[#1d63dc] text-white font-bold text-[8px] flex items-center justify-center">
-                            ZH
+                          <span className="w-5 h-5 rounded-full bg-[#6b5fd6] text-white font-bold text-[8px] flex items-center justify-center">
+                            AX
                           </span>
                           <span className="font-mono font-semibold tracking-wider text-white">
-                            ZENITH
+                            AURA•UI
                           </span>
                         </div>
                         <div className="hidden md:flex items-center gap-3.5 text-[8px] font-mono uppercase tracking-wider text-zinc-300">
-                          <span>Platform</span>
-                          <span>Clinical AI</span>
-                          <span>Triage</span>
-                          <span>Compliance</span>
+                          <span>Web Design</span>
+                          <span>UI Tokens</span>
+                          <span>Motion</span>
+                          <span>Figma Kit</span>
                         </div>
                         <span className="px-2 py-0.5 rounded bg-white/10 text-white font-mono text-[8px]">
-                          Contact ↗
+                          Prototype ↗
                         </span>
                       </div>
 
                       {/* Center Screen Headline */}
                       <div className="relative z-10 my-auto text-center px-4 sm:px-8">
                         <h3 className="text-lg sm:text-xl lg:text-[26px] font-normal text-white tracking-tight leading-[1.2] drop-shadow">
-                          Creating the New
+                          Interactive Brand Design,
                           <br />
-                          Standard for Autonomous
+                          Clean UI/UX Systems &amp;
                           <br />
                           <span className="font-semibold">
-                            Clinical AI &amp; Diagnostics.
+                            60fps Motion Storytelling.
                           </span>
                         </h3>
 
                         <div className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-white/90 text-[#0b1017] text-[9px] font-semibold tracking-wide">
-                          <span>Learn More</span>
+                          <span>Explore Concept</span>
                           <ArrowUpRight className="w-2.5 h-2.5" />
                         </div>
                       </div>
@@ -353,7 +376,7 @@ export default function CaseStudies() {
                     </div>
                   </div>
 
-                  {/* Tapered Silver Aluminum Stand (cropped cleanly at bottom of card) */}
+                  {/* Tapered Silver Aluminum Stand */}
                   <div className="relative w-24 sm:w-28 h-12 sm:h-14 bg-gradient-to-b from-[#aeb2ba] via-[#cfd2d8] to-[#b5b9c2] [clip-path:polygon(14%_0%,86%_0%,100%_100%,0%_100%)] shadow-inner" />
                   <div className="w-36 sm:w-44 h-2 rounded-full bg-gradient-to-r from-black/10 via-[#d8dbe0] to-black/10 shadow-[0_4px_12px_rgba(0,0,0,0.22)]" />
                 </div>

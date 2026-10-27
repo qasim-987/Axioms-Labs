@@ -41,7 +41,7 @@ export default function ContactSection() {
     email: "",
     company: "",
     service: "",
-    budget: "$25k - $50k",
+    budget: "$2,500 - $5,000",
     message: "",
     botField: "",
     websiteUrl: "",
@@ -65,18 +65,18 @@ export default function ContactSection() {
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Work email is required";
+      newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid corporate email address";
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!formData.service) {
-      newErrors.service = "Please select a service area";
+      newErrors.service = "Please select a service";
     }
 
     if (!formData.message.trim() || formData.message.trim().length < 15) {
       newErrors.message =
-        "Please provide at least 15 characters describing your project requirements";
+        "Please share at least 15 characters describing your project";
     }
 
     setErrors(newErrors);
@@ -113,7 +113,7 @@ export default function ContactSection() {
           email: "",
           company: "",
           service: "",
-          budget: "$25k - $50k",
+          budget: "$2,500 - $5,000",
           message: "",
           botField: "",
           websiteUrl: "",
@@ -141,11 +141,11 @@ export default function ContactSection() {
     >
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          {/* Left Column: Context & Studio Coordinates */}
+          {/* Left Column: Context & Real Studio Locations */}
           <div className="lg:col-span-5 flex flex-col justify-between">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-brand-primary text-xs font-mono font-medium mb-4">
-                <span>START AN ENGAGEMENT</span>
+                <span>START YOUR PROJECT</span>
               </div>
               <SplitTextReveal
                 as="h2"
@@ -154,33 +154,31 @@ export default function ContactSection() {
                 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight"
               />
               <p className="mt-4 text-base text-zinc-400 leading-relaxed">
-                Whether you need an autonomous agent platform, an evaluation
-                harness, or a high-throughput Next.js digital flagship, our
-                engineering leads respond within one business day.
+                Whether you need a high-converting website, a polished UI/UX
+                design system, a custom full-stack web application, or an AI
+                agent for your business, our team replies within 24 hours.
               </p>
 
               <div className="mt-10 space-y-4">
                 <div className="flex items-center gap-3 text-xs text-zinc-300 font-mono">
                   <ShieldCheck className="w-5 h-5 text-brand-primary shrink-0" />
-                  <span>Strict Mutual NDA &amp; Zero-Retention Privacy</span>
+                  <span>100% Code &amp; Design Ownership + NDA Ready</span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-zinc-300 font-mono">
                   <Globe className="w-5 h-5 text-brand-primary shrink-0" />
-                  <span>Dedicated VPC, On-Prem &amp; Edge Sovereignty</span>
+                  <span>Nordic &amp; Global Delivery (Finland + Pakistan)</span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-zinc-300 font-mono">
                   <Mail className="w-5 h-5 text-brand-primary shrink-0" />
-                  <span>Direct Principal Architect Scoping (&lt; 24h SLA)</span>
+                  <span>Direct Founder &amp; Lead Engineer Response (&lt; 24h)</span>
                 </div>
               </div>
             </div>
 
             <div className="mt-12 pt-8 border-t border-white/[0.08] text-xs font-mono text-zinc-400 space-y-1.5">
               <div className="flex items-center gap-2 text-zinc-200">
-                <MapPin className="w-4 h-4 text-brand-primary" />
-                <span>
-                  Axiom Studio Headquarters: San Francisco • London • Remote
-                </span>
+                <MapPin className="w-4 h-4 text-brand-primary shrink-0" />
+                <span>Studios: Kuopio, Finland • Lahore, Pakistan</span>
               </div>
               <div>Inquiries: contact@axiomstudio.agency</div>
             </div>
@@ -195,7 +193,7 @@ export default function ContactSection() {
                     <CheckCircle2 className="w-8 h-8 text-emerald-400" />
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2">
-                    Architecture Inquiry Logged
+                    Project Inquiry Received
                   </h3>
                   {inquiryId && (
                     <div className="inline-block px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 font-mono text-xs text-brand-light mb-4">
@@ -203,8 +201,9 @@ export default function ContactSection() {
                     </div>
                   )}
                   <p className="text-zinc-400 text-sm max-w-md mx-auto mb-8 leading-relaxed">
-                    An Axiom Studio senior systems architect will review your
-                    technical parameters and reach out within 24 business hours.
+                    Thank you for reaching out! Our team at Axiom Studio will
+                    review your project details and get back to you within 24
+                    hours.
                   </p>
                   <button
                     type="button"
@@ -215,12 +214,12 @@ export default function ContactSection() {
                     }}
                     className="px-6 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs font-mono text-white transition-colors"
                   >
-                    Submit Another Inquiry
+                    Send Another Message
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                  {/* Dual Anti-Bot Honeypots (Hidden from humans & screen readers) */}
+                  {/* Dual Anti-Bot Honeypots */}
                   <div className="hidden" aria-hidden="true">
                     <input
                       type="text"
@@ -262,7 +261,7 @@ export default function ContactSection() {
                             firstName: e.target.value,
                           })
                         }
-                        placeholder="Marcus"
+                        placeholder="Alex"
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/50"
                       />
                       {errors.firstName && (
@@ -287,7 +286,7 @@ export default function ContactSection() {
                         onChange={(e) =>
                           setFormData({ ...formData, lastName: e.target.value })
                         }
-                        placeholder="Vance"
+                        placeholder="Lindholm"
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/50"
                       />
                     </div>
@@ -299,7 +298,7 @@ export default function ContactSection() {
                         htmlFor="contact-email"
                         className="block text-xs font-mono text-zinc-400 mb-2"
                       >
-                        Corporate Email *
+                        Email Address *
                       </label>
                       <input
                         id="contact-email"
@@ -308,7 +307,7 @@ export default function ContactSection() {
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
-                        placeholder="marcus@enterprise.io"
+                        placeholder="alex@company.com"
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/50"
                       />
                       {errors.email && (
@@ -324,7 +323,7 @@ export default function ContactSection() {
                         htmlFor="contact-company"
                         className="block text-xs font-mono text-zinc-400 mb-2"
                       >
-                        Organization
+                        Company / Brand
                       </label>
                       <input
                         id="contact-company"
@@ -333,7 +332,7 @@ export default function ContactSection() {
                         onChange={(e) =>
                           setFormData({ ...formData, company: e.target.value })
                         }
-                        placeholder="Strata Systems"
+                        placeholder="Your Company"
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/50"
                       />
                     </div>
@@ -345,7 +344,7 @@ export default function ContactSection() {
                         htmlFor="contact-service"
                         className="block text-xs font-mono text-zinc-400 mb-2"
                       >
-                        Primary Discipline *
+                        Service Needed *
                       </label>
                       <select
                         id="contact-service"
@@ -355,7 +354,7 @@ export default function ContactSection() {
                         }
                         className="w-full px-4 py-3 rounded-xl bg-[#0b0b10] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
                       >
-                        <option value="">Select Service Pillar...</option>
+                        <option value="">Select a Service...</option>
                         {servicesData.map((s) => (
                           <option key={s.id} value={s.title}>
                             {s.title}
@@ -375,7 +374,7 @@ export default function ContactSection() {
                         htmlFor="contact-budget"
                         className="block text-xs font-mono text-zinc-400 mb-2"
                       >
-                        Estimated Allocation
+                        Estimated Budget
                       </label>
                       <select
                         id="contact-budget"
@@ -385,12 +384,10 @@ export default function ContactSection() {
                         }
                         className="w-full px-4 py-3 rounded-xl bg-[#0b0b10] border border-white/10 text-sm text-white focus:outline-none focus:border-brand-primary"
                       >
-                        <option value="$25k - $50k">$25,000 – $50,000</option>
-                        <option value="$50k - $100k">$50,000 – $100,000</option>
-                        <option value="$100k - $250k">
-                          $100,000 – $250,000
-                        </option>
-                        <option value="$250k+">$250,000+ Enterprise SLA</option>
+                        <option value="$1,000 - $2,500">$1,000 – $2,500</option>
+                        <option value="$2,500 - $5,000">$2,500 – $5,000</option>
+                        <option value="$5,000 - $15,000">$5,000 – $15,000</option>
+                        <option value="$15,000+">$15,000+ Custom Scope</option>
                       </select>
                     </div>
                   </div>
@@ -400,7 +397,7 @@ export default function ContactSection() {
                       htmlFor="contact-message"
                       className="block text-xs font-mono text-zinc-400 mb-2"
                     >
-                      Architectural Scope &amp; Objectives *
+                      Project Goals &amp; Timeline *
                     </label>
                     <textarea
                       id="contact-message"
@@ -409,7 +406,7 @@ export default function ContactSection() {
                       onChange={(e) =>
                         setFormData({ ...formData, message: e.target.value })
                       }
-                      placeholder="Describe your target architecture, latency requirements, compliance perimeter (VPC/HIPAA/SOC2), and desired launch window..."
+                      placeholder="Tell us about the website, UI/UX design, web app, or AI agent you want to build and your target launch timeline..."
                       className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/50"
                     />
                     {errors.message && (
@@ -428,11 +425,11 @@ export default function ContactSection() {
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Transmitting to Axiom Studio Engine...</span>
+                        <span>Sending Inquiry...</span>
                       </>
                     ) : (
                       <>
-                        <span>Submit Architecture Inquiry</span>
+                        <span>Send Project Inquiry</span>
                         <Send className="w-4 h-4" />
                       </>
                     )}

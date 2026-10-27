@@ -51,21 +51,21 @@ export default function BlogIndexPage() {
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono uppercase tracking-wider text-brand-primary mb-6"
           >
             <FileText className="w-3.5 h-3.5" />
-            Engineering Blueprints &amp; Evals
+            Axiom Studio Notes &amp; Guides
           </motion.div>
 
           <SplitTextReveal
             as="h1"
-            text="Insights from the Frontiers of AI Systems"
-            accentFromWordIndex={3}
+            text="Insights on Web, UI/UX & Practical AI"
+            accentFromWordIndex={4}
             triggerOnLoad
             className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight text-center"
           />
 
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            In-depth technical writeups on multi-agent orchestration, model
-            evaluation frameworks, hardware economics, and enterprise AI
-            production architecture.
+            Practical guides from our design and engineering team on modern web
+            development, high-converting web design, scalable UI/UX systems,
+            and AI agents.
           </p>
         </div>
 

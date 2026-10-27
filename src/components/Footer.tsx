@@ -5,7 +5,7 @@ import Link from "next/link";
 import { footerLinks } from "@/data/navigation";
 import { checkBackendHealth, BackendHealthStatus } from "@/lib/apiClient";
 import SplitTextReveal from "./SplitTextReveal";
-import { Clock, ArrowUp, ArrowRight, Server } from "lucide-react";
+import { Clock, ArrowUp, ArrowRight, Server, MapPin } from "lucide-react";
 
 export default function Footer() {
   const [timeString, setTimeString] = useState<string>("--:--:--");
@@ -58,7 +58,7 @@ export default function Footer() {
         <div className="pb-16 mb-16 border-b border-white/[0.08] flex flex-col items-center text-center gap-7">
           <div className="max-w-2xl mx-auto">
             <span className="text-xs font-mono uppercase tracking-widest text-brand-primary block mb-3">
-              READY TO ARCHITECT?
+              READY TO BUILD?
             </span>
             <SplitTextReveal
               as="h2"
@@ -92,12 +92,9 @@ export default function Footer() {
             <div>
               <span className="font-sans font-bold text-lg text-white tracking-tight flex items-center gap-2">
                 AXIOM STUDIO
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.06] text-zinc-400 border border-white/[0.08]">
-                  v2.4
-                </span>
               </span>
               <p className="text-xs text-zinc-400 font-mono mt-0.5">
-                San Francisco • London • Serving Enterprise Clients Globally
+                Kuopio, Finland • Lahore, Pakistan • Serving Clients Globally
               </p>
             </div>
           </div>
@@ -133,8 +130,8 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* 5-Column Architectural Directory */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-16">
+        {/* Clean 4-Column Directory */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
           <div>
             <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
               Services
@@ -155,7 +152,7 @@ export default function Footer() {
 
           <div>
             <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
-              Case Studies
+              Concept Showcase
             </h4>
             <ul className="space-y-2.5 text-xs">
               {footerLinks.work.map((item, idx) => (
@@ -173,43 +170,7 @@ export default function Footer() {
 
           <div>
             <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
-              Resources
-            </h4>
-            <ul className="space-y-2.5 text-xs">
-              {footerLinks.resources.map((item, idx) => (
-                <li key={idx}>
-                  <Link
-                    href={item.href}
-                    className="hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
-              Demos &amp; Labs
-            </h4>
-            <ul className="space-y-2.5 text-xs">
-              {footerLinks.demos.map((item, idx) => (
-                <li key={idx}>
-                  <Link
-                    href={item.href}
-                    className="hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
-              Company
+              Studio
             </h4>
             <ul className="space-y-2.5 text-xs">
               {footerLinks.company.map((item, idx) => (
@@ -223,10 +184,26 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-semibold mb-4">
+              Locations &amp; Direct
+            </h4>
+            <ul className="space-y-2.5 text-xs">
+              <li className="flex items-center gap-2 text-zinc-300">
+                <MapPin className="w-3.5 h-3.5 text-brand-primary shrink-0" />
+                <span>Kuopio, Finland</span>
+              </li>
+              <li className="flex items-center gap-2 text-zinc-300">
+                <MapPin className="w-3.5 h-3.5 text-brand-primary shrink-0" />
+                <span>Lahore, Pakistan</span>
+              </li>
+            </ul>
             <div className="mt-5 pt-4 border-t border-white/[0.06] text-xs font-mono text-zinc-400">
               <a
                 href="mailto:contact@axiomstudio.agency"
-                className="hover:text-brand-light transition-colors"
+                className="hover:text-brand-light transition-colors break-all"
               >
                 contact@axiomstudio.agency
               </a>
@@ -237,7 +214,7 @@ export default function Footer() {
         {/* Legal & Back-to-Top Bottom Bar */}
         <div className="pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <div className="flex flex-wrap items-center gap-3">
-            <span>© {year} Axiom Studio Inc. All rights reserved.</span>
+            <span>© {year} Axiom Studio. All rights reserved.</span>
             <span className="hidden sm:inline text-zinc-700">•</span>
             {footerLinks.legal.map((item, idx) => (
               <Link

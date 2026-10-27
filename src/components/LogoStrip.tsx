@@ -7,14 +7,14 @@ export default function LogoStrip() {
   return (
     <section
       className="pt-14 pb-0 border-y border-white/[0.06] bg-[#040405] overflow-hidden relative"
-      aria-label="Trusted Industry Partners and Clients"
+      aria-label="Core Engineering and Design Stack"
     >
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 mb-6 text-center">
         <span className="text-xs font-mono uppercase tracking-widest text-zinc-400 block">
-          Trusted by Industry Leaders
+          Our Core Engineering &amp; Design Stack
         </span>
         <span className="text-[11px] text-zinc-500 mt-1 block">
-          Powering Autonomous Innovation for Engineering Teams Worldwide
+          Powering Fast Websites, Intuitive UI/UX &amp; Autonomous AI Agents
         </span>
       </div>
 
@@ -36,7 +36,7 @@ export default function LogoStrip() {
         </div>
       </div>
 
-      {/* Centered Planetary Horizon Rim-Light Arc (clientsLightCurve parity) */}
+      {/* Centered Planetary Horizon Rim-Light Arc */}
       <div
         aria-hidden="true"
         className="w-full flex justify-center overflow-hidden pointer-events-none"

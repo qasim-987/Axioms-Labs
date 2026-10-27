@@ -40,7 +40,7 @@ export default function Hero() {
         }}
       />
 
-      {/* LAYER 2: Centered Giant Ghost Watermark (fits 100% centered inside viewport without edge clipping) */}
+      {/* LAYER 2: Centered Giant Ghost Watermark */}
       <div
         aria-hidden="true"
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 px-8"
@@ -87,7 +87,7 @@ export default function Hero() {
             </span>
           </motion.h1>
 
-          {/* Centered Subtitle */}
+          {/* Centered Subtitle tailored to Web Dev, Web Design, UI/UX & AI Agents */}
           <motion.p
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -98,8 +98,8 @@ export default function Hero() {
             }}
             className="max-w-xl mx-auto text-center text-sm sm:text-base md:text-lg text-white/85 leading-relaxed font-normal mb-8"
           >
-            We empower organizations with AI that turns complex challenges into
-            real-world outcomes.
+            We craft high-converting websites, intuitive UI/UX interfaces,
+            scalable web applications, and custom AI agents for modern brands.
           </motion.p>
 
           {/* Centered Primary CTA Pill */}
@@ -129,7 +129,7 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Centered Bottom Metrics Strip with Symmetrical Side Breathing Space */}
+        {/* Centered Bottom Metrics Strip (Honest Studio Standards) */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -139,12 +139,12 @@ export default function Hero() {
           {/* Stat 1 */}
           <div className="flex items-center gap-3 text-left">
             <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
-              <RollingNumber value={50} duration={1700} suffix="+" />
+              <RollingNumber value={4} duration={1400} suffix="" />
             </span>
             <span className="text-xs text-zinc-400 font-medium leading-snug">
-              Projects
+              Core Studio
               <br />
-              Delivered
+              Disciplines
             </span>
           </div>
 
@@ -156,12 +156,12 @@ export default function Hero() {
           {/* Stat 2 */}
           <div className="flex items-center gap-3 text-left">
             <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
-              <RollingNumber value={100} duration={1900} suffix="%" />
+              <RollingNumber value={99} duration={1800} suffix="+" />
             </span>
             <span className="text-xs text-zinc-400 font-medium leading-snug">
-              Client
+              Lighthouse
               <br />
-              Satisfaction
+              Performance
             </span>
           </div>
 
@@ -176,15 +176,15 @@ export default function Hero() {
               24/7
             </span>
             <span className="text-xs text-zinc-400 font-medium leading-snug">
-              Support
+              Direct Team
               <br />
-              Available
+              Support
             </span>
           </div>
         </motion.div>
       </div>
 
-      {/* Floating Quick-Contact Badge (Bottom-Right Corner, clear of centered stats) */}
+      {/* Floating Quick-Contact Badge */}
       <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
         <Link
           href="/contact"

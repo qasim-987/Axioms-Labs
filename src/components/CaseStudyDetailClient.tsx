@@ -11,17 +11,13 @@ import SpotlightCard from "@/components/SpotlightCard";
 import CaseStudyScrollShowcase from "@/components/CaseStudyScrollShowcase";
 import { ClientCaseStudy } from "@/data/clients";
 import { MOTION_EASE } from "@/lib/motionTokens";
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle2,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 
 const dialGauges = [
-  { label: "Availability SLA", display: "99.99%", pct: 99 },
-  { label: "Eval Gate Fidelity", display: "99.4%", pct: 96 },
-  { label: "Latency Budget", display: "<85ms", pct: 92 },
-  { label: "Zero-Trust Isolation", display: "100%", pct: 100 },
+  { label: "Lighthouse Speed", display: "99/100", pct: 99 },
+  { label: "UI Token Consistency", display: "100%", pct: 100 },
+  { label: "Edge Latency", display: "<85ms", pct: 94 },
+  { label: "Responsive & A11y", display: "WCAG AA", pct: 98 },
 ];
 
 export default function CaseStudyDetailClient({
@@ -53,7 +49,7 @@ export default function CaseStudyDetailClient({
             </Link>
             <span>/</span>
             <Link href="/work" className="hover:text-white transition-colors">
-              Work
+              Concept Showcase
             </Link>
             <span>/</span>
             <span className="text-brand-primary font-medium">
@@ -102,7 +98,7 @@ export default function CaseStudyDetailClient({
             </motion.p>
           </div>
 
-          {/* Highlight Impact Stat Banner + Scroll-Driven Radial Dial Gauges */}
+          {/* Highlight Benchmark Banner + Scroll-Driven Radial Dial Gauges */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -121,11 +117,11 @@ export default function CaseStudyDetailClient({
               </div>
               <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3.5 py-2 rounded-full border border-emerald-500/20 shrink-0 self-start sm:self-auto">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Production Benchmark Verified</span>
+                <span>Axiom Studio Internal Concept Build</span>
               </div>
             </div>
 
-            {/* 4 Scroll-Driven Radial SVG Dial Gauges (Talitrix Parity) */}
+            {/* 4 Scroll-Driven Radial SVG Dial Gauges */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {dialGauges.map((g, idx) => {
                 const targetOffset = circumference * (1 - g.pct / 100);
@@ -180,17 +176,17 @@ export default function CaseStudyDetailClient({
             </div>
           </motion.div>
 
-          {/* Executive Summary */}
+          {/* Concept Overview */}
           <div className="mb-16">
             <h2 className="text-xs font-mono uppercase tracking-widest text-brand-primary mb-3 font-semibold">
-              Executive Summary
+              Concept Overview
             </h2>
             <p className="text-lg text-zinc-200 leading-relaxed">
               {study.summary}
             </p>
           </div>
 
-          {/* Challenge & Solution Spotlight Grid */}
+          {/* Problem Statement & Studio Execution Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             <SpotlightCard
               spotlightColor="rgba(251, 191, 36, 0.12)"
@@ -198,10 +194,10 @@ export default function CaseStudyDetailClient({
             >
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-semibold mb-3 block">
-                  The Operational Bottleneck
+                  The UX &amp; Engineering Problem
                 </span>
                 <h3 className="text-xl font-bold text-white mb-4">
-                  Challenge &amp; Blast Radius
+                  Why Most Teams Struggle Here
                 </h3>
                 <p className="text-zinc-300 text-sm leading-relaxed">
                   {study.challenge}
@@ -215,10 +211,10 @@ export default function CaseStudyDetailClient({
             >
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-brand-primary font-semibold mb-3 block">
-                  Engineered Architecture
+                  Our Studio Blueprint
                 </span>
                 <h3 className="text-xl font-bold text-white mb-4">
-                  The Axiom Studio Solution
+                  How Axiom Studio Built It
                 </h3>
                 <p className="text-zinc-300 text-sm leading-relaxed">
                   {study.solution}
@@ -227,18 +223,18 @@ export default function CaseStudyDetailClient({
             </SpotlightCard>
           </div>
 
-          {/* Talitrix-Style Pinned <canvas> Scroll-Scrubbed Architecture Disassembly */}
+          {/* Pinned <canvas> Scroll-Scrubbed Architecture Disassembly */}
           <CaseStudyScrollShowcase study={study} />
 
-          {/* Architecture Highlights (3D Tilt Spotlight Cards) */}
+          {/* Architecture Highlights */}
           {study.architectureHighlights &&
             study.architectureHighlights.length > 0 && (
               <div className="mb-16">
                 <h2 className="text-xs font-mono uppercase tracking-widest text-brand-primary mb-3 font-semibold">
-                  Technical Highlights
+                  Craft &amp; Engineering Details
                 </h2>
                 <h3 className="text-2xl font-bold text-white mb-6">
-                  Under the Hood: Key Engineering Decisions
+                  Under the Hood: Key Design &amp; Code Decisions
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {study.architectureHighlights.map((hl, i) => (
@@ -265,13 +261,13 @@ export default function CaseStudyDetailClient({
               </div>
             )}
 
-          {/* Quantified Results */}
+          {/* Prototype Benchmarks */}
           <div className="mb-16 p-8 sm:p-10 rounded-2xl bg-[#08080c] border border-white/[0.08]">
             <h2 className="text-xs font-mono uppercase tracking-widest text-brand-primary mb-2 font-semibold">
-              Measurable Outcomes
+              Prototype Benchmarks
             </h2>
             <h3 className="text-2xl font-bold text-white mb-6">
-              Quantified Production Impact
+              What This Architecture Delivers for Clients
             </h3>
             <div className="grid grid-cols-1 gap-4">
               {study.results.map((result, idx) => (
@@ -299,7 +295,7 @@ export default function CaseStudyDetailClient({
           {/* Tech Stack Pills */}
           <div className="mb-16">
             <h3 className="text-xs font-mono uppercase tracking-widest text-zinc-400 mb-4">
-              Technologies &amp; Frameworks Deployed
+              Tools &amp; Stack Used in This Concept
             </h3>
             <div className="flex flex-wrap gap-2">
               {study.techStack.map((tech, idx) => (
@@ -313,7 +309,7 @@ export default function CaseStudyDetailClient({
             </div>
           </div>
 
-          {/* Previous / Next Case Study Navigation */}
+          {/* Previous / Next Concept Navigation */}
           <div className="pt-10 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-6 mb-16">
             <Link
               href={`/work/${prevStudy.slug}`}
@@ -321,10 +317,10 @@ export default function CaseStudyDetailClient({
             >
               <span className="text-xs font-mono text-zinc-500 mb-2 flex items-center gap-1.5">
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                Previous Case Study
+                Previous Concept Build
               </span>
               <span className="text-base font-semibold text-white group-hover:text-brand-light transition-colors">
-                {prevStudy.client}: {prevStudy.title}
+                {prevStudy.title}
               </span>
             </Link>
 
@@ -333,11 +329,11 @@ export default function CaseStudyDetailClient({
               className="p-5 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:border-brand-primary/40 transition-all group flex flex-col justify-between text-right"
             >
               <span className="text-xs font-mono text-zinc-500 mb-2 flex items-center justify-end gap-1.5">
-                Next Case Study
+                Next Concept Build
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </span>
               <span className="text-base font-semibold text-white group-hover:text-brand-light transition-colors">
-                {nextStudy.client}: {nextStudy.title}
+                {nextStudy.title}
               </span>
             </Link>
           </div>
@@ -346,18 +342,18 @@ export default function CaseStudyDetailClient({
           <div className="p-8 rounded-2xl bg-gradient-to-r from-brand-primary/10 to-transparent border border-brand-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div>
               <h4 className="text-xl font-bold text-white mb-1">
-                Explore an architecture tailored to your data
+                Want something like this built for your brand?
               </h4>
               <p className="text-xs text-zinc-400">
-                Schedule a direct 45-minute architectural scoping session with
-                our engineering leads.
+                Book a free discovery call with our team in Kuopio &amp; Lahore
+                to scope your website, UI/UX design, or AI agent.
               </p>
             </div>
             <Link
               href="/contact"
               className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-white text-black hover:bg-zinc-200 transition-colors shrink-0"
             >
-              Book Scoping Call
+              Start Your Project
             </Link>
           </div>
         </div>
