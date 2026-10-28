@@ -1,23 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { clientsData, ClientCaseStudy } from "@/data/clients";
 import SplitTextReveal from "./SplitTextReveal";
 import ViewWorkCursor from "./ViewWorkCursor";
-import { MOTION_EASE } from "@/lib/motionTokens";
+import { MOTION_EASE, MOTION_SPRING } from "@/lib/motionTokens";
 import {
   ArrowUpRight,
   Sparkles,
   CheckCircle2,
-  Activity,
-  Bot,
   Layers,
-  ShieldCheck,
   Terminal,
   TrendingUp,
 } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
  * 100%-Width Studio Concept Visual Preview for Card 01 (Dark Obsidian + Electric Blue) & Card 02 (Cool Light Surface iMac)
@@ -283,19 +284,48 @@ function ProjectShowcaseVisual({
   );
 }
 
-const secondaryIcons = [
-  <Layers key="layers" className="w-4 h-4 text-[#3186FF]" />,
-  <Bot key="bot" className="w-4 h-4 text-[#00B95C]" />,
-  <ShieldCheck key="shield" className="w-4 h-4 text-[#FC413D]" />,
-  <Activity key="activity" className="w-4 h-4 text-[#FBBC04]" />,
-];
-
 export default function CaseStudies() {
   const featuredShowcase = clientsData.slice(0, 2);
-  const additionalStudies = clientsData.slice(2);
+  const allStudies = clientsData.slice(0, 4);
+  const [selectedIdx, setSelectedIdx] = useState<number>(2);
+  const activeExplorerStudy = allStudies[selectedIdx] || allStudies[0];
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const cardParallaxRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (prefersReduced || !sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      cardParallaxRefs.current.forEach((el) => {
+        if (!el) return;
+        gsap.fromTo(
+          el,
+          { yPercent: -3.5, scale: 1.06 },
+          {
+            yPercent: 3.5,
+            scale: 1.06,
+            ease: "none",
+            scrollTrigger: {
+              trigger: el.parentElement,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.6,
+            },
+          }
+        );
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="work"
       className="relative py-24 sm:py-32 bg-[#FFFFFF] border-t border-[#212226]/[0.07]"
     >
@@ -309,16 +339,15 @@ export default function CaseStudies() {
             </div>
             <SplitTextReveal
               as="h2"
-              text="Selected Concept Showcases"
-              accentFromWordIndex={2}
+              text="Case Studies"
+              accentFromWordIndex={1}
               accentClassName="text-[#3186FF]"
               className="text-3xl sm:text-5xl font-bold tracking-tight text-[#121317]"
             />
           </div>
           <p className="text-[#45474D] max-w-md text-sm sm:text-base leading-relaxed">
-            Explore our studio-crafted concept builds demonstrating our
-            production standards in Web Development, Web Designing, UI/UX
-            Design, and AI Agents.
+            Proven engineering standards, measurable craft—explore the Studio
+            Concept Builds we&apos;ve architected across Web, UI/UX, and AI.
           </p>
         </div>
 
@@ -339,11 +368,11 @@ export default function CaseStudies() {
             return (
               <motion.div
                 key={study.slug}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
+                initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
+                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                viewport={{ once: true, amount: 0.18 }}
                 transition={{
-                  duration: 0.7,
+                  duration: 0.78,
                   delay: idx * 0.12,
                   ease: MOTION_EASE.cinematicOut,
                 }}
@@ -355,12 +384,19 @@ export default function CaseStudies() {
                   aria-label={`View Concept Build: ${study.client} — ${study.title}`}
                   className="group relative block w-full aspect-[16/10] rounded-[24px] overflow-hidden border border-[#212226]/[0.1] hover:border-[#3186FF]/40 shadow-[0_12px_36px_rgba(18,19,23,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] cursor-pointer"
                 >
-                  {/* 100%-Width Visual Canvas */}
-                  <div className="w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]">
-                    <ProjectShowcaseVisual
-                      study={study}
-                      variant={idx === 0 ? "dark" : "light"}
-                    />
+                  {/* 100%-Width Scroll-Parallax Visual Canvas */}
+                  <div
+                    ref={(el) => {
+                      cardParallaxRefs.current[idx] = el;
+                    }}
+                    className="w-full h-full will-change-transform"
+                  >
+                    <div className="w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]">
+                      <ProjectShowcaseVisual
+                        study={study}
+                        variant={idx === 0 ? "dark" : "light"}
+                      />
+                    </div>
                   </div>
 
                   {/* Strictly Image-Clipped "View Work" Difference-Blend Cursor */}
@@ -390,67 +426,188 @@ export default function CaseStudies() {
           })}
         </div>
 
-        {/* Additional Concept Builds Strip (UI/UX Design System & AI Agent Concepts) */}
-        {additionalStudies.length > 0 && (
-          <div className="mt-14 pt-12 border-t border-[#212226]/[0.08]">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#6A6A71]">
-                MORE STUDIO CONCEPTS (03 — 04)
-              </span>
-              <Link
-                href="/work"
-                className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#121317] hover:text-[#3186FF] transition-colors"
-              >
-                <span>Explore Full Concept Index</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
+        {/* =====================================================================
+            ANTIMATTER-STYLE INTERACTIVE SPLIT-STAGE INDEX (01 — 04)
+            Left interactive numbered rail (`layoutId` spring indicator + hover shift)
+            synced with Right blur-to-sharp `AnimatePresence` Obsidian `.card.dark` stage
+           ===================================================================== */}
+        <div className="mt-20 pt-16 border-t border-[#212226]/[0.08]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#45474D]">
+              INTERACTIVE CONCEPT INDEX (01 — 04)
+            </span>
+            <Link
+              href="/work"
+              className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#121317] hover:text-[#3186FF] transition-colors font-semibold"
+            >
+              <span>View All Concept Builds</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+            {/* Left Interactive 01-04 Index Rail */}
+            <div className="lg:col-span-5 divide-y divide-[#212226]/[0.08] border-y border-[#212226]/[0.08]">
+              {allStudies.map((study, idx) => {
+                const isSelected = idx === selectedIdx;
+                const num = String(idx + 1).padStart(2, "0");
+
+                return (
+                  <button
+                    key={study.slug}
+                    type="button"
+                    onMouseEnter={() => setSelectedIdx(idx)}
+                    onFocus={() => setSelectedIdx(idx)}
+                    onClick={() => setSelectedIdx(idx)}
+                    className={`relative w-full text-left py-5 px-4 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] ${
+                      isSelected ? "bg-[#F8F9FC]" : "hover:bg-[#F8F9FC]/65"
+                    }`}
+                  >
+                    {isSelected && (
+                      <motion.span
+                        layoutId="activeCaseStudyBar"
+                        transition={MOTION_SPRING.snappy}
+                        className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#121317]"
+                      />
+                    )}
+
+                    <div
+                      className={`flex items-start justify-between gap-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                        isSelected
+                          ? "translate-x-2"
+                          : "group-hover:translate-x-1"
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`font-mono text-xs font-bold tabular-nums transition-colors ${
+                              isSelected ? "text-[#3186FF]" : "text-[#45474D]"
+                            }`}
+                          >
+                            {num}
+                          </span>
+                          <span
+                            className={`text-lg font-bold tracking-tight transition-colors ${
+                              isSelected
+                                ? "text-[#121317]"
+                                : "text-[#45474D] group-hover:text-[#121317]"
+                            }`}
+                          >
+                            {study.client}
+                          </span>
+                        </div>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 pl-7">
+                          <span className="text-[11px] font-mono text-[#45474D]">
+                            {study.category}
+                          </span>
+                          <span className="text-[#CDD4DC]">•</span>
+                          <span className="text-[11px] font-mono text-[#6A6A71]">
+                            {study.techStack.slice(0, 2).join(" / ")}
+                          </span>
+                        </div>
+                      </div>
+
+                      <ArrowUpRight
+                        className={`w-4 h-4 shrink-0 mt-1 transition-all duration-300 ${
+                          isSelected
+                            ? "text-[#121317] translate-x-0.5 -translate-y-0.5"
+                            : "text-[#B2BBC5] group-hover:text-[#121317]"
+                        }`}
+                      />
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {additionalStudies.map((study, idx) => (
-                <Link
-                  key={study.slug}
-                  href={`/work/${study.slug}`}
-                  className="group rounded-2xl p-6 bg-[#F8F9FC] hover:bg-[#EFF2F7] border border-[#212226]/[0.07] hover:border-[#3186FF]/30 transition-all flex items-center justify-between gap-4"
-                >
-                  <div className="flex items-start gap-4 min-w-0">
-                    <span className="text-lg font-mono font-semibold text-[#3186FF] pt-0.5 tabular-nums">
-                      {String(idx + 3).padStart(2, "0")}
-                    </span>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        {secondaryIcons[idx % secondaryIcons.length]}
-                        <span className="text-base font-bold text-[#121317] group-hover:text-[#3186FF] transition-colors truncate">
-                          {study.client}
-                        </span>
-                        <span className="hidden sm:inline-block text-[11px] font-mono text-[#6A6A71]">
-                          • {study.category}
-                        </span>
-                      </div>
-                      <p className="text-xs sm:text-sm text-[#45474D] line-clamp-1">
-                        {study.title}
-                      </p>
-                    </div>
-                  </div>
+            {/* Right Synchronized Obsidian `.card.dark` Visual Preview Stage */}
+            <div className="lg:col-span-7">
+              <div className="relative h-full min-h-[340px] rounded-[28px] bg-[#121317] text-white border border-[#212226]/[0.12] p-7 sm:p-9 overflow-hidden shadow-[0_24px_60px_rgba(18,19,23,0.15)] flex flex-col justify-between">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -top-28 -right-20 w-72 h-72 rounded-full blur-3xl opacity-40"
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(49,134,255,0.55) 0%, rgba(116,155,255,0.2) 52%, transparent 74%)",
+                  }}
+                />
 
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="text-right hidden sm:block">
-                      <div className="text-base font-extrabold font-mono text-[#121317]">
-                        {study.impactMetric}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeExplorerStudy.slug}
+                    initial={{ opacity: 0, scale: 1.035, filter: "blur(8px)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, scale: 0.985, filter: "blur(5px)" }}
+                    transition={{
+                      duration: 0.46,
+                      ease: MOTION_EASE.cinematicOut,
+                    }}
+                    className="relative z-10 flex flex-col justify-between h-full gap-6"
+                  >
+                    <div>
+                      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+                        <span className="text-xs font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-white/[0.08] border border-white/10 text-[#749BFF]">
+                          {activeExplorerStudy.client} •{" "}
+                          {activeExplorerStudy.category}
+                        </span>
+                        <span className="text-xs font-mono text-[#B2BBC5]">
+                          {activeExplorerStudy.duration}
+                        </span>
                       </div>
-                      <div className="text-[10px] font-mono text-[#6A6A71]">
-                        Target Spec
+
+                      <div className="p-5 rounded-2xl bg-white/[0.04] border border-white/10 mb-5 flex items-center justify-between gap-4">
+                        <div>
+                          <div className="text-3xl sm:text-4xl font-extrabold font-mono text-white tracking-tight">
+                            {activeExplorerStudy.impactMetric}
+                          </div>
+                          <div className="text-xs text-[#B2BBC5] mt-1">
+                            {activeExplorerStudy.impactLabel}
+                          </div>
+                        </div>
+                        <div className="w-11 h-11 rounded-2xl bg-[#3186FF]/20 border border-[#3186FF]/35 flex items-center justify-center shrink-0">
+                          <TrendingUp className="w-5 h-5 text-[#749BFF]" />
+                        </div>
+                      </div>
+
+                      <h3 className="text-xl sm:text-2xl font-bold text-white mb-2.5 tracking-tight">
+                        {activeExplorerStudy.title}
+                      </h3>
+                      <p className="text-sm text-[#B2BBC5] leading-relaxed mb-5">
+                        {activeExplorerStudy.summary}
+                      </p>
+
+                      <div className="flex flex-wrap gap-1.5">
+                        {activeExplorerStudy.techStack.map((t) => (
+                          <span
+                            key={t}
+                            className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-white/[0.06] border border-white/10 text-[#E6EAF0]"
+                          >
+                            {t}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <div className="w-9 h-9 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.1] group-hover:bg-[#121317] flex items-center justify-center transition-colors shadow-sm">
-                      <ArrowUpRight className="w-4 h-4 text-[#121317] group-hover:text-white transition-colors" />
+
+                    <div className="pt-5 border-t border-white/10 flex items-center justify-between gap-4">
+                      <span className="text-xs font-mono text-[#B2BBC5] inline-flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5 text-[#3186FF]" />
+                        Studio Concept Architecture
+                      </span>
+                      <Link
+                        href={`/work/${activeExplorerStudy.slug}`}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#FFFFFF] hover:bg-[#F0F1F5] text-[#121317] text-xs font-semibold transition-all hover:scale-[1.02]"
+                      >
+                        <span>Explore Concept</span>
+                        <ArrowUpRight className="w-4 h-4" />
+                      </Link>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </section>
   );

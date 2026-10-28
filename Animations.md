@@ -141,11 +141,12 @@ In RGB color space, difference blending computes $C_\text{result} = |C_\text{bac
 
 ### Particle-Morph "Our Services" Section (`src/lib/particleEngine.ts` + `src/components/ServicesGrid.tsx` + `src/components/ServicesParticleCanvas.tsx`)
 
-#### 1. Shared Particle Engine & Hover + Scroll Synchronization
+#### 1. Shared Particle Engine, Black & White + Antigravity Palette & Hover + Scroll Synchronization
 - **Shared Particle Engine (`src/lib/particleEngine.ts`)**: Extracted from `ParticleSphereHero.tsx` and shared across both the Hero sphere and `#services` (`DESKTOP_COUNT: 7200`, `MOBILE_COUNT: 3600`, `PerspectiveCamera(45, w/h, 0.1, 2500)` at `z = 800`, DPR capped at `2`, `generateFibonacciSphereBuffer`, smoothed pointer repulsion/swirl, `ResizeObserver`, `IntersectionObserver` + `visibilitychange` pause, and full WebGL resource disposal).
-- **Single Source of Truth (`activeIndex = hoverIndex ?? scrollIndex`)**:
-  - **Scroll Scrubbing + Soft Snap (`>= 1024px`)**: `GSAP ScrollTrigger` (`pin: true, scrub: true, anticipatePin: 1`, `snap` to `STEP_SNAP_POINTS`) pins `#services` for `4 × 92vh = 368vh` and drives `evaluateServicesMasterTimeline`.
-  - **Hover & Keyboard Focus Override (`@media (hover: hover) and (pointer: fine)` + `focus`)**: Hovering a card (after `HOVER_INTENT_DELAY_MS = 100ms`) or focusing it via keyboard sets `hoverIndex`, snapshots live particle positions so queued morphs never pile up or snap, morphs through the dust-sphere midpoint into that card's 3D shape with a subtle hover energy boost (`+4.5%` swell, `+14%` brightness, `+48%` spin/sway), and expands the hovered card. Leaving clears `hoverIndex` after `HOVER_LEAVE_DELAY_MS = 250ms` and morphs smoothly back to the scroll-implied state. Scrolling to a new step while hovered clears `hoverIndex` immediately (`scroll wins`) until the pointer moves again.
+- **Black & White + Antigravity (`antigravity.google`) Rendering**: Uses `THREE.NormalBlending` (`ANTIGRAVITY_BW_PALETTE`: Obsidian `#121317`, Electric Blue `#3186FF`, Charcoal `#202124`, Deep Sapphire `#1E3A8A`, Periwinkle `#749BFF`, plus subtle Coral `#FC413D` / Signal Yellow `#FBBC04` / Vivid Green `#00B95C` spark particles) so all 5 shapes stay razor-sharp against `#FFFFFF` and `#F8F9FC` surfaces.
+- **Single Source of Truth (`activeIndex = hoverIndex ?? scrollIndex`) & Snap-Free Lenis Scrub**:
+  - **Smooth Scroll Scrubbing (`>= 1024px`)**: `GSAP ScrollTrigger` (`pin: true, scrub: 0.5, anticipatePin: 1`, zero `snap` conflict with `Lenis`) pins `#services` for `4 × 82vh = 328vh` (`STEP_HOLD_PROGRESS`) and drives `evaluateServicesMasterTimeline`.
+  - **Hover & Keyboard Focus Override (`@media (hover: hover) and (pointer: fine)` + `focus`)**: Hovering a card (after `HOVER_INTENT_DELAY_MS = 90ms`) or focusing it via keyboard sets `hoverIndex`, snapshots live particle positions so queued morphs never pile up or snap, morphs through the dust-sphere midpoint into that card's 3D shape with a subtle hover energy boost (`+4.5%` swell, `+16%` Antigravity Electric Blue shift, `+48%` spin/sway), and expands the hovered card into `.card.dark` (`#121317` -> `#1A1B22`). Leaving clears `hoverIndex` after `HOVER_LEAVE_DELAY_MS = 240ms` and morphs smoothly back to the scroll-implied state. Scrolling to a new step while hovered clears `hoverIndex` immediately (`scroll wins`) until the pointer moves again.
 - **5 GPU Point-Cloud Targets (`src/lib/serviceParticleShapes.ts`)**:
   - Default / Initial (`blob`): Shared Fibonacci + core-weighted stardust sphere matching `ParticleSphereHero`.
   - Step 1 (`wireframe` $\leftrightarrow$ `UI/UX Design`): Hollow 3D UI wireframe / browser box (`~13%` wall thickness) with top bar and center divider forming two hollow inner panels.
@@ -158,14 +159,14 @@ In RGB color space, difference blending computes $C_\text{result} = |C_\text{bac
 | Constant | Default Value | Purpose |
 | :--- | :--- | :--- |
 | `DESKTOP_COUNT` / `MOBILE_COUNT` | `7200` / `3600` | Shared `particleEngine.ts` `THREE.Points` count (`>= 1024px` vs `< 1024px`), DPR capped at `2` |
-| `PROGRESS_LERP` / `HOVER_MORPH_DURATION_S` | `0.08` / `0.84s` | Per-frame scroll smoothing & interruptible hover/focus morph duration |
-| `HOVER_INTENT_DELAY_MS` / `HOVER_LEAVE_DELAY_MS` | `100ms` / `250ms` | Anti-flicker hover debounce & smooth return-to-scroll delay on pointer leave |
+| `PROGRESS_LERP` / `HOVER_MORPH_DURATION_S` | `0.10` / `0.82s` | Per-frame scroll smoothing & interruptible hover/focus morph duration |
+| `HOVER_INTENT_DELAY_MS` / `HOVER_LEAVE_DELAY_MS` | `90ms` / `240ms` | Anti-flicker hover debounce & smooth return-to-scroll delay on pointer leave |
 | `SWAY_AMPLITUDE_Y` / `HELIX_ROTATION_SPEED` | `0.26 rad` (`~15°`) / `0.34 rad/s` | Gentle Y-sway on `wireframe`, `brackets`, `growthChart`; continuous Y-spin on `blob` & `dnaHelix` |
 | `MIDPOINT_NOISE_AMOUNT` / `INTRO_BURST_AMOUNT` | `0.44` / `0.46` | Mid-transition dust-sphere curl turbulence & initial sphere dispersion |
-| `SCROLL_VH_PER_STEP` | `92` (`vh`) | Scroll distance per service step (`368vh` total across 4 studio services) |
-| `SECTION_BG` / `RADIAL_GLOW_COLOR` | `#05050c` / `rgba(27, 27, 77, 0.72)` | Cool near-black section surface & left-stage `#1b1b4d` radial glow (`~60% vh`) |
-| `ACTIVE_CARD_TOP` $\rightarrow$ `BOTTOM` | `#5650b8` $\rightarrow$ `#4a45a6` | Expanded active card (`~312px`) indigo/violet gradient + diagonal top-left violet sweep |
-| `INACTIVE_CARD_BG` | `#0a0a0f` | Near-black collapsed cards (`~168px`) with hairline border (`17%` on hover) & halftone dots |
+| `SCROLL_VH_PER_STEP` | `82` (`vh`) | Snap-free (`scrub: 0.5`) scroll distance per service step (`328vh` total across 4 studio services) |
+| `SECTION_BG` / `RADIAL_GLOW_COLOR` | `#FFFFFF` / `rgba(49, 134, 255, 0.13)` | Pure white Antigravity stage & soft `#3186FF` / `#749BFF` atmospheric halo |
+| `ACTIVE_CARD_TOP` $\rightarrow$ `BOTTOM` | `#121317` $\rightarrow$ `#1A1B22` | Expanded active `.card.dark` (`~312px`) Obsidian card + `#3186FF` diagonal sweep + white tool icons |
+| `INACTIVE_CARD_BG` | `#F8F9FC` | Cool surface collapsed cards (`~168px`) with `#212226` hairline border (`#3186FF` on hover) & `#3186FF` halftone dots |
 
 ---
 

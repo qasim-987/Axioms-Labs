@@ -20,27 +20,26 @@ import {
 import ServicesParticleCanvas, {
   PARTICLE_TUNING,
   STEP_HOLD_PROGRESS,
-  STEP_SNAP_POINTS,
   evaluateServicesMasterTimeline,
 } from "./ServicesParticleCanvas";
+import SplitTextReveal from "./SplitTextReveal";
 import { renderServiceToolIcon } from "./ServiceToolIcons";
 
 gsap.registerPlugin(ScrollTrigger);
 
 // ============================================================================
-// TUNABLE SECTION, CARD & HOVER CONSTANTS
+// TUNABLE SECTION, CARD & HOVER CONSTANTS (Black & White + Antigravity Palette)
 // ============================================================================
 export const SERVICES_SECTION_TUNING = {
-  SECTION_BG: "#05050c",
-  RADIAL_GLOW_COLOR: "rgba(27, 27, 77, 0.72)", // #1b1b4d deep navy/indigo radial glow (~60% vh)
-  ACTIVE_CARD_TOP: "#5650b8", // Indigo/violet top-left highlight fill
-  ACTIVE_CARD_BOTTOM: "#4a45a6", // Indigo/violet base fill
-  INACTIVE_CARD_BG: "#0a0a0f", // Near-black glassy collapsed card fill
-  SCROLL_VH_PER_STEP: 92, // ~92vh per service (~(4 + 1) * 100vh total pinned feel)
-  HOVER_INTENT_DELAY_MS: 100, // 80-120ms debounce prevents flicker across cards
-  HOVER_LEAVE_DELAY_MS: 250, // Smoothly returns to scroll-dictated state 250ms after leave
-  CARD_EXPANDED_AT_1900_PX: 312, // ~300-315px active width at 1900px viewport (~1.85x inactive)
-  CARD_COLLAPSED_AT_1900_PX: 168, // ~160-170px inactive width at 1900px viewport
+  SECTION_BG: "#FFFFFF", // Crisp Antigravity pure white surface
+  ACTIVE_CARD_TOP: "#1A1B22", // Obsidian black top-left sheen
+  ACTIVE_CARD_BOTTOM: "#121317", // Signature Antigravity `.card.dark` obsidian fill
+  INACTIVE_CARD_BG: "#F8F9FC", // Cool alabaster surface-container (`--palette-grey-10`)
+  SCROLL_VH_PER_STEP: 82, // Smooth 328vh pinned travel across 4 services (zero drag)
+  HOVER_INTENT_DELAY_MS: 95, // Prevents flicker when sweeping across cards
+  HOVER_LEAVE_DELAY_MS: 240, // Smoothly returns to scroll-dictated state after leave
+  CARD_EXPANDED_AT_1900_PX: 324, // Active expanded card width (~1.85x inactive)
+  CARD_COLLAPSED_AT_1900_PX: 172, // Collapsed card width
   CARD_GAP_PX: 16,
   INACTIVE_TOP_OFFSET_PX: 14,
 } as const;
@@ -85,7 +84,7 @@ export default function ServicesGrid() {
   const cardsTrackRef = useRef<HTMLDivElement>(null);
 
   const cardShellRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const indigoFillRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const darkFillRefs = useRef<(HTMLDivElement | null)[]>([]);
   const sweepGlowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const inactiveNumberRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const inactiveBottomLabelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -103,7 +102,6 @@ export default function ServicesGrid() {
   const hoverIndexRef = useRef<number | null>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
-  // Hover intent / leave timers & scroll-override suppression
   const hoverIntentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
@@ -112,7 +110,7 @@ export default function ServicesGrid() {
   const hoverSuppressedByScrollRef = useRef<boolean>(false);
   const rawPointedCardRef = useRef<number | null>(null);
 
-  // React state for single-source-of-truth `activeIndex = hoverIndex ?? scrollIndex`
+  // Single resolved active state: `activeIndex = hoverIndex ?? scrollIndex`
   const [scrollIndex, setScrollIndex] = useState<number>(0);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const activeIndex = hoverIndex ?? scrollIndex;
@@ -130,7 +128,6 @@ export default function ServicesGrid() {
     gap: SERVICES_SECTION_TUNING.CARD_GAP_PX,
   });
 
-  // Clear pending timers safely
   const clearHoverTimers = useCallback(() => {
     if (hoverIntentTimerRef.current) {
       clearTimeout(hoverIntentTimerRef.current);
@@ -142,7 +139,6 @@ export default function ServicesGrid() {
     }
   }, []);
 
-  // Viewport, hover capability & reduced-motion media queries
   useEffect(() => {
     const mqReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mqHover = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -155,18 +151,18 @@ export default function ServicesGrid() {
 
       const expandedW = Math.round(
         Math.max(
-          268,
+          276,
           Math.min(
-            vw * 0.168,
-            SERVICES_SECTION_TUNING.CARD_EXPANDED_AT_1900_PX + 28
+            vw * 0.175,
+            SERVICES_SECTION_TUNING.CARD_EXPANDED_AT_1900_PX + 24
           )
         )
       );
       const collapsedW = Math.round(
         Math.max(
-          148,
+          150,
           Math.min(
-            vw * 0.09,
+            vw * 0.092,
             SERVICES_SECTION_TUNING.CARD_COLLAPSED_AT_1900_PX + 16
           )
         )
@@ -191,7 +187,6 @@ export default function ServicesGrid() {
     };
   }, [clearHoverTimers]);
 
-  // Smoothly scroll to a specific service step (used on mobile pills or coarse-pointer tap)
   const scrollToServiceStep = useCallback((stepIdx: number) => {
     const st = scrollTriggerRef.current;
     if (!st) return;
@@ -200,7 +195,6 @@ export default function ServicesGrid() {
     window.scrollTo({ top: targetScrollY, behavior: "smooth" });
   }, []);
 
-  // Hover & Keyboard Focus Handlers (Section 6)
   const activateCardOverride = useCallback(
     (idx: number, immediate = false) => {
       clearHoverTimers();
@@ -258,14 +252,11 @@ export default function ServicesGrid() {
     [activateCardOverride, canHover, isDesktop, reducedMotion]
   );
 
-  const handleCardPointerLeave = useCallback(
-    (idx: number) => {
-      if (rawPointedCardRef.current === idx) {
-        rawPointedCardRef.current = null;
-      }
-    },
-    []
-  );
+  const handleCardPointerLeave = useCallback((idx: number) => {
+    if (rawPointedCardRef.current === idx) {
+      rawPointedCardRef.current = null;
+    }
+  }, []);
 
   const handleRowPointerLeave = useCallback(() => {
     rawPointedCardRef.current = null;
@@ -293,7 +284,7 @@ export default function ServicesGrid() {
   );
 
   // --------------------------------------------------------------------------
-  // DESKTOP GSAP SCROLLTRIGGER PIN + UNIFIED SCROLL/HOVER RAF CHOREOGRAPHER
+  // DESKTOP GSAP SCROLLTRIGGER PIN (scrub: 0.5, zero snap conflict with Lenis!)
   // --------------------------------------------------------------------------
   useEffect(() => {
     if (!isDesktop || reducedMotion) {
@@ -313,20 +304,12 @@ export default function ServicesGrid() {
       start: "top top",
       end: `+=${totalScrollVh}%`,
       pin: true,
-      scrub: true,
+      scrub: 0.5,
       anticipatePin: 1,
       invalidateOnRefresh: true,
-      snap: {
-        snapTo: [...STEP_SNAP_POINTS],
-        duration: { min: 0.22, max: 0.5 },
-        delay: 0.16,
-        ease: "power2.out",
-        directional: false,
-      },
       onUpdate: (self) => {
         scrollProgressRef.current = self.progress;
 
-        // Rule 6.4: If scrolling moves to a different step while hovered, scroll wins!
         const liveScrollIdx = evaluateServicesMasterTimeline(
           self.progress
         ).scrollIndex;
@@ -347,7 +330,6 @@ export default function ServicesGrid() {
     let smoothP = scrollProgressRef.current;
     let lastReportedScrollIdx = -1;
 
-    // Smoothed per-card weights (`0..1`) & row translation so hover AND scroll share identical fluid motion
     const liveWeights: number[] = entries.map((_, idx) => (idx === 0 ? 1 : 0));
     const prevWeights: number[] = [...liveWeights];
     let liveTrackX = 0;
@@ -371,7 +353,6 @@ export default function ServicesGrid() {
       const isScrollTrans = fromCardIndex !== toCardIndex;
       const easedScrollMove = easeInOutCubic(cardTransitionT);
 
-      // Compute target per-card weights & target trackX from `activeIndex = hoverIndex ?? scrollIndex`
       const scrollTrackX = -(
         (isScrollTrans ? fromCardIndex : state.scrollIndex) *
           (collapsedW + gap) +
@@ -380,7 +361,6 @@ export default function ServicesGrid() {
 
       let targetTrackX = scrollTrackX;
       if (currentHover !== null) {
-        // Keep hovered card stably under the cursor; only nudge left if its expanded width would clip off the right viewport edge
         const viewportW = cardsViewportRef.current?.clientWidth || 760;
         let leftBeforeHovered = 0;
         for (let j = 0; j < currentHover; j++) {
@@ -396,7 +376,7 @@ export default function ServicesGrid() {
         }
       }
 
-      const lerpRate = currentHover !== null ? 0.13 : 0.24;
+      const lerpRate = currentHover !== null ? 0.14 : 0.25;
       liveTrackX += (targetTrackX - liveTrackX) * lerpRate;
 
       if (cardsTrackRef.current) {
@@ -418,8 +398,10 @@ export default function ServicesGrid() {
         }
 
         prevWeights[i] = liveWeights[i];
-        if (currentHover !== null || Math.abs(liveWeights[i] - targetW) > 0.002) {
-          // Smooth blend when entering/leaving hover; tight follow during scroll scrub
+        if (
+          currentHover !== null ||
+          Math.abs(liveWeights[i] - targetW) > 0.002
+        ) {
           const wRate = currentHover !== null ? 0.14 : 0.26;
           liveWeights[i] += (targetW - liveWeights[i]) * wRate;
         } else {
@@ -428,8 +410,7 @@ export default function ServicesGrid() {
 
         const w = Math.max(0, Math.min(1, liveWeights[i]));
         const deltaW = w - prevWeights[i];
-        const isPointedInactive =
-          rawPointedCardRef.current === i && w < 0.25;
+        const isPointedInactive = rawPointedCardRef.current === i && w < 0.25;
 
         const widthPx = collapsedW + (expandedW - collapsedW) * w;
         const yOffsetPx =
@@ -441,29 +422,29 @@ export default function ServicesGrid() {
           shell.style.transform = `translate3d(0, ${yOffsetPx.toFixed(
             2
           )}px, 0)`;
-          // Rule 6.6: Inactive hover lifts border to ~16% white
           if (w > 0.45) {
-            shell.style.borderColor = `rgba(210, 206, 255, ${(
-              0.12 +
-              w * 0.14
-            ).toFixed(3)})`;
+            shell.style.borderColor = "rgba(18, 19, 23, 0.92)";
+            shell.style.boxShadow = "0 24px 56px -14px rgba(18, 19, 23, 0.22)";
           } else if (isPointedInactive) {
-            shell.style.borderColor = "rgba(255, 255, 255, 0.17)";
+            shell.style.borderColor = "rgba(49, 134, 255, 0.45)";
+            shell.style.boxShadow = "0 16px 36px -12px rgba(49, 134, 255, 0.14)";
           } else {
-            shell.style.borderColor = "rgba(255, 255, 255, 0.07)";
+            shell.style.borderColor = "rgba(33, 34, 38, 0.09)";
+            shell.style.boxShadow = "0 4px 20px -6px rgba(18, 19, 23, 0.05)";
           }
         }
 
-        const indigoFill = indigoFillRefs.current[i];
-        if (indigoFill) {
-          indigoFill.style.opacity = w.toFixed(3);
+        const darkFill = darkFillRefs.current[i];
+        if (darkFill) {
+          darkFill.style.opacity = w.toFixed(3);
         }
 
-        // Diagonal top-left light-violet sweep overlay peaking mid-expansion
+        // Diagonal top-left Antigravity Electric Blue / Periwinkle light sweep peaking mid-expansion
         const sweepEl = sweepGlowRefs.current[i];
         if (sweepEl) {
-          const isExpanding = deltaW > 0.0005 || (isScrollTrans && i === toCardIndex);
-          const sweepPeak = Math.sin(Math.PI * w) * (isExpanding ? 0.95 : 0.42);
+          const isExpanding =
+            deltaW > 0.0005 || (isScrollTrans && i === toCardIndex);
+          const sweepPeak = Math.sin(Math.PI * w) * (isExpanding ? 0.92 : 0.35);
           const sweepShift = (1 - w) * -28;
           sweepEl.style.opacity = sweepPeak.toFixed(3);
           sweepEl.style.transform = `translate3d(${sweepShift.toFixed(
@@ -471,8 +452,8 @@ export default function ServicesGrid() {
           )}px, ${sweepShift.toFixed(1)}px, 0)`;
         }
 
-        // Collapsed card elements ("02"-"04", bottom caption, halftone dots)
-        const inactiveAlpha = Math.max(0, 1 - w * 1.5);
+        // Collapsed light card elements ("02"-"04", bottom caption, halftone dots)
+        const inactiveAlpha = Math.max(0, 1 - w * 1.55);
         const numEl = inactiveNumberRefs.current[i];
         if (numEl) {
           numEl.style.opacity = inactiveAlpha.toFixed(3);
@@ -486,20 +467,23 @@ export default function ServicesGrid() {
 
         const halftoneEl = halftoneRefs.current[i];
         if (halftoneEl) {
-          const baseHalftone = isPointedInactive ? 1.0 : 0.78;
+          const baseHalftone = isPointedInactive ? 1.0 : 0.72;
           halftoneEl.style.opacity = (inactiveAlpha * baseHalftone).toFixed(3);
         }
 
-        // Arrow scale/opacity polish (smaller on inactive, full crisp size on active)
+        // Arrow badge color & scale transition (dark ink on light card -> crisp white on #121317 active card)
         const arrowEl = arrowWrapRefs.current[i];
         if (arrowEl) {
-          const arrowScale = 0.86 + 0.14 * w;
+          const arrowScale = 0.88 + 0.12 * w;
           arrowEl.style.transform = `scale(${arrowScale.toFixed(3)})`;
-          arrowEl.style.opacity = (0.72 + 0.28 * w).toFixed(3);
+          arrowEl.style.color = w > 0.45 ? "#FFFFFF" : "#121317";
+          arrowEl.style.backgroundColor =
+            w > 0.45
+              ? "rgba(255, 255, 255, 0.10)"
+              : "rgba(18, 19, 23, 0.05)";
         }
 
         // Staggered inner content reveal (`cubic-bezier(0.22, 1, 0.36, 1)`)
-        // When collapsing, content fades out fast in first ~35% BEFORE width finishes collapsing
         const isCollapsing = deltaW < -0.001 && targetW < 0.5;
         let tTitle = 0;
         let tDesc = 0;
@@ -548,7 +532,6 @@ export default function ServicesGrid() {
           ).toFixed(1)}px, 0)`;
         }
 
-        // Left-to-right staggered reveal on the 3x2 tool icons
         const toolNodes = activeToolItemRefs.current[i] || [];
         for (let k = 0; k < toolNodes.length; k++) {
           const node = toolNodes[k];
@@ -559,7 +542,9 @@ export default function ServicesGrid() {
           } else {
             const revealP = Math.max(0, (w - 0.22) / 0.78);
             const delay = 0.36 + k * 0.065;
-            tIcon = easeOutOdometer((revealP - delay) / Math.max(0.24, 1 - delay));
+            tIcon = easeOutOdometer(
+              (revealP - delay) / Math.max(0.24, 1 - delay)
+            );
           }
           node.style.opacity = tIcon.toFixed(3);
           node.style.transform = `translate3d(${(
@@ -580,9 +565,7 @@ export default function ServicesGrid() {
     };
   }, [cardDims, clearHoverTimers, entries, isDesktop, reducedMotion]);
 
-  // --------------------------------------------------------------------------
-  // TABLET & MOBILE (< 1024px) SCROLL-SWITCHED STICKY STACK (No Hover Logic)
-  // --------------------------------------------------------------------------
+  // Tablet & Mobile (< 1024px) Scroll-Switched Sticky Stack
   useEffect(() => {
     if (isDesktop || reducedMotion) return;
     const wrapperEl = mobileWrapperRef.current;
@@ -595,7 +578,7 @@ export default function ServicesGrid() {
       trigger: wrapperEl,
       start: "top top",
       end: "bottom bottom",
-      scrub: true,
+      scrub: 0.5,
       onUpdate: (self) => {
         scrollProgressRef.current = self.progress;
         const nextIdx = evaluateServicesMasterTimeline(
@@ -613,28 +596,24 @@ export default function ServicesGrid() {
   }, [isDesktop, reducedMotion]);
 
   // --------------------------------------------------------------------------
-  // 1. REDUCED MOTION ACCESSIBLE FALLBACK (`prefers-reduced-motion: reduce`)
-  //    No pinning, no morph animation -> static particle shape per service + vertical card list
+  // 1. REDUCED MOTION ACCESSIBLE FALLBACK
   // --------------------------------------------------------------------------
   if (reducedMotion) {
     return (
       <section
         id="services"
         aria-labelledby="services-heading-reduced"
-        style={{ backgroundColor: SERVICES_SECTION_TUNING.SECTION_BG }}
-        className="relative py-24 sm:py-28 text-white overflow-hidden"
+        className="relative py-24 sm:py-28 bg-[#FFFFFF] text-[#121317] border-t border-[#212226]/[0.07] overflow-hidden"
       >
         <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-14">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
             <h2
               id="services-heading-reduced"
-              className="text-4xl sm:text-5xl font-medium tracking-tight leading-[1.08] text-white"
+              className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.08] text-[#121317]"
             >
-              Our
-              <br />
-              Services
+              Our <span className="text-[#3186FF]">Services</span>
             </h2>
-            <p className="text-xs sm:text-sm text-white/70 max-w-[280px] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#45474D] max-w-[300px] leading-relaxed">
               We offer comprehensive digital solutions that transform your
               business and drive innovation across every touchpoint.
             </p>
@@ -645,9 +624,9 @@ export default function ServicesGrid() {
               <article
                 key={entry.service.id}
                 aria-current={idx === 0 ? "true" : undefined}
-                className="grid grid-cols-1 md:grid-cols-[240px_1fr] items-center gap-6 rounded-[22px] p-6 sm:p-8 border border-white/15 bg-gradient-to-br from-[#5650b8] to-[#4a45a6]"
+                className="grid grid-cols-1 md:grid-cols-[240px_1fr] items-center gap-6 rounded-[24px] p-6 sm:p-8 border border-[#212226]/[0.1] bg-[#121317] text-white shadow-[0_20px_50px_rgba(18,19,23,0.12)]"
               >
-                <div className="relative h-44 w-full rounded-2xl bg-[#05050c]/75 border border-white/10 overflow-hidden">
+                <div className="relative h-44 w-full rounded-2xl bg-[#FFFFFF] border border-white/10 overflow-hidden">
                   <ServicesParticleCanvas
                     scrollProgressRef={scrollProgressRef}
                     layoutMode="mobile"
@@ -659,27 +638,27 @@ export default function ServicesGrid() {
                 <div className="flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between gap-4 mb-3">
-                      <h3 className="text-xl font-medium text-white">
+                      <h3 className="text-xl font-bold text-white">
                         {entry.service.title}
                       </h3>
                       <Link
                         href={`/services/${entry.service.slug}`}
                         aria-label={`Explore ${entry.service.title}`}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                        className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#3186FF] flex items-center justify-center text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF]"
                       >
-                        <span aria-hidden="true" className="text-lg leading-none">
+                        <span aria-hidden="true" className="text-base leading-none">
                           ↗
                         </span>
                       </Link>
                     </div>
-                    <p className="text-sm text-white/85 leading-relaxed mb-5 max-w-2xl">
+                    <p className="text-sm text-[#B2BBC5] leading-relaxed mb-5 max-w-2xl">
                       {entry.service.shortDesc}
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-white/15">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-white/10">
                     <div>
-                      <div className="text-xs text-white/60 mb-2">Services</div>
+                      <div className="text-xs text-[#B2BBC5] mb-2">Services</div>
                       <ul className="space-y-1 text-xs text-white/95">
                         {entry.shortCardBullets.map((b) => (
                           <li key={b}>{b}</li>
@@ -687,7 +666,7 @@ export default function ServicesGrid() {
                       </ul>
                     </div>
                     <div>
-                      <div className="text-xs text-white/60 mb-2">Tools</div>
+                      <div className="text-xs text-[#B2BBC5] mb-2">Tools</div>
                       <div className="grid grid-cols-3 gap-2.5 max-w-[120px] text-white/95">
                         {entry.displayTools.map((tool, tIdx) => (
                           <span
@@ -712,7 +691,6 @@ export default function ServicesGrid() {
 
   // --------------------------------------------------------------------------
   // 2. TABLET & MOBILE (< 1024px) VERTICAL SCROLL-DRIVEN STACK
-  //    Top ~40vh particle stage + single active card switching automatically on scroll
   // --------------------------------------------------------------------------
   if (!isDesktop) {
     const activeEntry = entries[scrollIndex] || entries[0];
@@ -721,40 +699,34 @@ export default function ServicesGrid() {
         ref={mobileWrapperRef}
         id="services"
         aria-labelledby="services-heading-mobile"
-        style={{
-          backgroundColor: SERVICES_SECTION_TUNING.SECTION_BG,
-          height: "390vh",
-        }}
-        className="relative text-white"
+        style={{ height: "360vh" }}
+        className="relative bg-[#FFFFFF] text-[#121317] border-t border-[#212226]/[0.07]"
       >
         <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between py-6 px-5 sm:px-8">
-          {/* Deep Navy/Indigo Radial Glow behind Top 40vh Particle Stage */}
+          {/* Soft Antigravity Pastel Aura behind Top 40vh Particle Stage */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute top-[6%] left-1/2 -translate-x-1/2 w-[86vw] h-[40vh] rounded-full blur-3xl"
             style={{
-              background: `radial-gradient(circle, ${SERVICES_SECTION_TUNING.RADIAL_GLOW_COLOR} 0%, rgba(20, 20, 68, 0.25) 55%, transparent 76%)`,
+              background:
+                "radial-gradient(circle, rgba(49, 134, 255, 0.14) 0%, rgba(183, 191, 217, 0.24) 52%, transparent 76%)",
             }}
           />
 
-          {/* Compact Header */}
-          <div className="relative z-10 max-w-xl w-full mx-auto flex items-end justify-between gap-4">
+          <div className="relative z-10 max-w-xl w-full mx-auto flex items-end justify-between gap-4 pt-12">
             <h2
               id="services-heading-mobile"
-              className="text-2xl sm:text-3xl font-medium tracking-tight leading-[1.08] text-white"
+              className="text-2xl sm:text-3xl font-bold tracking-tight leading-[1.08] text-[#121317]"
             >
-              Our
-              <br />
-              Services
+              Our <span className="text-[#3186FF]">Services</span>
             </h2>
-            <p className="text-[11px] sm:text-xs text-white/65 max-w-[230px] leading-relaxed">
-              We offer comprehensive digital solutions that transform your
-              business and drive innovation across every touchpoint.
+            <p className="text-[11px] sm:text-xs text-[#45474D] max-w-[230px] leading-relaxed">
+              Comprehensive digital solutions engineered for speed, clarity, and
+              real-world impact.
             </p>
           </div>
 
-          {/* ~38-40vh Particle Stage */}
-          <div className="relative z-10 w-full h-[36vh] min-h-[210px] my-1">
+          <div className="relative z-10 w-full h-[34vh] min-h-[200px] my-1">
             <ServicesParticleCanvas
               scrollProgressRef={scrollProgressRef}
               layoutMode="mobile"
@@ -762,7 +734,6 @@ export default function ServicesGrid() {
             />
           </div>
 
-          {/* Step Indicator Rail (Optional tap scrolls smoothly to step) + Active Card */}
           <div className="relative z-10 max-w-xl w-full mx-auto">
             <div className="grid grid-cols-4 gap-2 mb-3">
               {entries.map((entry, idx) => {
@@ -774,10 +745,10 @@ export default function ServicesGrid() {
                     onClick={() => scrollToServiceStep(idx)}
                     aria-label={`Jump to service 0${idx + 1}: ${entry.service.title}`}
                     aria-current={isSelected ? "true" : undefined}
-                    className={`py-1.5 px-2 rounded-lg text-[11px] font-mono transition-colors border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                    className={`py-1.5 px-2 rounded-full text-[11px] font-mono transition-colors border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] ${
                       isSelected
-                        ? "bg-[#5650b8] border-white/25 text-white font-semibold"
-                        : "bg-[#0a0a0f] border-white/10 text-white/55"
+                        ? "bg-[#121317] border-[#121317] text-white font-semibold shadow-sm"
+                        : "bg-[#F8F9FC] border-[#212226]/[0.09] text-[#45474D]"
                     }`}
                   >
                     0{idx + 1}
@@ -789,19 +760,16 @@ export default function ServicesGrid() {
             <article
               key={activeEntry.service.id}
               aria-current="true"
-              className="rounded-[20px] p-5 sm:p-6 border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.55)] animate-[fadeIn_280ms_cubic-bezier(0.22,1,0.36,1)]"
-              style={{
-                background: `linear-gradient(150deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP} 0%, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 100%)`,
-              }}
+              className="rounded-[22px] p-5 sm:p-6 border border-[#212226]/[0.12] bg-[#121317] text-white shadow-[0_20px_50px_rgba(18,19,23,0.16)]"
             >
               <div className="flex items-start justify-between gap-4 mb-3">
-                <h3 className="text-lg sm:text-xl font-medium text-white tracking-tight">
+                <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
                   {activeEntry.service.title}
                 </h3>
                 <Link
                   href={`/services/${activeEntry.service.slug}`}
                   aria-label={`View ${activeEntry.service.title} page`}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#3186FF] flex items-center justify-center text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF]"
                 >
                   <svg
                     viewBox="0 0 20 20"
@@ -819,13 +787,13 @@ export default function ServicesGrid() {
                 </Link>
               </div>
 
-              <p className="text-xs text-white/85 leading-relaxed mb-4">
+              <p className="text-xs text-[#B2BBC5] leading-relaxed mb-4">
                 {activeEntry.service.shortDesc}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 pt-3.5 border-t border-white/15">
+              <div className="grid grid-cols-2 gap-4 pt-3.5 border-t border-white/10">
                 <div>
-                  <div className="text-[11px] text-white/60 mb-1.5">
+                  <div className="text-[11px] text-[#749BFF] font-mono uppercase tracking-wider mb-1.5">
                     Services
                   </div>
                   <ul className="space-y-1 text-[11px] text-white/95">
@@ -836,7 +804,9 @@ export default function ServicesGrid() {
                 </div>
 
                 <div>
-                  <div className="text-[11px] text-white/60 mb-1.5">Tools</div>
+                  <div className="text-[11px] text-[#749BFF] font-mono uppercase tracking-wider mb-1.5">
+                    Tools
+                  </div>
                   <div className="grid grid-cols-3 gap-2.5 max-w-[116px] text-white">
                     {activeEntry.displayTools.map((tool, tIdx) => (
                       <div
@@ -858,8 +828,7 @@ export default function ServicesGrid() {
   }
 
   // --------------------------------------------------------------------------
-  // 3. DESKTOP (>= 1024px) PINNED HOVER + SCROLL PARTICLE-MORPH SECTION
-  //    Single resolved state: `activeIndex = hoverIndex ?? scrollIndex`
+  // 3. DESKTOP (>= 1024px) PINNED ANTIMATTER CHOREOGRAPHY IN BLACK/WHITE/ANTIGRAVITY
   // --------------------------------------------------------------------------
   return (
     <section
@@ -867,48 +836,69 @@ export default function ServicesGrid() {
       id="services"
       aria-labelledby="services-heading-desktop"
       style={{ backgroundColor: SERVICES_SECTION_TUNING.SECTION_BG }}
-      className="relative w-full h-screen min-h-[660px] overflow-hidden text-white select-none"
+      className="relative w-full h-screen min-h-[660px] overflow-hidden text-[#121317] border-y border-[#212226]/[0.07] select-none"
     >
-      {/* Left-Stage Soft Deep Navy / Indigo Radial Glow (~60% vh, centered on particle shape) */}
+      {/* Subtle Precision Dot Grid matching Hero */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[4.5%] top-1/2 -translate-y-1/2 w-[38vw] max-w-[720px] h-[62vh] max-h-[640px] rounded-full"
+        className="pointer-events-none absolute inset-0 opacity-[0.055]"
         style={{
-          background: `radial-gradient(circle at 50% 50%, ${SERVICES_SECTION_TUNING.RADIAL_GLOW_COLOR} 0%, rgba(27, 27, 77, 0.32) 44%, rgba(5, 5, 12, 0) 74%)`,
-          filter: "blur(32px)",
+          backgroundImage:
+            "radial-gradient(rgba(18, 19, 23, 0.8) 1px, transparent 1px)",
+          backgroundSize: "30px 30px",
+          maskImage:
+            "radial-gradient(circle at 26% 52%, black 15%, transparent 72%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at 26% 52%, black 15%, transparent 72%)",
+        }}
+      />
+
+      {/* Left-Stage Soft Antigravity Pastel & Electric Blue Radial Aura (~60% vh) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[3.5%] top-1/2 -translate-y-1/2 w-[39vw] max-w-[720px] h-[64vh] max-h-[660px] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(49, 134, 255, 0.14) 0%, rgba(116, 155, 255, 0.10) 38%, rgba(239, 242, 247, 0.65) 64%, rgba(255, 255, 255, 0) 78%)",
+          filter: "blur(38px)",
         }}
       />
 
       {/* Right-Half Header + Horizontal Portrait Cards Stage */}
       <div className="relative z-10 w-full h-full flex items-center">
-        {/* Left ~44% Spacer reserved for the Particle Sphere / Shape Morph Stage */}
-        <div className="w-[43%] xl:w-[45%] shrink-0 h-full pointer-events-none" />
+        {/* Left ~43% Spacer reserved for the 3D Antigravity Particle Morph Stage */}
+        <div className="w-[43%] xl:w-[44%] shrink-0 h-full pointer-events-none" />
 
-        {/* Right ~55-57% Column: Header on top, Portrait Cards Row running off the right edge */}
-        <div className="w-[57%] xl:w-[55%] h-full flex flex-col justify-end pb-[4.5vh] pt-[8vh]">
-          {/* Header Row: Two-Line "Our Services" + Muted Intro Copy */}
-          <div className="pr-8 lg:pr-14 xl:pr-20 mb-7 xl:mb-8 flex items-start justify-between gap-8 max-w-[760px]">
-            <h2
-              id="services-heading-desktop"
-              className="text-[28px] xl:text-[35px] font-medium tracking-[-0.02em] leading-[1.08] text-white shrink-0"
-            >
-              Our
-              <br />
-              Services
-            </h2>
+        {/* Right ~56-57% Column */}
+        <div className="w-[57%] xl:w-[56%] h-full flex flex-col justify-end pb-[5vh] pt-[10vh]">
+          {/* Header Row: Character-Split "Our Services" + Muted Slate Intro Copy */}
+          <div className="pr-8 lg:pr-14 xl:pr-20 mb-7 xl:mb-8 flex items-end justify-between gap-8 max-w-[780px]">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-[11px] font-mono text-[#45474D] mb-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
+                <span>04 CORE CAPABILITIES</span>
+              </div>
+              <SplitTextReveal
+                as="h2"
+                text="Our Services"
+                accentFromWordIndex={1}
+                accentClassName="text-[#3186FF]"
+                className="text-[32px] xl:text-[42px] font-bold tracking-[-0.025em] leading-[1.06] text-[#121317]"
+              />
+            </div>
 
-            <p className="text-[12px] xl:text-[13px] text-white/65 leading-[1.58] max-w-[280px] pt-1 font-normal">
+            <p className="text-[12.5px] xl:text-[13.5px] text-[#45474D] leading-[1.6] max-w-[290px] pb-1 font-normal">
               We offer comprehensive digital solutions that transform your
               business and drive innovation across every touchpoint.
             </p>
           </div>
 
-          {/* Horizontal Portrait Cards Viewport (Clips outgoing cards cleanly on the left; lets upcoming cards peek & crop at right viewport edge) */}
+          {/* Horizontal Portrait Cards Viewport */}
           <div
             ref={cardsViewportRef}
             onPointerLeave={handleRowPointerLeave}
             onBlur={handleRowBlur}
-            className="relative w-full overflow-hidden pt-1 pb-2"
+            className="relative w-full overflow-hidden pt-1 pb-4"
           >
             <div
               ref={cardsTrackRef}
@@ -952,22 +942,12 @@ export default function ServicesGrid() {
                         idx === 0
                           ? `${cardDims.expandedW}px`
                           : `${cardDims.collapsedW}px`,
-                      height: "clamp(380px, 57vh, 500px)",
+                      height: "clamp(380px, 56vh, 496px)",
                       backgroundColor: SERVICES_SECTION_TUNING.INACTIVE_CARD_BG,
                     }}
-                    className="group/card relative shrink-0 rounded-[21px] border border-white/[0.07] overflow-hidden cursor-pointer select-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#05050c]"
+                    className="group/card relative shrink-0 rounded-[24px] border border-[#212226]/[0.09] overflow-hidden cursor-pointer select-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
                   >
-                    {/* Faint Top-Left Sheen on Collapsed Near-Black Glassy Cards */}
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, rgba(255,255,255,0.065) 0%, rgba(255,255,255,0.015) 28%, transparent 56%)",
-                      }}
-                    />
-
-                    {/* Inactive Card Decorative Bottom-Right Muted Indigo Halftone Dots */}
+                    {/* Inactive Card Decorative Bottom-Right Obsidian & Electric Blue Halftone Dot Matrix */}
                     <div
                       ref={(el) => {
                         halftoneRefs.current[idx] = el;
@@ -975,9 +955,9 @@ export default function ServicesGrid() {
                       aria-hidden="true"
                       className="pointer-events-none absolute inset-0 transition-opacity duration-150"
                       style={{
-                        opacity: idx === 0 ? 0 : 0.78,
+                        opacity: idx === 0 ? 0 : 0.72,
                         backgroundImage:
-                          "radial-gradient(circle, rgba(114, 108, 224, 0.5) 1.3px, transparent 1.45px)",
+                          "radial-gradient(circle, rgba(49, 134, 255, 0.36) 1.35px, transparent 1.5px)",
                         backgroundSize: "13px 13px",
                         maskImage:
                           "radial-gradient(circle at 92% 92%, black 0%, rgba(0,0,0,0.55) 36%, transparent 68%)",
@@ -986,20 +966,31 @@ export default function ServicesGrid() {
                       }}
                     />
 
-                    {/* Active Indigo / Violet Fill (`#5650b8 -> #4a45a6`) */}
+                    {/* Active Obsidian Black `.card.dark` Fill (`#1A1B22 -> #121317`) */}
                     <div
                       ref={(el) => {
-                        indigoFillRefs.current[idx] = el;
+                        darkFillRefs.current[idx] = el;
                       }}
                       aria-hidden="true"
                       className="pointer-events-none absolute inset-0"
                       style={{
                         opacity: idx === 0 ? 1 : 0,
-                        background: `linear-gradient(148deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP} 0%, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 66%, #3f3a94 100%)`,
+                        background: `linear-gradient(152deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP} 0%, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 65%, #0D0E12 100%)`,
                       }}
                     />
 
-                    {/* Diagonal Top-Left Light-Violet Sweep Overlay (Animates opacity & translate3d, never CSS gradient transition) */}
+                    {/* Subtle Ambient Electric Blue Corner Aura inside Active `#121317` Card */}
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -bottom-20 -right-16 w-52 h-52 rounded-full blur-3xl transition-opacity duration-300"
+                      style={{
+                        opacity: isCurrentActive ? 0.32 : 0,
+                        background:
+                          "radial-gradient(circle, rgba(49, 134, 255, 0.55) 0%, transparent 72%)",
+                      }}
+                    />
+
+                    {/* Diagonal Top-Left Antigravity Electric Blue / Periwinkle Sweep Overlay */}
                     <div
                       ref={(el) => {
                         sweepGlowRefs.current[idx] = el;
@@ -1009,11 +1000,11 @@ export default function ServicesGrid() {
                       style={{
                         opacity: 0,
                         background:
-                          "linear-gradient(135deg, rgba(196, 190, 255, 0.65) 0%, rgba(130, 122, 238, 0.30) 38%, rgba(74, 69, 166, 0) 70%)",
+                          "linear-gradient(135deg, rgba(49, 134, 255, 0.42) 0%, rgba(116, 155, 255, 0.22) 38%, rgba(18, 19, 23, 0) 70%)",
                       }}
                     />
 
-                    {/* Top-Right Thin Diagonal "↗" Arrow Link */}
+                    {/* Top-Right Circular "↗" Launch Badge */}
                     <Link
                       ref={(el) => {
                         arrowWrapRefs.current[idx] = el;
@@ -1024,14 +1015,14 @@ export default function ServicesGrid() {
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
-                      className="group/arrow absolute top-5 right-5 z-30 w-8 h-8 rounded-lg flex items-center justify-center text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white will-change-transform"
+                      className="group/arrow absolute top-5 right-5 z-30 w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200 group-hover/card:!bg-[#3186FF] group-hover/card:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] will-change-transform"
                     >
                       <svg
                         viewBox="0 0 22 22"
-                        className="w-[17px] h-[17px] transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
+                        className="w-[16px] h-[16px] transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1.5"
+                        strokeWidth="1.7"
                       >
                         <path
                           d="M5.5 16.5L15.5 6.5M7.5 6.5h8v8"
@@ -1041,71 +1032,74 @@ export default function ServicesGrid() {
                       </svg>
                     </Link>
 
-                    {/* Inactive Card Top-Left Number ("02", "03", "04") */}
+                    {/* Inactive Card Top-Left Number ("02", "03", "04") in Crisp #121317 */}
                     <span
                       ref={(el) => {
                         inactiveNumberRefs.current[idx] = el;
                       }}
                       aria-hidden="true"
                       style={{ opacity: idx === 0 ? 0 : 1 }}
-                      className="pointer-events-none absolute top-5 left-5 z-20 text-[20px] xl:text-[22px] font-medium tracking-tight text-white tabular-nums will-change-transform"
+                      className="pointer-events-none absolute top-5 left-5 z-20 text-[21px] xl:text-[23px] font-mono font-bold tracking-tight text-[#121317] tabular-nums will-change-transform"
                     >
                       {indexNumber}
                     </span>
 
-                    {/* Inactive Card Bottom-Left Service Caption */}
+                    {/* Inactive Card Bottom-Left Service Caption in #121317 / #45474D */}
                     <div
                       ref={(el) => {
                         inactiveBottomLabelRefs.current[idx] = el;
                       }}
                       aria-hidden="true"
                       style={{ opacity: idx === 0 ? 0 : 1 }}
-                      className="pointer-events-none absolute bottom-5 left-5 right-4 z-20 text-[12.5px] font-medium text-white/85 truncate"
+                      className="pointer-events-none absolute bottom-5 left-5 right-4 z-20 text-[13px] font-semibold text-[#121317] truncate"
                     >
                       {entry.service.title}
                     </div>
 
-                    {/* Fixed-Width Expanded Inner Content Wrapper (`overflow: hidden` on parent prevents ANY text reflow during width changes) */}
+                    {/* Fixed-Width Expanded Inner Content Wrapper (Zero text reflow during width changes) */}
                     <div
                       style={{ width: `${cardDims.expandedW}px` }}
-                      className="relative z-20 h-full p-6 pb-5 flex flex-col justify-between pointer-events-none"
+                      className="relative z-20 h-full p-6 pb-6 flex flex-col justify-between pointer-events-none"
                     >
-                      {/* 1. Service Title (Top-Left, ~15-17px medium weight) */}
-                      <div className="pr-10">
+                      {/* 1. Service Index Pill + Title */}
+                      <div className="pr-11">
+                        <span className="inline-block text-[10.5px] font-mono uppercase tracking-widest text-[#749BFF] mb-1">
+                          {indexNumber} / DISCIPLINE
+                        </span>
                         <h3
                           ref={(el) => {
                             activeTitleRefs.current[idx] = el;
                           }}
-                          className="text-[16px] xl:text-[17px] font-medium tracking-tight text-white will-change-transform"
+                          className="text-[18px] xl:text-[19.5px] font-bold tracking-tight text-white will-change-transform"
                         >
                           {entry.service.title}
                         </h3>
                       </div>
 
-                      {/* 2. Short Description (Middle area, ~11px light slightly translucent white) */}
+                      {/* 2. Concise Description */}
                       <div className="my-auto py-3 pr-2">
                         <p
                           ref={(el) => {
                             activeDescRefs.current[idx] = el;
                           }}
-                          className="text-[11px] xl:text-[11.5px] leading-[1.6] text-white/85 font-light max-w-[258px] will-change-transform"
+                          className="text-[12px] xl:text-[12.5px] leading-[1.6] text-[#B2BBC5] font-normal max-w-[268px] will-change-transform"
                         >
                           {entry.service.shortDesc}
                         </p>
                       </div>
 
-                      {/* 3 & 4. Bottom Two Columns: "Services" List + "Tools" 3x2 Monoline Icon Grid */}
+                      {/* 3 & 4. Bottom Two Columns: "Services" List + "Tools" 3x2 White Monoline Icon Grid */}
                       <div
                         ref={(el) => {
                           activeColumnsRefs.current[idx] = el;
                         }}
-                        className="grid grid-cols-[1.25fr_1fr] gap-3.5 items-start pt-2 will-change-transform"
+                        className="grid grid-cols-[1.28fr_1fr] gap-3.5 items-start pt-3 border-t border-white/10 will-change-transform"
                       >
                         <div>
-                          <div className="text-[10.5px] text-white/60 font-normal mb-2">
+                          <div className="text-[10.5px] font-mono uppercase tracking-wider text-[#749BFF] mb-2">
                             Services
                           </div>
-                          <ul className="space-y-1.5 text-[10.5px] xl:text-[11px] leading-[1.35] text-white/95 font-normal">
+                          <ul className="space-y-1.5 text-[11px] xl:text-[11.5px] leading-[1.35] text-white/95 font-normal">
                             {entry.shortCardBullets.map((line) => (
                               <li key={line}>{line}</li>
                             ))}
@@ -1113,7 +1107,7 @@ export default function ServicesGrid() {
                         </div>
 
                         <div>
-                          <div className="text-[10.5px] text-white/60 font-normal mb-2">
+                          <div className="text-[10.5px] font-mono uppercase tracking-wider text-[#749BFF] mb-2">
                             Tools
                           </div>
                           <div className="grid grid-cols-3 gap-x-2.5 gap-y-2.5 max-w-[104px] text-white/95">
@@ -1144,7 +1138,7 @@ export default function ServicesGrid() {
         </div>
       </div>
 
-      {/* Shared GPU Particle Morph Stage (`aria-hidden="true"`, driven by `scrollProgressRef` + `hoverIndexRef`) */}
+      {/* Shared Black/White/Antigravity GPU Particle Morph Stage */}
       <ServicesParticleCanvas
         scrollProgressRef={scrollProgressRef}
         hoverIndexRef={hoverIndexRef}

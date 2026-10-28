@@ -1,152 +1,208 @@
 "use client";
 
-import React, { useRef } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
-import SpotlightCard from "./SpotlightCard";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitTextReveal from "./SplitTextReveal";
 import { MOTION_EASE } from "@/lib/motionTokens";
-import { Compass, Layers, Code2, Rocket, CheckCircle2 } from "lucide-react";
+import { Compass, Layers, Code2, Rocket } from "lucide-react";
 
-const steps = [
+gsap.registerPlugin(ScrollTrigger);
+
+const phases = [
   {
-    phase: "PHASE 01",
-    title: "Discovery & Scope",
-    duration: "Days 1 — 3",
+    step: "01",
+    title: "Discovery & Product Scope",
+    duration: "Week 1",
     description:
-      "We clarify your goals, target audience, user journeys, and technical requirements—delivering a clear roadmap, sitemap, and milestone plan before writing code.",
-    deliverable: "Scope Document + Sitemap & Architecture Plan",
+      "We map your user journeys, business goals, and technical requirements into a clear, actionable product blueprint.",
     icon: <Compass className="w-5 h-5 text-[#3186FF]" />,
-    chipBg: "bg-[#3186FF]/10 border-[#3186FF]/20",
   },
   {
-    phase: "PHASE 02",
+    step: "02",
     title: "UI/UX & Web Design",
-    duration: "Week 1 — 2",
+    duration: "Weeks 2–3",
     description:
-      "We craft interactive wireframes, visual direction, responsive layouts, and reusable Figma component tokens so you can experience the product before build.",
-    deliverable: "Interactive Figma Prototype + Design System",
-    icon: <Layers className="w-5 h-5 text-[#FC413D]" />,
-    chipBg: "bg-[#FC413D]/10 border-[#FC413D]/20",
+      "Interactive Figma prototypes, design tokens, and visual direction—refining layout, typography, and motion before writing code.",
+    icon: <Layers className="w-5 h-5 text-[#121317]" />,
   },
   {
-    phase: "PHASE 03",
-    title: "Engineering & AI Build",
-    duration: "Week 2 — 5",
+    step: "03",
+    title: "Web & AI Engineering",
+    duration: "Weeks 3–6",
     description:
-      "We build your frontend, backend APIs, CMS or database, motion interactions, and custom AI agents in clean TypeScript with weekly staging previews.",
-    deliverable: "Live Staging Link + Clean Git Repository",
-    icon: <Code2 className="w-5 h-5 text-[#FBBC04]" />,
-    chipBg: "bg-[#FBBC04]/15 border-[#FBBC04]/30",
+      "Clean Next.js / TypeScript web applications and custom AI agent workflows built with weekly staging previews.",
+    icon: <Code2 className="w-5 h-5 text-[#00B95C]" />,
   },
   {
-    phase: "PHASE 04",
+    step: "04",
     title: "QA, Launch & Handover",
-    duration: "Final Week",
+    duration: "Final Sprint",
     description:
-      "We test across devices, optimize Core Web Vitals and SEO metadata, deploy to Vercel or cloud production, and hand over full code and documentation.",
-    deliverable: "Production Deployment + Full Ownership Handover",
-    icon: <Rocket className="w-5 h-5 text-[#00B95C]" />,
-    chipBg: "bg-[#00B95C]/10 border-[#00B95C]/20",
+      "Performance tuning, responsive QA across devices, production deployment, and full source-code ownership.",
+    icon: <Rocket className="w-5 h-5 text-[#FC413D]" />,
   },
 ];
 
+function PhaseTiltCard({
+  phase,
+  idx,
+}: {
+  phase: (typeof phases)[number];
+  idx: number;
+}) {
+  const [tilt, setTilt] = useState<{
+    rx: number;
+    ry: number;
+    spotX: number;
+    spotY: number;
+    hovered: boolean;
+  }>({ rx: 0, ry: 0, spotX: 50, spotY: 50, hovered: false });
+
+  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    setTilt({
+      rx: (0.5 - ny) * 7,
+      ry: (nx - 0.5) * 7,
+      spotX: nx * 100,
+      spotY: ny * 100,
+      hovered: true,
+    });
+  }, []);
+
+  const handleLeave = useCallback(() => {
+    setTilt((prev) => ({ ...prev, rx: 0, ry: 0, hovered: false }));
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28, filter: "blur(6px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{
+        duration: 0.68,
+        delay: idx * 0.09,
+        ease: MOTION_EASE.cinematicOut,
+      }}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      style={{
+        transform: `perspective(950px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+        transition: tilt.hovered
+          ? "transform 120ms cubic-bezier(0.22, 1, 0.36, 1), background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease"
+          : "transform 520ms cubic-bezier(0.16, 1, 0.3, 1), background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease",
+      }}
+      className="group relative rounded-3xl p-7 bg-[#F8F9FC] hover:bg-[#FFFFFF] border border-[#212226]/[0.07] hover:border-[#3186FF]/35 flex flex-col justify-between overflow-hidden shadow-[0_6px_24px_rgba(18,19,23,0.03)] hover:shadow-[0_20px_48px_rgba(18,19,23,0.08)] will-change-transform"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+        style={{
+          opacity: tilt.hovered ? 1 : 0,
+          background: `radial-gradient(300px circle at ${tilt.spotX}% ${tilt.spotY}%, rgba(49, 134, 255, 0.08), transparent 72%)`,
+        }}
+      />
+
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-6">
+          <div className="w-11 h-11 rounded-2xl bg-[#FFFFFF] border border-[#212226]/[0.08] group-hover:border-[#3186FF]/30 flex items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-105">
+            {phase.icon}
+          </div>
+          <span className="text-xs font-mono text-[#3186FF] font-semibold">
+            PHASE {phase.step}
+          </span>
+        </div>
+
+        <h3 className="text-lg font-bold text-[#121317] mb-2.5">
+          {phase.title}
+        </h3>
+        <p className="text-sm text-[#45474D] leading-relaxed mb-6">
+          {phase.description}
+        </p>
+      </div>
+
+      <div className="relative z-10 pt-4 border-t border-[#212226]/[0.07] flex items-center justify-between text-xs font-mono">
+        <span className="text-[#6A6A71]">CADENCE</span>
+        <span className="text-[#121317] font-medium">{phase.duration}</span>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function MethodologySection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start 75%", "end 60%"],
-  });
-  const lineScale = useSpring(scrollYProgress, {
-    stiffness: 180,
-    damping: 28,
-    restDelta: 0.001,
-  });
+  const progressBarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (prefersReduced || !sectionRef.current || !progressBarRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        progressBarRef.current,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 72%",
+            end: "bottom 55%",
+            scrub: 0.5,
+          },
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
       ref={sectionRef}
       id="process"
-      className="relative py-24 sm:py-32 bg-[#FFFFFF] border-t border-[#212226]/[0.07]"
+      className="relative py-24 sm:py-32 bg-[#FFFFFF]"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-            <span>HOW WE WORK</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
+              <span>HOW WE WORK</span>
+            </div>
+            <SplitTextReveal
+              as="h2"
+              text="Transparent Delivery Process"
+              accentFromWordIndex={2}
+              accentClassName="text-[#3186FF]"
+              className="text-3xl sm:text-5xl font-bold tracking-tight text-[#121317]"
+            />
           </div>
-          <SplitTextReveal
-            as="h2"
-            text="Transparent Process. Predictable Delivery."
-            accentFromWordIndex={2}
-            accentClassName="text-[#3186FF]"
-            className="text-3xl sm:text-5xl font-bold tracking-tight text-[#121317] mb-4 justify-center"
-          />
-          <p className="text-[#45474D] text-sm sm:text-base leading-relaxed">
-            No black-box agency handoffs. You work directly with our designers
-            and engineers from initial Figma wireframes to live deployment.
+          <p className="text-[#45474D] max-w-md text-sm sm:text-base leading-relaxed">
+            Direct collaboration with designers and engineers from Kuopio and
+            Lahore—structured in clear weekly milestones.
           </p>
         </div>
 
-        {/* Scroll-Scrubbed Antigravity Multicolor Progress Bus */}
-        <div className="hidden lg:block relative mb-8 px-12" aria-hidden="true">
+        {/* Scroll-Scrubbed Delivery Progress Rail (Desktop) */}
+        <div className="hidden lg:block relative mb-8">
           <div className="h-[2px] w-full bg-[#E6EAF0] rounded-full overflow-hidden">
-            <motion.div
-              style={{
-                scaleX: lineScale,
-                transformOrigin: "0% 50%",
-                background:
-                  "linear-gradient(90deg, #3186FF 0%, #FC413D 45%, #FBBC04 75%, #00B95C 100%)",
-              }}
-              className="h-full w-full"
+            <div
+              ref={progressBarRef}
+              className="h-full w-full origin-left bg-gradient-to-r from-[#121317] via-[#3186FF] to-[#749BFF]"
+              style={{ transform: "scaleX(0)" }}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {steps.map((step, idx) => (
-            <motion.div
-              key={step.phase}
-              initial={{ opacity: 0, y: 26 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{
-                duration: 0.65,
-                delay: idx * 0.1,
-                ease: MOTION_EASE.cinematicOut,
-              }}
-            >
-              <SpotlightCard className="relative h-full rounded-2xl p-6 sm:p-7 bg-[#F8F9FC] hover:bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 shadow-sm hover:shadow-[0_16px_40px_rgba(18,19,23,0.07)] transition-all flex flex-col justify-between group">
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <span className="text-xs font-mono font-bold text-[#3186FF] px-2.5 py-1 rounded-md bg-[#3186FF]/[0.08] border border-[#3186FF]/20">
-                      {step.phase}
-                    </span>
-                    <span className="text-xs font-mono text-[#6A6A71]">
-                      {step.duration}
-                    </span>
-                  </div>
-
-                  <div
-                    className={`p-3 rounded-xl border w-fit mb-5 group-hover:scale-105 transition-transform duration-300 ${step.chipBg}`}
-                  >
-                    {step.icon}
-                  </div>
-
-                  <h3 className="text-xl font-bold text-[#121317] mb-3">
-                    {step.title}
-                  </h3>
-
-                  <p className="text-sm text-[#45474D] leading-relaxed mb-6">
-                    {step.description}
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-[#212226]/[0.08] flex items-start gap-2 text-xs text-[#121317]">
-                  <CheckCircle2 className="w-4 h-4 text-[#00B95C] shrink-0 mt-0.5" />
-                  <span className="font-mono">{step.deliverable}</span>
-                </div>
-              </SpotlightCard>
-            </motion.div>
+          {phases.map((phase, idx) => (
+            <PhaseTiltCard key={phase.step} phase={phase} idx={idx} />
           ))}
         </div>
       </div>
