@@ -139,6 +139,34 @@ In RGB color space, difference blending computes $C_\text{result} = |C_\text{bac
 
 ---
 
+### Particle-Morph "Our Services" Section (`src/components/ServicesGrid.tsx` + `src/components/ServicesParticleCanvas.tsx`)
+
+#### 1. Architecture & Single-Source-of-Truth Synchronization
+- **Pinned Stage (`>= 1024px`)**: `GSAP ScrollTrigger` (`pin: true`, `scrub: true`, `anticipatePin: 1`) pins `#services` for `4 × 92vh = 368vh` of scroll distance, writing raw scroll progress (`0..1`) into a shared `scrollProgressRef`.
+- **Unified Master Timeline (`evaluateServicesMasterTimeline`)**: Both `ServicesParticleCanvas` (WebGL shader uniforms & attribute buffers) and `ServicesGrid` (card width expansion, horizontal track translation, indigo fill, diagonal top-left violet sweep, and staggered inner content reveal) sample the exact same smoothed progress (`PROGRESS_LERP = 0.09`) so particles and cards never drift out of sync in either scroll direction.
+- **5 GPU Point-Cloud Targets (`src/lib/serviceParticleShapes.ts`)**:
+  - Step 0 (`blob`): Core-weighted fuzzy stardust sphere + outward radial burst (`uBurst`) into Step 1.
+  - Step 1 (`wireframe` $\leftrightarrow$ `UI/UX Design`): 3D rounded browser wireframe with window dots, sidebar split, and wireframe cards.
+  - Step 2 (`brackets` $\leftrightarrow$ `Web Designing`): Bold 3D `</>` code brackets (`<`, `/`, `>`).
+  - Step 3 (`growthChart` $\leftrightarrow$ `Web Development`): 4 ascending 3D bars + rising diagonal trend arrow.
+  - Step 4 (`dnaHelix` $\leftrightarrow$ `AI Agents`): Tilted vertical double helix with 2 intertwined strands + 11 base-pair rungs, rotating continuously around Y.
+- **Midpoint Dust-Sphere Dissolution**: Every service-to-service transition (`1->2`, `2->3`, `3->4`) blends through `aBlob` + 3D trigonometric curl turbulence (`sin(π · staggered) * uMidpointDust`) at `uMorph = 0.5` before condensing into `aTarget`.
+
+#### 2. Tunable Constants (`PARTICLE_TUNING` & `SERVICES_SECTION_TUNING`)
+
+| Constant | Default Value | Purpose |
+| :--- | :--- | :--- |
+| `DESKTOP_COUNT` / `MOBILE_COUNT` | `9200` / `3600` | GPU `THREE.Points` count (`>= 1024px` vs `< 1024px`), DPR capped at `2` |
+| `PROGRESS_LERP` | `0.09` | Render-loop smoothing factor shared between particle morph and card track |
+| `SWAY_AMPLITUDE_Y` / `HELIX_ROTATION_SPEED` | `0.26 rad` (`~15°`) / `0.36 rad/s` | Gentle Y-sway on `wireframe`, `brackets`, `growthChart`; continuous Y-spin on `blob` & `dnaHelix` |
+| `MIDPOINT_NOISE_AMOUNT` / `INTRO_BURST_AMOUNT` | `0.42` / `0.58` | Mid-transition dust-sphere turbulence & Step 0 outward sphere scatter |
+| `SCROLL_VH_PER_STEP` | `92` (`vh`) | Scroll distance per service step (`368vh` total across 4 studio services) |
+| `SECTION_BG` / `RADIAL_GLOW_COLOR` | `#05050c` / `rgba(32, 34, 108, 0.62)` | Deep dark section surface & left-stage `#1b1b4d` radial glow |
+| `ACTIVE_CARD_TOP` $\rightarrow$ `BOTTOM` | `#4c48a4` $\rightarrow$ `#3b3882` | Expanded active card indigo/violet gradient + diagonal top-left violet sweep |
+| `INACTIVE_CARD_BG` | `#090910` | Near-black collapsed cards with top specular rim & bottom-right violet halftone dots |
+
+---
+
 ## 1. Motion Stack & Architecture Overview
 
 Inspection of `antimatterai.agency` (including its official studio template architecture and case study engineering specifications) confirms a four-layer motion stack running on Next.js + Tailwind CSS:
