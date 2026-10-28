@@ -2,6 +2,13 @@
 
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
+import {
+  PARTICLE_ENGINE_DEFAULTS,
+  createRadialGlowSprite,
+  createSharedParticleStage,
+  generateFibonacciSphereBuffer,
+  ProjectionMetrics,
+} from "@/lib/particleEngine";
 
 interface ParticleSphereProps {
   className?: string;
@@ -34,64 +41,72 @@ export default function ParticleSphereHero({
     const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
     const isMobileViewport = window.innerWidth < 768;
 
-    // --- TUNABLE CONSTANTS ---
-    const PARTICLE_COUNT = isMobileViewport ? 3600 : 7200;
-    const HOVER_TINT_COLOR = new THREE.Color("#3186FF"); // Antigravity Electric Blue highlight
-    const INFLUENCE_RADIUS = 118;
-    const SPRING_STIFFNESS = 0.078;
-    const SPRING_DAMPING = 0.88;
-    const ROTATION_SPEED_Y = prefersReducedMotion ? 0.02 : 0.095;
-    const ROTATION_TILT_X = 0.15;
-    const MOUSE_LERP_FACTOR = 0.12;
-
-    let width = container.clientWidth || window.innerWidth;
-    let height = container.clientHeight || window.innerHeight;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 2500);
-    camera.position.set(0, 0, 800);
-
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: true,
-      powerPreference: "high-performance",
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setClearColor(0xffffff, 0);
-    container.appendChild(renderer.domElement);
+    const PARTICLE_COUNT = isMobileViewport
+      ? PARTICLE_ENGINE_DEFAULTS.MOBILE_COUNT
+      : PARTICLE_ENGINE_DEFAULTS.DESKTOP_COUNT;
+    const HOVER_TINT_COLOR = new THREE.Color("#3186FF");
+    const INFLUENCE_RADIUS = PARTICLE_ENGINE_DEFAULTS.MOUSE_INFLUENCE_RADIUS_PX;
+    const SPRING_STIFFNESS = PARTICLE_ENGINE_DEFAULTS.SPRING_STIFFNESS;
+    const SPRING_DAMPING = PARTICLE_ENGINE_DEFAULTS.SPRING_DAMPING;
+    const ROTATION_SPEED_Y = prefersReducedMotion
+      ? 0.02
+      : PARTICLE_ENGINE_DEFAULTS.HERO_ROTATION_SPEED_Y;
+    const ROTATION_TILT_X = PARTICLE_ENGINE_DEFAULTS.ROTATION_TILT_X;
 
     const sphereGroup = new THREE.Group();
-    scene.add(sphereGroup);
 
-    // Subtle Daylight Pastel Core Glow Sprite behind the Sphere
-    const canvasGlow = document.createElement("canvas");
-    canvasGlow.width = 256;
-    canvasGlow.height = 256;
-    const glowCtx = canvasGlow.getContext("2d");
-    if (glowCtx) {
-      const grad = glowCtx.createRadialGradient(128, 128, 0, 128, 128, 128);
-      grad.addColorStop(0, "rgba(49, 134, 255, 0.14)");
-      grad.addColorStop(0.45, "rgba(116, 155, 255, 0.07)");
-      grad.addColorStop(0.75, "rgba(251, 188, 4, 0.03)");
-      grad.addColorStop(1, "rgba(255, 255, 255, 0.0)");
-      glowCtx.fillStyle = grad;
-      glowCtx.fillRect(0, 0, 256, 256);
-    }
-    const glowTexture = new THREE.CanvasTexture(canvasGlow);
-    const glowMaterial = new THREE.SpriteMaterial({
-      map: glowTexture,
-      transparent: true,
-      blending: THREE.NormalBlending,
-      depthWrite: false,
+    const glow = createRadialGlowSprite(
+      [
+        { offset: 0, color: "rgba(49, 134, 255, 0.14)" },
+        { offset: 0.45, color: "rgba(116, 155, 255, 0.07)" },
+        { offset: 0.75, color: "rgba(251, 188, 4, 0.03)" },
+        { offset: 1, color: "rgba(255, 255, 255, 0.0)" },
+      ],
+      THREE.NormalBlending
+    );
+    sphereGroup.add(glow.sprite);
+
+    let sphereRadius = 180;
+    const applyStageMetrics = (metrics: ProjectionMetrics) => {
+      const { width, height, pxToWorld } = metrics;
+      const isMobile = width < 768;
+      const targetScreenX = width * 0.5;
+      const targetScreenY = height * 0.5;
+
+      const maxRadiusByHeight = height * 0.34;
+      const screenRadius = isMobile
+        ? Math.min(maxRadiusByHeight, Math.max(125, Math.min(width * 0.34, 220)))
+        : Math.min(maxRadiusByHeight, Math.max(150, Math.min(width * 0.17, 330)));
+
+      sphereRadius = screenRadius * pxToWorld;
+
+      const worldX = (targetScreenX - width / 2) * pxToWorld;
+      const worldY = -(targetScreenY - height / 2) * pxToWorld;
+      sphereGroup.position.set(worldX, worldY, 0);
+
+      const glowScale = sphereRadius * 2.5;
+      glow.sprite.scale.set(glowScale, glowScale, 1);
+    };
+
+    const stage = createSharedParticleStage(container, {
+      fov: PARTICLE_ENGINE_DEFAULTS.CAMERA_FOV,
+      cameraZ: PARTICLE_ENGINE_DEFAULTS.CAMERA_Z,
+      onResize: applyStageMetrics,
     });
-    const glowSprite = new THREE.Sprite(glowMaterial);
-    sphereGroup.add(glowSprite);
+    if (!stage) {
+      glow.dispose();
+      return;
+    }
 
-    // --- FIBONACCI SPHERE GEOMETRY & TYPED ARRAYS ---
+    stage.scene.add(sphereGroup);
+
+    // --- SHARED FIBONACCI SPHERE GEOMETRY & TYPED ARRAYS ---
     const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const baseUnitPositions = new Float32Array(PARTICLE_COUNT * 3);
+    const baseUnitPositions = generateFibonacciSphereBuffer(PARTICLE_COUNT, {
+      jitter: 0.05,
+      surfaceBias: 1.0,
+    });
+    const positions = new Float32Array(baseUnitPositions);
     const baseColors = new Float32Array(PARTICLE_COUNT * 3);
     const displacements = new Float32Array(PARTICLE_COUNT * 3);
     const velocities = new Float32Array(PARTICLE_COUNT * 3);
@@ -106,26 +121,14 @@ export default function ParticleSphereHero({
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const y = 1 - (i / (PARTICLE_COUNT - 1)) * 2;
-      const radiusAtY = Math.sqrt(Math.max(0, 1 - y * y));
       const theta = goldenAngle * i;
-      const x = Math.cos(theta) * radiusAtY;
-      const z = Math.sin(theta) * radiusAtY;
 
-      const jitter = 1 + (Math.random() - 0.5) * 0.05;
-      baseUnitPositions[i * 3] = x * jitter;
-      baseUnitPositions[i * 3 + 1] = y * jitter;
-      baseUnitPositions[i * 3 + 2] = z * jitter;
-
-      positions[i * 3] = x * jitter;
-      positions[i * 3 + 1] = y * jitter;
-      positions[i * 3 + 2] = z * jitter;
-
-      // Distribute Antigravity multicolor spectrum organically across angular bands
       const bandSeed =
         Math.abs(Math.sin(theta * 0.5 + y * 2.4)) *
         ANTIGRAVITY_SPECTRUM.length;
       const paletteIdx =
-        (Math.floor(bandSeed) + (i % 3 === 0 ? 0 : i % ANTIGRAVITY_SPECTRUM.length)) %
+        (Math.floor(bandSeed) +
+          (i % 3 === 0 ? 0 : i % ANTIGRAVITY_SPECTRUM.length)) %
         ANTIGRAVITY_SPECTRUM.length;
       const chosen = ANTIGRAVITY_SPECTRUM[paletteIdx];
 
@@ -149,7 +152,6 @@ export default function ParticleSphereHero({
     geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
     geometry.setAttribute("customAlpha", new THREE.BufferAttribute(alphas, 1));
 
-    // Crisp NormalBlending Shader for Light (#FFFFFF) Antigravity Surface
     const shaderMaterial = new THREE.ShaderMaterial({
       vertexShader: `
         attribute float size;
@@ -190,92 +192,6 @@ export default function ParticleSphereHero({
     const points = new THREE.Points(geometry, shaderMaterial);
     sphereGroup.add(points);
 
-    let sphereRadius = 180;
-    let visibleHeightAtZ0 = 0;
-    let visibleWidthAtZ0 = 0;
-    let pxToWorld = 1;
-
-    const updateProjectionMetrics = () => {
-      width = container.clientWidth || window.innerWidth;
-      height = container.clientHeight || window.innerHeight;
-
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-
-      visibleHeightAtZ0 =
-        2 * Math.tan(((camera.fov * Math.PI) / 180) / 2) * camera.position.z;
-      visibleWidthAtZ0 = visibleHeightAtZ0 * camera.aspect;
-      pxToWorld = visibleWidthAtZ0 / width;
-
-      // Exact dead-center (50% X, 50% Y)
-      const isMobile = width < 768;
-      const targetScreenX = width * 0.5;
-      const targetScreenY = height * 0.5;
-
-      const maxRadiusByHeight = height * 0.34;
-      const screenRadius = isMobile
-        ? Math.min(maxRadiusByHeight, Math.max(125, Math.min(width * 0.34, 220)))
-        : Math.min(maxRadiusByHeight, Math.max(150, Math.min(width * 0.17, 330)));
-
-      sphereRadius = screenRadius * pxToWorld;
-
-      const worldX = (targetScreenX - width / 2) * pxToWorld;
-      const worldY = -(targetScreenY - height / 2) * pxToWorld;
-      sphereGroup.position.set(worldX, worldY, 0);
-
-      const glowScale = sphereRadius * 2.5;
-      glowSprite.scale.set(glowScale, glowScale, 1);
-    };
-
-    updateProjectionMetrics();
-    window.addEventListener("resize", updateProjectionMetrics);
-
-    let resizeObserver: ResizeObserver | null = null;
-    if (typeof ResizeObserver !== "undefined") {
-      resizeObserver = new ResizeObserver(() => {
-        updateProjectionMetrics();
-      });
-      resizeObserver.observe(container);
-    }
-
-    let targetMouseX = -9999;
-    let targetMouseY = -9999;
-    let lerpedMouseX = -9999;
-    let lerpedMouseY = -9999;
-    let isMouseInHero = false;
-
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      targetMouseX = e.clientX - rect.left;
-      targetMouseY = e.clientY - rect.top;
-      isMouseInHero = true;
-    };
-
-    const onMouseLeave = () => {
-      isMouseInHero = false;
-    };
-
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-    document.addEventListener("mouseleave", onMouseLeave);
-
-    let isTabVisible = !document.hidden;
-    const onVisibilityChange = () => {
-      isTabVisible = !document.hidden;
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    let isIntersecting = true;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          isIntersecting = entry.isIntersecting;
-        });
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(container);
-
     let animationFrameId = 0;
     let lastTime = performance.now();
     let currentRotationY = 0;
@@ -283,7 +199,7 @@ export default function ParticleSphereHero({
     const animate = (now: number) => {
       animationFrameId = requestAnimationFrame(animate);
 
-      if (!isTabVisible || !isIntersecting) {
+      if (!stage.isActive()) {
         lastTime = now;
         return;
       }
@@ -296,24 +212,14 @@ export default function ParticleSphereHero({
       points.rotation.y = currentRotationY;
       points.rotation.x = ROTATION_TILT_X;
 
-      if (isMouseInHero) {
-        if (lerpedMouseX === -9999) {
-          lerpedMouseX = targetMouseX;
-          lerpedMouseY = targetMouseY;
-        } else {
-          lerpedMouseX += (targetMouseX - lerpedMouseX) * MOUSE_LERP_FACTOR;
-          lerpedMouseY += (targetMouseY - lerpedMouseY) * MOUSE_LERP_FACTOR;
-        }
-      } else {
-        lerpedMouseX += (-9999 - lerpedMouseX) * 0.05;
-        lerpedMouseY += (-9999 - lerpedMouseY) * 0.05;
-      }
+      stage.pointer.stepLerp();
+      const { width, height, pxToWorld } = stage.getMetrics();
 
-      let activeCursorX = lerpedMouseX;
-      let activeCursorY = lerpedMouseY;
-      let cursorActive = isMouseInHero;
+      let activeCursorX = stage.pointer.lerpedX;
+      let activeCursorY = stage.pointer.lerpedY;
+      let cursorActive = stage.pointer.inside;
 
-      if (isCoarsePointer && !isMouseInHero && !prefersReducedMotion) {
+      if (isCoarsePointer && !stage.pointer.inside && !prefersReducedMotion) {
         const centerScreenX = width * 0.5;
         const centerScreenY = height * 0.5;
         const orbitRadius = (sphereRadius / pxToWorld) * 0.65;
@@ -331,7 +237,7 @@ export default function ParticleSphereHero({
       const groupPosX = sphereGroup.position.x;
       const groupPosY = sphereGroup.position.y;
       const groupPosZ = sphereGroup.position.z;
-      const cameraZ = camera.position.z;
+      const cameraZ = stage.camera.position.z;
 
       const positionAttr = geometry.attributes.position as THREE.BufferAttribute;
       const colorAttr = geometry.attributes.customColor as THREE.BufferAttribute;
@@ -453,7 +359,6 @@ export default function ParticleSphereHero({
         colors[i3 + 1] = bg + (HOVER_TINT_COLOR.g - bg) * currentTint;
         colors[i3 + 2] = bb + (HOVER_TINT_COLOR.b - bb) * currentTint;
 
-        // Crisp airy alpha on white surface so foreground #121317 headline stays razor-sharp
         const depthFactor = Math.max(
           0.0,
           Math.min(1.0, (rz / sphereRadius + 1.0) * 0.5)
@@ -476,30 +381,17 @@ export default function ParticleSphereHero({
       sizeAttr.needsUpdate = true;
       alphaAttr.needsUpdate = true;
 
-      renderer.render(scene, camera);
+      stage.renderer.render(stage.scene, stage.camera);
     };
 
     animationFrameId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", updateProjectionMetrics);
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-      window.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseleave", onMouseLeave);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      observer.disconnect();
-
       geometry.dispose();
       shaderMaterial.dispose();
-      glowTexture.dispose();
-      glowMaterial.dispose();
-      renderer.dispose();
-      if (renderer.domElement.parentElement) {
-        renderer.domElement.parentElement.removeChild(renderer.domElement);
-      }
+      glow.dispose();
+      stage.dispose();
     };
   }, []);
 
