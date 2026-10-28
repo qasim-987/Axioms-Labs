@@ -5,9 +5,12 @@ import * as THREE from "three";
 import {
   PARTICLE_ENGINE_DEFAULTS,
   ProjectionMetrics,
+  createRadialGlowSprite,
   createSeededRandom,
   createSharedParticleStage,
+  easeInOutCubic,
   easeInOutQuint,
+  stepScreenSpaceRepulsionSpring,
 } from "@/lib/particleEngine";
 import {
   SERVICE_STAGE_ORDER,
@@ -16,25 +19,28 @@ import {
 } from "@/lib/serviceParticleShapes";
 
 // ============================================================================
-// TUNABLE PARTICLE CONSTANTS (Black & White + Antigravity Palette)
+// TUNABLE PARTICLE & HOVER CONSTANTS (Light Theme + Antigravity Palette)
 // ============================================================================
 export const PARTICLE_TUNING = {
   DESKTOP_COUNT: PARTICLE_ENGINE_DEFAULTS.DESKTOP_COUNT, // 7,200 (matches ParticleSphereHero)
   MOBILE_COUNT: PARTICLE_ENGINE_DEFAULTS.MOBILE_COUNT, // 3,600 (matches ParticleSphereHero)
-  PROGRESS_LERP: 0.11, // Crisp, lag-free follow of GSAP scrubbed scroll progress
-  HOVER_MORPH_DURATION_S: 0.78, // Smooth hover/focus shape morph through dust sphere
+  PROGRESS_LERP: 0.12, // Crisp follow of GSAP scrubbed scroll progress
+  HOVER_MORPH_DURATION_S: 0.78, // Preview-tab shape morph duration through dust-sphere midpoint
+  HOVER_PULSE_STRENGTH: 0.36, // 36% outward loosening on active-card hover (target: 30-40%)
+  HOVER_PULSE_DURATION_MS: 820, // 820ms ease-in-out breathing loosen + re-assemble pulse
+  HOVER_ROTATION_MULTIPLIER: 1.5, // 1.5x rotation/sway speed while card is hovered/focused
+  HOVER_ENTER_EASE_MS: 320, // Smooth ramp-in for glow & rotation boost on hover enter
+  HOVER_LEAVE_EASE_MS: 500, // 500ms smooth ease-back on pointer leave
+  REPEL_RADIUS_PX: 112, // 112px cursor repulsion radius on particle stage (target: 90-120px)
+  REPEL_STRENGTH_PX: 78, // Crisp tactile repulsion impulse with damped spring return
   SWAY_AMPLITUDE_Y: 0.26, // ~15 deg gentle Y-axis depth sway for wireframe, </> & growth chart
   SWAY_SPEED: 0.55, // rad/s idle sway frequency
   HELIX_ROTATION_SPEED: 0.36, // rad/s continuous Y-axis spin for initial sphere & DNA helix
   MIDPOINT_NOISE_AMOUNT: 0.42, // Outward curl turbulence peaking at uMorph = 0.5
   INTRO_BURST_AMOUNT: 0.4, // Subtle outward stardust dispersion as initial sphere forms Step 1
-  IDLE_WOBBLE_AMOUNT: 0.016, // Continuous per-particle organic breathing wobble
-  HOVER_ENERGY_SWELL: 0.045, // +4.5% gentle scale swell while a card is hovered/focused
-  HOVER_ENERGY_SPIN_BOOST: 0.48, // +48% faster idle sway/spin while hovered/focused
-  STAGE_CENTER_X_DESKTOP: 0.225, // Left-half particle center (~22.5% of viewport width)
-  STAGE_CENTER_Y_DESKTOP: 0.52, // Vertically centered in pinned viewport
-  SHAPE_RADIUS_CLAMP_MIN: 148,
-  SHAPE_RADIUS_CLAMP_MAX: 192,
+  IDLE_WOBBLE_AMOUNT: 0.015, // Continuous per-particle organic breathing wobble
+  SHAPE_RADIUS_CLAMP_MIN: 126,
+  SHAPE_RADIUS_CLAMP_MAX: 184,
 } as const;
 
 // Exact Black & White + Antigravity Spectrum matching `ParticleSphereHero.tsx`
@@ -65,6 +71,12 @@ export interface MasterTimelineState {
   introBurst: number; // 0..1 stardust dispersion during initial sphere -> Step 1 morph
 }
 
+export interface ServicesHoverBridge {
+  previewIndex: number | null; // Non-null when SHOW_UPCOMING_PREVIEW=true & hovering a collapsed tab
+  cardHovered: boolean; // True when active card (or its arrow) is hovered or keyboard-focused
+  pulseSeq: number; // Increments on each genuine hover/focus enter to fire breathing pulse
+}
+
 export const STEP_HOLD_PROGRESS = [0.16, 0.43, 0.7, 0.95] as const;
 
 export function evaluateServicesMasterTimeline(
@@ -72,8 +84,8 @@ export function evaluateServicesMasterTimeline(
 ): MasterTimelineState {
   const p = Math.max(0, Math.min(1, rawP));
 
-  // Initial entry [0.00 .. 0.11]: Default rotating Particle Sphere (`blob`) morphs into
-  // Service 0's shape (`wireframe`) while Service 0 card is expanded.
+  // Initial entry [0.00 .. 0.115]: Default rotating Particle Sphere (`blob`) morphs into
+  // Service 0's shape (`wireframe`) while Service 0 card is visible.
   const INTRO_HOLD_SPHERE = 0.025;
   const INTRO_END = 0.115;
 
@@ -162,7 +174,7 @@ export function evaluateServicesMasterTimeline(
 
 interface ServicesParticleCanvasProps {
   scrollProgressRef: React.MutableRefObject<number>;
-  hoverIndexRef?: React.MutableRefObject<number | null>;
+  hoverBridgeRef?: React.MutableRefObject<ServicesHoverBridge>;
   layoutMode: "desktop" | "mobile";
   staticShape?: ServiceShapeId;
   className?: string;
@@ -170,7 +182,7 @@ interface ServicesParticleCanvasProps {
 
 export default function ServicesParticleCanvas({
   scrollProgressRef,
-  hoverIndexRef,
+  hoverBridgeRef,
   layoutMode,
   staticShape,
   className = "",
@@ -181,6 +193,13 @@ export default function ServicesParticleCanvas({
     const container = containerRef.current;
     if (!container) return;
 
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const fineHoverQuery = window.matchMedia(
+      "(hover: hover) and (pointer: fine)"
+    );
+
     const count =
       layoutMode === "desktop"
         ? PARTICLE_TUNING.DESKTOP_COUNT
@@ -189,21 +208,36 @@ export default function ServicesParticleCanvas({
     const shapes = buildAllServiceShapes(count);
     const cloudGroup = new THREE.Group();
 
-    let shapeScaleWorld = 170;
+    // Soft accent-colored radial glow sprite behind the shape (rises on card hover)
+    const accentGlow = createRadialGlowSprite(
+      [
+        { offset: 0, color: "rgba(49, 134, 255, 0.34)" },
+        { offset: 0.38, color: "rgba(116, 155, 255, 0.18)" },
+        { offset: 0.72, color: "rgba(49, 134, 255, 0.05)" },
+        { offset: 1, color: "rgba(255, 255, 255, 0.0)" },
+      ],
+      THREE.NormalBlending
+    );
+    accentGlow.sprite.position.set(0, 0, -28);
+    accentGlow.material.opacity = 0.16;
+    cloudGroup.add(accentGlow.sprite);
+
+    let shapeScaleWorld = 164;
     let baseCenterWorldX = 0;
     let baseCenterWorldY = 0;
 
     const applyStageMetrics = (metrics: ProjectionMetrics) => {
       const { width, height, pxToWorld } = metrics;
       if (layoutMode === "desktop") {
-        const targetScreenX = width * PARTICLE_TUNING.STAGE_CENTER_X_DESKTOP;
-        const targetScreenY = height * PARTICLE_TUNING.STAGE_CENTER_Y_DESKTOP;
+        // Container IS the dedicated left-half particle column: center cleanly at (50%, 50%)
+        const targetScreenX = width * 0.5;
+        const targetScreenY = height * 0.5;
         const radiusPx = Math.max(
           PARTICLE_TUNING.SHAPE_RADIUS_CLAMP_MIN,
           Math.min(
-            width * 0.1,
-            PARTICLE_TUNING.SHAPE_RADIUS_CLAMP_MAX,
-            height * 0.26
+            width * 0.25,
+            height * 0.285,
+            PARTICLE_TUNING.SHAPE_RADIUS_CLAMP_MAX
           )
         );
         shapeScaleWorld = radiusPx * pxToWorld;
@@ -211,14 +245,16 @@ export default function ServicesParticleCanvas({
         baseCenterWorldY = -(targetScreenY - height * 0.5) * pxToWorld;
       } else {
         const radiusPx = Math.max(
-          98,
-          Math.min(width * 0.28, height * 0.34, 150)
+          94,
+          Math.min(width * 0.28, height * 0.34, 148)
         );
         shapeScaleWorld = radiusPx * pxToWorld;
         baseCenterWorldX = 0;
         baseCenterWorldY = 0;
       }
       cloudGroup.position.set(baseCenterWorldX, baseCenterWorldY, 0);
+      const baseGlowScale = shapeScaleWorld * 2.85;
+      accentGlow.sprite.scale.set(baseGlowScale, baseGlowScale, 1);
     };
 
     const stage = createSharedParticleStage(container, {
@@ -227,8 +263,9 @@ export default function ServicesParticleCanvas({
       onResize: applyStageMetrics,
     });
 
-    // 2D Canvas Fallback if WebGL is disabled
+    // 2D Canvas Fallback if WebGL is unavailable
     if (!stage) {
+      accentGlow.dispose();
       const canvas2d = document.createElement("canvas");
       canvas2d.style.width = "100%";
       canvas2d.style.height = "100%";
@@ -250,25 +287,22 @@ export default function ServicesParticleCanvas({
 
         smoothP +=
           (scrollProgressRef.current - smoothP) * PARTICLE_TUNING.PROGRESS_LERP;
-        const hIdx = hoverIndexRef?.current ?? null;
+        const previewIdx = hoverBridgeRef?.current.previewIndex ?? null;
         const state = staticShape
           ? { fromShape: staticShape, toShape: staticShape, shapeMorphT: 0 }
-          : hIdx !== null
+          : previewIdx !== null
           ? {
-              fromShape: ORDERED_SERVICE_SHAPES[hIdx],
-              toShape: ORDERED_SERVICE_SHAPES[hIdx],
+              fromShape: ORDERED_SERVICE_SHAPES[previewIdx],
+              toShape: ORDERED_SERVICE_SHAPES[previewIdx],
               shapeMorphT: 0,
             }
           : evaluateServicesMasterTimeline(smoothP);
 
         const src = shapes[state.fromShape];
         const dst = shapes[state.toShape];
-        const cx =
-          layoutMode === "desktop"
-            ? w * PARTICLE_TUNING.STAGE_CENTER_X_DESKTOP
-            : w * 0.5;
+        const cx = w * 0.5;
         const cy = h * 0.5;
-        const scale = Math.min(w, h) * 0.3;
+        const scale = Math.min(w, h) * 0.29;
 
         const stride = 9;
         for (let i = 0; i < src.length; i += stride) {
@@ -296,7 +330,7 @@ export default function ServicesParticleCanvas({
     stage.scene.add(cloudGroup);
 
     // ------------------------------------------------------------------------
-    // GPU THREE.JS POINTS + CUSTOM GLSL SHADER MORPH (Black/White/Antigravity)
+    // GPU THREE.JS POINTS + CUSTOM GLSL SHADER MORPH + SPRING REPULSION
     // ------------------------------------------------------------------------
     const geometry = new THREE.BufferGeometry();
 
@@ -312,6 +346,11 @@ export default function ServicesParticleCanvas({
     );
     const blobArray = new Float32Array(shapes.blob);
 
+    // Damped-spring screen-space cursor repulsion buffers (shared engine physics)
+    const repelDisplacements = new Float32Array(count * 3);
+    const repelVelocities = new Float32Array(count * 3);
+    const repelHighlights = new Float32Array(count);
+
     const rng = createSeededRandom(7719);
     const seeds = new Float32Array(count);
     const sizes = new Float32Array(count);
@@ -326,11 +365,9 @@ export default function ServicesParticleCanvas({
       const r3 = rng();
 
       seeds[i] = r1;
-      // Crisp 1.4-2.8px dots on white surface matching ParticleSphereHero
       sizes[i] = r2 > 0.84 ? 2.3 + r3 * 0.75 : 1.35 + r2 * 1.05;
-      alphas[i] = 0.36 + Math.pow(r3, 1.15) * 0.58;
+      alphas[i] = 0.38 + Math.pow(r3, 1.15) * 0.56;
 
-      // Distribute Black/Charcoal + Antigravity multicolor spectrum identically to ParticleSphereHero
       const y = 1 - (i / Math.max(1, count - 1)) * 2;
       const theta = goldenAngle * i;
       const bandSeed =
@@ -349,9 +386,14 @@ export default function ServicesParticleCanvas({
 
     const startAttr = new THREE.BufferAttribute(startArray, 3);
     const targetAttr = new THREE.BufferAttribute(targetArray, 3);
+    const repelOffsetAttr = new THREE.BufferAttribute(repelDisplacements, 3);
+    const repelHighlightAttr = new THREE.BufferAttribute(repelHighlights, 1);
+
     geometry.setAttribute("position", startAttr);
     geometry.setAttribute("aTarget", targetAttr);
     geometry.setAttribute("aBlob", new THREE.BufferAttribute(blobArray, 3));
+    geometry.setAttribute("aRepelOffset", repelOffsetAttr);
+    geometry.setAttribute("aRepelHighlight", repelHighlightAttr);
     geometry.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
     geometry.setAttribute("aSeed", new THREE.BufferAttribute(seeds, 1));
     geometry.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
@@ -370,12 +412,16 @@ export default function ServicesParticleCanvas({
       uPixelRatio: { value: dpr },
       uShapeScale: { value: shapeScaleWorld },
       uIdleWobble: {
-        value: staticShape ? 0.0 : PARTICLE_TUNING.IDLE_WOBBLE_AMOUNT,
+        value:
+          staticShape || prefersReducedMotion
+            ? 0.0
+            : PARTICLE_TUNING.IDLE_WOBBLE_AMOUNT,
       },
       uNoiseAmount: { value: PARTICLE_TUNING.MIDPOINT_NOISE_AMOUNT },
       uHoverEnergy: { value: 0 },
-      uCursorLocal: { value: new THREE.Vector3(99, 99, 0) },
-      uCursorStrength: { value: 0 },
+      uPulseActive: { value: 0 },
+      uPulseProgress: { value: 0 },
+      uPulseStrength: { value: PARTICLE_TUNING.HOVER_PULSE_STRENGTH },
     };
 
     const shaderMaterial = new THREE.ShaderMaterial({
@@ -383,6 +429,8 @@ export default function ServicesParticleCanvas({
       vertexShader: `
         attribute vec3 aTarget;
         attribute vec3 aBlob;
+        attribute vec3 aRepelOffset;
+        attribute float aRepelHighlight;
         attribute vec3 aColor;
         attribute float aSeed;
         attribute float aSize;
@@ -397,8 +445,9 @@ export default function ServicesParticleCanvas({
         uniform float uIdleWobble;
         uniform float uNoiseAmount;
         uniform float uHoverEnergy;
-        uniform vec3 uCursorLocal;
-        uniform float uCursorStrength;
+        uniform float uPulseActive;
+        uniform float uPulseProgress;
+        uniform float uPulseStrength;
 
         varying float vAlpha;
         varying vec3 vColor;
@@ -417,12 +466,13 @@ export default function ServicesParticleCanvas({
 
           vec3 basePos = mix(position, aTarget, eased);
 
-          // Signature dust-sphere midpoint: peaks at uMorph = 0.5 (sin(PI * staggered))
+          // Dust-sphere midpoint during shape-to-shape morphs
           float midBell = sin(3.14159265 * staggered) * uMidpointDust;
           basePos = mix(basePos, aBlob * 1.05, midBell * 0.68);
           vec3 midNoise = curlNoise3D(basePos * 1.45, uTime, aSeed) * midBell * uNoiseAmount * (0.45 + aSeed * 0.75);
           basePos += midNoise;
 
+          // Initial sphere-to-wireframe burst
           if (uBurst > 0.001) {
             vec3 radialDir = normalize(position + vec3(0.0001));
             vec3 burstScatter = radialDir * (0.3 + aSeed * 0.85) * uBurst * ${PARTICLE_TUNING.INTRO_BURST_AMOUNT.toFixed(2)};
@@ -430,39 +480,42 @@ export default function ServicesParticleCanvas({
             basePos += burstScatter;
           }
 
-          // Left-stage cursor repulsion/swirl (consistent with ParticleSphereHero)
-          float cursorHighlight = 0.0;
-          if (uCursorStrength > 0.001) {
-            vec3 toParticle = basePos - uCursorLocal;
-            float dist2D = length(toParticle.xy);
-            float influence = smoothstep(0.64, 0.0, dist2D) * uCursorStrength;
-            cursorHighlight = influence;
-            vec2 repelDir = normalize(toParticle.xy + vec2(0.0001));
-            vec2 swirlDir = vec2(-repelDir.y, repelDir.x);
-            basePos.xy += (repelDir * 0.17 + swirlDir * 0.09 * sin(uTime * 2.0 + aSeed * 6.28)) * influence;
+          // Card-hover breathing pulse: loosens current shape by ~36% and re-assembles
+          // with the exact same per-particle aSeed ripple stagger as normal morphs
+          float pulseWave = 0.0;
+          if (uPulseActive > 0.5) {
+            float pStagger = clamp((uPulseProgress * 1.28) - aSeed * 0.28, 0.0, 1.0);
+            float bell = sin(3.14159265 * pStagger);
+            pulseWave = bell * bell;
+            vec3 outwardDir = normalize(basePos + aBlob * 0.32 + vec3(0.0001));
+            vec3 loosenedPos = basePos * (1.0 + 0.94 * uPulseStrength) + outwardDir * (0.28 * uPulseStrength);
+            vec3 pulseCurl = curlNoise3D(basePos * 1.65, uTime * 1.2, aSeed) * pulseWave * uPulseStrength * 0.92;
+            basePos = mix(basePos, loosenedPos, pulseWave) + pulseCurl;
           }
 
+          // Damped-spring screen-space repulsion offset from left-stage cursor
+          basePos += aRepelOffset;
+
           vec3 wobble = curlNoise3D(basePos * 2.2, uTime * 0.75, aSeed) * uIdleWobble;
-          float breathe = 1.0 + sin(uTime * 1.1) * (uIdleWobble * 0.8) + uHoverEnergy * ${PARTICLE_TUNING.HOVER_ENERGY_SWELL.toFixed(3)};
+          float breathe = 1.0 + sin(uTime * 1.1) * (uIdleWobble * 0.8) + uHoverEnergy * 0.032;
           vec3 scaledPos = (basePos * breathe + wobble) * uShapeScale;
 
           vec4 mvPosition = modelViewMatrix * vec4(scaledPos, 1.0);
           float dist = max(120.0, -mvPosition.z);
 
-          // Volumetric 3D depth cues on white surface
           float relDepth = clamp((mvPosition.z + 800.0) / (uShapeScale * 2.2) + 0.5, 0.0, 1.0);
-          float depthAlpha = mix(0.26, 0.96, relDepth);
+          float depthAlpha = mix(0.28, 0.96, relDepth);
           float depthSize = mix(0.76, 1.28, relDepth);
 
-          float scatterDim = 1.0 - 0.18 * max(uBurst, midBell);
-          vAlpha = clamp(aAlpha * depthAlpha * scatterDim * (1.0 + uHoverEnergy * 0.12), 0.08, 0.95);
+          float scatterDim = 1.0 - 0.16 * max(uBurst, midBell);
+          vAlpha = clamp(aAlpha * depthAlpha * scatterDim * (1.0 + uHoverEnergy * 0.14 + pulseWave * 0.12), 0.10, 0.96);
 
-          // Subtle Electric Blue (#3186FF) highlight on cursor interaction or card hover
+          // Electric Blue (#3186FF) accent highlight on cursor repel, breathing pulse, or card hover
           vec3 electricBlue = vec3(0.192, 0.525, 1.0);
-          float tintMix = clamp(cursorHighlight * 0.75 + uHoverEnergy * 0.18, 0.0, 0.85);
+          float tintMix = clamp(aRepelHighlight * 0.78 + pulseWave * 0.48 + uHoverEnergy * 0.24, 0.0, 0.88);
           vColor = mix(aColor, electricBlue, tintMix);
 
-          gl_PointSize = aSize * depthSize * uPixelRatio * (700.0 / dist) * (1.0 + cursorHighlight * 0.35);
+          gl_PointSize = aSize * depthSize * uPixelRatio * (700.0 / dist) * (1.0 + aRepelHighlight * 0.38 + pulseWave * 0.18);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -487,10 +540,15 @@ export default function ServicesParticleCanvas({
     const points = new THREE.Points(geometry, shaderMaterial);
     cloudGroup.add(points);
 
+    // Captures the exact live particle cloud (including midpoint dust & active breathing pulse)
+    // into `startArray` so interrupted morphs always blend seamlessly without snapping.
     const snapshotCurrentCloudIntoStart = (
       currentMorph: number,
-      midpointDustWeight: number
+      midpointDustWeight: number,
+      activePulse: boolean,
+      currentPulseProg: number
     ) => {
+      const pStrength = PARTICLE_TUNING.HOVER_PULSE_STRENGTH;
       for (let i = 0; i < count; i++) {
         const i3 = i * 3;
         const seed = seeds[i];
@@ -513,6 +571,27 @@ export default function ServicesParticleCanvas({
           z += (blobArray[i3 + 2] * 1.05 - z) * midBell;
         }
 
+        if (activePulse) {
+          const pStag = Math.max(
+            0,
+            Math.min(1, currentPulseProg * 1.28 - seed * 0.28)
+          );
+          const bell = Math.sin(Math.PI * pStag);
+          const pw = bell * bell;
+          if (pw > 0.001) {
+            const ox = x + blobArray[i3] * 0.32;
+            const oy = y + blobArray[i3 + 1] * 0.32;
+            const oz = z + blobArray[i3 + 2] * 0.32;
+            const len = Math.sqrt(ox * ox + oy * oy + oz * oz) || 1;
+            const lx = x * (1 + 0.94 * pStrength) + (ox / len) * (0.28 * pStrength);
+            const ly = y * (1 + 0.94 * pStrength) + (oy / len) * (0.28 * pStrength);
+            const lz = z * (1 + 0.94 * pStrength) + (oz / len) * (0.28 * pStrength);
+            x += (lx - x) * pw;
+            y += (ly - y) * pw;
+            z += (lz - z) * pw;
+          }
+        }
+
         startArray[i3] = x;
         startArray[i3 + 1] = y;
         startArray[i3 + 2] = z;
@@ -523,16 +602,28 @@ export default function ServicesParticleCanvas({
     let scrollFromShape: ServiceShapeId = "blob";
     let scrollToShape: ServiceShapeId = ORDERED_SERVICE_SHAPES[0];
 
-    let isOverrideMode = false;
+    // Single active preview-morph state (for SHOW_UPCOMING_PREVIEW = true)
+    let isPreviewOverride = false;
     let overrideTargetShape: ServiceShapeId | null = null;
     let overrideMorphT = 1;
-    let hoverEnergy = 0;
 
+    // Single active breathing-pulse state (for visible card hover / keyboard focus)
+    let lastPulseSeq = hoverBridgeRef?.current.pulseSeq ?? 0;
+    let pulseActive = false;
+    let pulseProgress = 0;
+
+    // Timed hover energy tween (320ms enter, 500ms ease-back on leave)
+    let hoverEnergy = 0;
+    let hoverTweenFrom = 0;
+    let hoverTweenTarget = 0;
+    let hoverTweenElapsedMs = 0;
+    let hoverTweenDurationMs: number = PARTICLE_TUNING.HOVER_ENTER_EASE_MS;
+
+    let hasRepelResidual = false;
     let rafId = 0;
     let lastNow = performance.now();
     let elapsed = 0;
     let smoothProgress = scrollProgressRef.current;
-    let lastRawProgress = scrollProgressRef.current;
     let spinAngleY = 0;
 
     const renderLoop = (now: number) => {
@@ -550,33 +641,91 @@ export default function ServicesParticleCanvas({
       }
 
       const dt = Math.min((now - lastNow) / 1000, 0.06);
+      const dtMs = dt * 1000;
       lastNow = now;
       elapsed += dt;
 
       const rawP = scrollProgressRef.current;
-      const rawScrollMoved = Math.abs(rawP - lastRawProgress) > 0.004;
-      lastRawProgress = rawP;
-
       smoothProgress +=
         (rawP - smoothProgress) * PARTICLE_TUNING.PROGRESS_LERP;
 
       const scrollState = evaluateServicesMasterTimeline(smoothProgress);
-      const currentHoverIdx = hoverIndexRef?.current ?? null;
+      const bridge = hoverBridgeRef?.current;
+      const previewIdx = bridge?.previewIndex ?? null;
+      const isCardHovered =
+        !prefersReducedMotion &&
+        Boolean(bridge?.cardHovered || previewIdx !== null);
 
-      const targetEnergy = currentHoverIdx !== null ? 1 : 0;
-      hoverEnergy += (targetEnergy - hoverEnergy) * 0.09;
+      // 1. Timed hover-energy ease (320ms enter -> 1.0, 500ms smooth ease-back -> 0.0 on leave)
+      const desiredEnergy = isCardHovered ? 1 : 0;
+      if (desiredEnergy !== hoverTweenTarget) {
+        hoverTweenFrom = hoverEnergy;
+        hoverTweenTarget = desiredEnergy;
+        hoverTweenElapsedMs = 0;
+        hoverTweenDurationMs =
+          desiredEnergy > hoverTweenFrom
+            ? PARTICLE_TUNING.HOVER_ENTER_EASE_MS
+            : PARTICLE_TUNING.HOVER_LEAVE_EASE_MS;
+      }
+      if (hoverEnergy !== hoverTweenTarget) {
+        hoverTweenElapsedMs = Math.min(
+          hoverTweenDurationMs,
+          hoverTweenElapsedMs + dtMs
+        );
+        const t = easeInOutCubic(
+          hoverTweenElapsedMs / Math.max(1, hoverTweenDurationMs)
+        );
+        hoverEnergy = hoverTweenFrom + (hoverTweenTarget - hoverTweenFrom) * t;
+      }
       uniforms.uHoverEnergy.value = hoverEnergy;
 
+      // Update soft accent radial glow behind the shape
+      accentGlow.material.opacity = 0.14 + hoverEnergy * 0.78;
+      const glowScale = shapeScaleWorld * (2.82 + hoverEnergy * 0.42);
+      accentGlow.sprite.scale.set(glowScale, glowScale, 1);
+
+      // 2. Single active breathing pulse (820ms loosen ~36% + re-assemble, zero piling up)
+      const incomingPulseSeq = bridge?.pulseSeq ?? 0;
+      if (incomingPulseSeq !== lastPulseSeq) {
+        lastPulseSeq = incomingPulseSeq;
+        if (!prefersReducedMotion && previewIdx === null) {
+          if (pulseActive && pulseProgress > 0.5 && pulseProgress < 1) {
+            // Mirror from symmetric pre-peak point so current looseness never snaps
+            pulseProgress = 1 - pulseProgress;
+          } else if (!pulseActive || pulseProgress >= 1) {
+            pulseProgress = 0;
+          }
+          pulseActive = true;
+        }
+      }
+
+      if (pulseActive) {
+        // Cancel pulse cleanly if user begins scrolling between shapes
+        if (scrollState.cardTransitionT > 0.02 || previewIdx !== null) {
+          pulseActive = false;
+          pulseProgress = 0;
+        } else {
+          pulseProgress += dtMs / PARTICLE_TUNING.HOVER_PULSE_DURATION_MS;
+          if (pulseProgress >= 1) {
+            pulseProgress = 0;
+            pulseActive = false;
+          }
+        }
+      }
+      uniforms.uPulseActive.value = pulseActive ? 1.0 : 0.0;
+      uniforms.uPulseProgress.value = pulseProgress;
+
+      // 3. Shape morph state machine (`activeIndex = previewIndex ?? scrollIndex`)
       let activeFromShapeForSpin: ServiceShapeId = scrollState.fromShape;
       let activeToShapeForSpin: ServiceShapeId = scrollState.toShape;
       let activeSpinBlend = scrollState.shapeMorphT;
 
-      if (currentHoverIdx !== null) {
+      if (previewIdx !== null && !prefersReducedMotion) {
         const desiredShape =
-          ORDERED_SERVICE_SHAPES[currentHoverIdx] ?? ORDERED_SERVICE_SHAPES[0];
+          ORDERED_SERVICE_SHAPES[previewIdx] ?? ORDERED_SERVICE_SHAPES[0];
 
-        if (!isOverrideMode) {
-          isOverrideMode = true;
+        if (!isPreviewOverride) {
+          isPreviewOverride = true;
           const settledScrollShape =
             scrollState.shapeMorphT < 0.04
               ? scrollState.fromShape
@@ -594,7 +743,9 @@ export default function ServicesParticleCanvas({
           } else {
             snapshotCurrentCloudIntoStart(
               uniforms.uMorph.value,
-              uniforms.uMidpointDust.value
+              uniforms.uMidpointDust.value,
+              pulseActive,
+              pulseProgress
             );
             targetArray.set(shapes[desiredShape]);
             targetAttr.needsUpdate = true;
@@ -604,7 +755,9 @@ export default function ServicesParticleCanvas({
         } else if (overrideTargetShape !== desiredShape) {
           snapshotCurrentCloudIntoStart(
             overrideMorphT,
-            uniforms.uMidpointDust.value
+            uniforms.uMidpointDust.value,
+            false,
+            0
           );
           targetArray.set(shapes[desiredShape]);
           targetAttr.needsUpdate = true;
@@ -626,21 +779,24 @@ export default function ServicesParticleCanvas({
         activeFromShapeForSpin = desiredShape;
         activeToShapeForSpin = desiredShape;
         activeSpinBlend = 1;
-      } else if (isOverrideMode) {
+      } else if (isPreviewOverride) {
         const scrollImpliedShape =
           scrollState.shapeMorphT >= 0.5
             ? scrollState.toShape
             : scrollState.fromShape;
 
-        if (rawScrollMoved && overrideMorphT > 0.65) {
-          isOverrideMode = false;
+        // If scroll transitioned to a new step (`scroll always wins`), hand back to scroll timeline
+        if (scrollState.cardTransitionT > 0.03) {
+          isPreviewOverride = false;
           overrideTargetShape = null;
           scrollFromShape = "" as ServiceShapeId;
         } else {
           if (overrideTargetShape !== scrollImpliedShape) {
             snapshotCurrentCloudIntoStart(
               overrideMorphT,
-              uniforms.uMidpointDust.value
+              uniforms.uMidpointDust.value,
+              false,
+              0
             );
             targetArray.set(shapes[scrollImpliedShape]);
             targetAttr.needsUpdate = true;
@@ -654,21 +810,21 @@ export default function ServicesParticleCanvas({
           );
           uniforms.uMorph.value = overrideMorphT;
           uniforms.uBurst.value = 0;
-          uniforms.uMidpointDust.value = 1.0;
+          uniforms.uMidpointDust.value = overrideMorphT < 1 ? 1.0 : 0.0;
 
           activeFromShapeForSpin = scrollImpliedShape;
           activeToShapeForSpin = scrollImpliedShape;
           activeSpinBlend = 1;
 
           if (overrideMorphT >= 1) {
-            isOverrideMode = false;
+            isPreviewOverride = false;
             overrideTargetShape = null;
             scrollFromShape = "" as ServiceShapeId;
           }
         }
       }
 
-      if (!isOverrideMode && currentHoverIdx === null) {
+      if (!isPreviewOverride && previewIdx === null) {
         if (scrollState.fromShape !== scrollFromShape) {
           startArray.set(shapes[scrollState.fromShape]);
           startAttr.needsUpdate = true;
@@ -686,30 +842,11 @@ export default function ServicesParticleCanvas({
           scrollState.fromShape === "blob" ? 0.0 : 1.0;
       }
 
-      // Left-stage cursor repulsion/swirl
-      stage.pointer.stepLerp();
-      const { width, height, pxToWorld } = stage.getMetrics();
-      const inLeftHalf =
-        stage.pointer.inside &&
-        (layoutMode !== "desktop" || stage.pointer.lerpedX < width * 0.45);
-
-      const targetCursorStrength = inLeftHalf ? 1 : 0;
-      uniforms.uCursorStrength.value +=
-        (targetCursorStrength - uniforms.uCursorStrength.value) * 0.12;
-
-      if (uniforms.uCursorStrength.value > 0.005) {
-        const cursorWorldX = (stage.pointer.lerpedX - width * 0.5) * pxToWorld;
-        const cursorWorldY =
-          -(stage.pointer.lerpedY - height * 0.5) * pxToWorld;
-        const localX =
-          (cursorWorldX - cloudGroup.position.x) / Math.max(1, shapeScaleWorld);
-        const localY =
-          (cursorWorldY - cloudGroup.position.y) / Math.max(1, shapeScaleWorld);
-        uniforms.uCursorLocal.value.set(localX, localY, 0);
-      }
-
-      const speedMul =
-        1 + hoverEnergy * PARTICLE_TUNING.HOVER_ENERGY_SPIN_BOOST;
+      // 4. Rotation / sway speed (`1.5x` while card is hovered, easing back over 500ms)
+      const speedMul = prefersReducedMotion
+        ? 0
+        : 1 +
+          hoverEnergy * (PARTICLE_TUNING.HOVER_ROTATION_MULTIPLIER - 1);
       spinAngleY += dt * PARTICLE_TUNING.HELIX_ROTATION_SPEED * speedMul;
 
       const swayY =
@@ -734,16 +871,59 @@ export default function ServicesParticleCanvas({
       points.rotation.y = swayY * (1 - spinWeight) + wrappedSpin * spinWeight;
       points.rotation.x =
         PARTICLE_ENGINE_DEFAULTS.ROTATION_TILT_X * 0.4 +
-        Math.sin(elapsed * 0.42) * 0.06;
+        (prefersReducedMotion ? 0 : Math.sin(elapsed * 0.42) * 0.06);
+
+      const { width, height, pxToWorld } = stage.getMetrics();
+      cloudGroup.position.set(
+        baseCenterWorldX,
+        baseCenterWorldY +
+          (prefersReducedMotion
+            ? 0
+            : Math.sin(elapsed * 0.85) * (4.0 * pxToWorld)),
+        0
+      );
+
+      // 5. Left-stage cursor repulsion (90-120px radius, damped spring return, reused from ParticleSphereHero)
+      stage.pointer.stepLerp();
+      const cursorActive =
+        !prefersReducedMotion &&
+        layoutMode === "desktop" &&
+        fineHoverQuery.matches &&
+        stage.pointer.inside;
+
+      if (cursorActive || hasRepelResidual) {
+        hasRepelResidual = stepScreenSpaceRepulsionSpring({
+          count,
+          startPositions: startArray,
+          targetPositions: targetArray,
+          seeds,
+          morphProgress: uniforms.uMorph.value,
+          displacements: repelDisplacements,
+          velocities: repelVelocities,
+          highlights: repelHighlights,
+          shapeScaleWorld,
+          rotationX: points.rotation.x,
+          rotationY: points.rotation.y,
+          groupX: cloudGroup.position.x,
+          groupY: cloudGroup.position.y,
+          groupZ: cloudGroup.position.z,
+          cameraZ: stage.camera.position.z,
+          stageWidth: width,
+          stageHeight: height,
+          pxToWorld,
+          cursorX: stage.pointer.lerpedX,
+          cursorY: stage.pointer.lerpedY,
+          cursorActive,
+          time: elapsed,
+          influenceRadiusPx: PARTICLE_TUNING.REPEL_RADIUS_PX,
+          repelStrengthPx: PARTICLE_TUNING.REPEL_STRENGTH_PX,
+        });
+        repelOffsetAttr.needsUpdate = true;
+        repelHighlightAttr.needsUpdate = true;
+      }
 
       uniforms.uTime.value = elapsed;
       uniforms.uShapeScale.value = shapeScaleWorld;
-
-      cloudGroup.position.set(
-        baseCenterWorldX,
-        baseCenterWorldY + Math.sin(elapsed * 0.85) * (4.5 * pxToWorld),
-        0
-      );
 
       stage.renderer.render(stage.scene, stage.camera);
     };
@@ -761,15 +941,16 @@ export default function ServicesParticleCanvas({
       cancelAnimationFrame(rafId);
       geometry.dispose();
       shaderMaterial.dispose();
+      accentGlow.dispose();
       stage.dispose();
     };
-  }, [hoverIndexRef, layoutMode, scrollProgressRef, staticShape]);
+  }, [hoverBridgeRef, layoutMode, scrollProgressRef, staticShape]);
 
   return (
     <div
       ref={containerRef}
       aria-hidden="true"
-      className={`pointer-events-none select-none overflow-hidden ${className}`}
+      className={`select-none overflow-hidden ${className}`}
     />
   );
 }

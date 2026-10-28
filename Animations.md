@@ -154,19 +154,21 @@ In RGB color space, difference blending computes $C_\text{result} = |C_\text{bac
   - Step 3 (`growthChart` $\leftrightarrow$ `Web Designing`): 4 ascending 3D bars + rising diagonal trend arrow.
   - Step 4 (`dnaHelix` $\leftrightarrow$ `AI Agents`): Tilted vertical double helix with 2 intertwined strands + 11 horizontal rungs, rotating continuously around Y.
 
-#### 2. Tunable Constants (`PARTICLE_TUNING` & `SERVICES_SECTION_TUNING`)
+#### 2. Tunable Constants (`PARTICLE_TUNING`, `SHOW_UPCOMING_PREVIEW` & `SERVICES_SECTION_TUNING`)
 
 | Constant | Default Value | Purpose |
 | :--- | :--- | :--- |
+| `SHOW_UPCOMING_PREVIEW` | `false` | Default single-card mode (`opacity: 0; visibility: hidden; pointer-events: none` on upcoming cards until scroll transition); flip to `true` for non-overlapping preview tabs |
+| `COMPACT_VIEWPORT_MAX_HEIGHT_PX` | `700` (`px`) | Enables compact layout (`height < 700px`: tighter header/card spacing, 3 whole service items, `line-clamp-3`) inside `calc(100dvh - var(--nav-h))` |
+| `HOVER_PULSE_STRENGTH` / `HOVER_PULSE_DURATION_MS` | `0.36` (`36%`) / `820ms` | Active-card hover/focus breathing pulse: loosens current shape ~36% and re-assembles with per-particle `aSeed` ripple stagger |
+| `HOVER_ROTATION_MULTIPLIER` / `HOVER_LEAVE_EASE_MS` | `1.5x` / `500ms` | Speeds up shape rotation/sway `1.5x` + raises soft Electric Blue glow behind shape while hovered, easing back over `500ms` on leave |
+| `REPEL_RADIUS_PX` / `REPEL_STRENGTH_PX` | `112px` / `78px` | Left-stage cursor repulsion radius (`90–120px` target) & impulse reusing `ParticleSphereHero`'s damped-spring physics |
 | `DESKTOP_COUNT` / `MOBILE_COUNT` | `7200` / `3600` | Shared `particleEngine.ts` `THREE.Points` count (`>= 1024px` vs `< 1024px`), DPR capped at `2` |
-| `PROGRESS_LERP` / `HOVER_MORPH_DURATION_S` | `0.10` / `0.82s` | Per-frame scroll smoothing & interruptible hover/focus morph duration |
-| `HOVER_INTENT_DELAY_MS` / `HOVER_LEAVE_DELAY_MS` | `90ms` / `240ms` | Anti-flicker hover debounce & smooth return-to-scroll delay on pointer leave |
-| `SWAY_AMPLITUDE_Y` / `HELIX_ROTATION_SPEED` | `0.26 rad` (`~15°`) / `0.34 rad/s` | Gentle Y-sway on `wireframe`, `brackets`, `growthChart`; continuous Y-spin on `blob` & `dnaHelix` |
-| `MIDPOINT_NOISE_AMOUNT` / `INTRO_BURST_AMOUNT` | `0.44` / `0.46` | Mid-transition dust-sphere curl turbulence & initial sphere dispersion |
-| `SCROLL_VH_PER_STEP` | `82` (`vh`) | Snap-free (`scrub: 0.5`) scroll distance per service step (`328vh` total across 4 studio services) |
-| `SECTION_BG` / `RADIAL_GLOW_COLOR` | `#FFFFFF` / `rgba(49, 134, 255, 0.13)` | Pure white Antigravity stage & soft `#3186FF` / `#749BFF` atmospheric halo |
-| `ACTIVE_CARD_TOP` $\rightarrow$ `BOTTOM` | `#121317` $\rightarrow$ `#1A1B22` | Expanded active `.card.dark` (`~312px`) Obsidian card + `#3186FF` diagonal sweep + white tool icons |
-| `INACTIVE_CARD_BG` | `#F8F9FC` | Cool surface collapsed cards (`~168px`) with `#212226` hairline border (`#3186FF` on hover) & `#3186FF` halftone dots |
+| `PROGRESS_LERP` / `HOVER_MORPH_DURATION_S` | `0.12` / `0.78s` | Per-frame scroll smoothing & interruptible preview-tab morph duration |
+| `PREVIEW_HOVER_INTENT_DELAY_MS` / `LEAVE` | `100ms` / `250ms` | Preview-tab hover intent debounce & return-to-scroll delay when `SHOW_UPCOMING_PREVIEW = true` |
+| `SWAY_AMPLITUDE_Y` / `HELIX_ROTATION_SPEED` | `0.26 rad` (`~15°`) / `0.36 rad/s` | Gentle Y-sway on `wireframe`, `brackets`, `growthChart`; continuous Y-spin on `blob` & `dnaHelix` |
+| `SCROLL_VH_PER_STEP` | `82` (`vh`) | Snap-free (`scrub: 0.5`) scroll distance per service step (`328vh` total across 4 studio services), pinned at `top ${navHeight}px` |
+| `SECTION_BG` / `ACTIVE_CARD_TOP..BOTTOM` | `#FFFFFF` / `#1A1B22` $\rightarrow$ `#121317` | Existing light theme stage + near-black active card + `#3186FF` / `#749BFF` accents |
 
 ---
 

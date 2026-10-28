@@ -65,9 +65,36 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+
+    const syncNavHeightVar = () => {
+      const h = Math.round(el.getBoundingClientRect().height);
+      if (h > 0) {
+        document.documentElement.style.setProperty("--nav-h", `${h}px`);
+      }
+    };
+
+    syncNavHeightVar();
+    window.addEventListener("resize", syncNavHeightVar);
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(syncNavHeightVar);
+      ro.observe(el);
+    }
+
+    return () => {
+      window.removeEventListener("resize", syncNavHeightVar);
+      ro?.disconnect();
+    };
+  }, []);
+
   return (
     <header
       ref={navRef}
+      data-site-navbar="true"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-[#FFFFFF]/92 backdrop-blur-xl border-b border-[#212226]/[0.07] py-3.5 shadow-[0_4px_24px_rgba(18,19,23,0.04)]"

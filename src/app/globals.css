@@ -277,3 +277,15 @@ body {
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/* Pinned Services Stage: Fits strictly inside `100dvh - navHeight` right below sticky Navbar */
+.services-pinned-stage {
+  height: calc(100vh - var(--section-nav-h, var(--nav-h, 68px)));
+  height: calc(100dvh - var(--section-nav-h, var(--nav-h, 68px)));
+}
+
+.services-mobile-sticky {
+  top: var(--section-nav-h, var(--nav-h, 68px));
+  height: calc(100vh - var(--section-nav-h, var(--nav-h, 68px)));
+  height: calc(100dvh - var(--section-nav-h, var(--nav-h, 68px)));
+}
