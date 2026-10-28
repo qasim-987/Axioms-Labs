@@ -18,6 +18,17 @@ const CATEGORIES = [
 
 export default function WorkPageContent() {
   const [activeCategory, setActiveCategory] = useState<string>("All Concepts");
+  const [useBlurFilter, setUseBlurFilter] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    const mq = window.matchMedia(
+      "(min-width: 1024px) and (hover: hover) and (pointer: fine)"
+    );
+    const sync = () => setUseBlurFilter(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const filteredStudies = useMemo(() => {
     if (activeCategory === "All Concepts") return clientsData;
@@ -49,18 +60,34 @@ export default function WorkPageContent() {
                 <motion.span
                   key={idx}
                   aria-hidden="true"
-                  initial={{
-                    opacity: 0,
-                    y: 36,
-                    rotateX: -42,
-                    filter: "blur(8px)",
-                  }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                    rotateX: 0,
-                    filter: "blur(0px)",
-                  }}
+                  initial={
+                    useBlurFilter
+                      ? {
+                          opacity: 0,
+                          y: 36,
+                          rotateX: -42,
+                          filter: "blur(8px)",
+                        }
+                      : {
+                          opacity: 0,
+                          y: 30,
+                          rotateX: -36,
+                        }
+                  }
+                  animate={
+                    useBlurFilter
+                      ? {
+                          opacity: 1,
+                          y: 0,
+                          rotateX: 0,
+                          filter: "blur(0px)",
+                        }
+                      : {
+                          opacity: 1,
+                          y: 0,
+                          rotateX: 0,
+                        }
+                  }
                   transition={{
                     duration: 0.72,
                     delay: 0.06 + idx * 0.055,
@@ -111,7 +138,7 @@ export default function WorkPageContent() {
                 key={cat}
                 type="button"
                 onClick={() => setActiveCategory(cat)}
-                className={`relative px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] ${
+                className={`relative min-h-[44px] lg:min-h-0 inline-flex items-center justify-center px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] ${
                   active
                     ? "text-white"
                     : "text-[#45474D] hover:text-[#121317] bg-[#F8F9FC] border border-[#212226]/[0.08]"
@@ -146,9 +173,21 @@ export default function WorkPageContent() {
                 <motion.div
                   layout
                   key={study.slug}
-                  initial={{ opacity: 0, y: 28, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 0.96, filter: "blur(4px)" }}
+                  initial={
+                    useBlurFilter
+                      ? { opacity: 0, y: 28, filter: "blur(6px)" }
+                      : { opacity: 0, y: 24 }
+                  }
+                  animate={
+                    useBlurFilter
+                      ? { opacity: 1, y: 0, filter: "blur(0px)" }
+                      : { opacity: 1, y: 0 }
+                  }
+                  exit={
+                    useBlurFilter
+                      ? { opacity: 0, scale: 0.96, filter: "blur(4px)" }
+                      : { opacity: 0, scale: 0.96 }
+                  }
                   transition={{
                     duration: 0.62,
                     delay: idx * 0.08,
@@ -159,7 +198,7 @@ export default function WorkPageContent() {
                   {/* Visual Preview Frame with Strictly Clipped `ViewWorkCursor` */}
                   <Link
                     href={`/work/${study.slug}`}
-                    className={`group relative block w-full rounded-[28px] overflow-hidden border border-[#212226]/[0.1] hover:border-[#3186FF]/40 p-7 sm:p-9 transition-all shadow-[0_14px_38px_rgba(18,19,23,0.06)] ${
+                    className={`group relative block w-full rounded-[28px] overflow-hidden border border-[#212226]/[0.1] hover:border-[#3186FF]/40 p-5 sm:p-9 transition-all shadow-[0_14px_38px_rgba(18,19,23,0.06)] ${
                       isDarkPreview
                         ? "bg-[#121317] text-white"
                         : "bg-[#F8F9FC] text-[#121317]"

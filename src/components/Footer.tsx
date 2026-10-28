@@ -67,6 +67,7 @@ export default function Footer() {
   const [mag, setMag] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const handleMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const dx = e.clientX - (rect.left + rect.width / 2);
     const dy = e.clientY - (rect.top + rect.height / 2);

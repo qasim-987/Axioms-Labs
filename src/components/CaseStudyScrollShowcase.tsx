@@ -76,17 +76,32 @@ export default function CaseStudyScrollShowcase({
     ).matches;
 
     let rafId = 0;
+    let isRunning = false;
+    let isVisible = true;
     let tick = 0;
+    let lastTime = performance.now();
+    let cachedWidth = 0;
+    let cachedHeight = 0;
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
+      cachedWidth = Math.max(1, rect.width);
+      cachedHeight = Math.max(1, rect.height);
+      const maxDpr = window.innerWidth < 1024 ? 1.5 : 2;
+      const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
+      canvas.width = Math.round(cachedWidth * dpr);
+      canvas.height = Math.round(cachedHeight * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
-    window.addEventListener("resize", resize);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(canvas);
+    } else {
+      window.addEventListener("resize", resize, { passive: true });
+    }
 
     let trigger: ScrollTrigger | null = null;
     if (!prefersReduced) {
@@ -160,32 +175,38 @@ export default function CaseStudyScrollShowcase({
         ctx.stroke();
       }
 
+      const maxLabelChars = cachedWidth < 340 ? 20 : 26;
       ctx.fillStyle = isHighlighted ? "#ffffff" : "rgba(230, 234, 240, 0.65)";
-      ctx.font = "600 11px ui-monospace, SFMono-Regular, monospace";
+      ctx.font =
+        cachedWidth < 340
+          ? "600 10px ui-monospace, SFMono-Regular, monospace"
+          : "600 11px ui-monospace, SFMono-Regular, monospace";
       ctx.fillText(
-        `${layerIndex} // ${layerTitle.slice(0, 26)}`,
-        cx - halfW * 0.52,
+        `${layerIndex} // ${layerTitle.slice(0, maxLabelChars)}`,
+        cx - halfW * 0.56,
         cy + 4
       );
       ctx.restore();
     };
 
-    const render = () => {
-      const rect = canvas.getBoundingClientRect();
-      const w = rect.width;
-      const h = rect.height;
+    const drawFrame = (now: number) => {
+      const dt = Math.min(0.05, Math.max(0, (now - lastTime) / 1000));
+      lastTime = now;
+
+      const w = cachedWidth;
+      const h = cachedHeight;
       ctx.clearRect(0, 0, w, h);
 
       if (!prefersReduced) {
-        tick += 0.018;
+        tick += dt * 1.08;
       }
 
       const p = progressRef.current;
       const cx = w * 0.5;
       const baseCy = h * 0.52;
-      const halfW = Math.min(w * 0.38, 175);
+      const halfW = Math.min(w * (window.innerWidth >= 1024 ? 0.38 : 0.41), 175);
       const halfH = halfW * 0.42;
-      const gap = 26 + p * 36;
+      const gap = window.innerWidth >= 1024 ? 26 + p * 36 : 24 + p * 34;
 
       const glow = ctx.createRadialGradient(
         cx,
@@ -237,15 +258,61 @@ export default function CaseStudyScrollShowcase({
       ctx.beginPath();
       ctx.arc(cx, packetY, 3, 0, Math.PI * 2);
       ctx.fill();
-
-      rafId = requestAnimationFrame(render);
     };
 
-    rafId = requestAnimationFrame(render);
+    const loop = (now: number) => {
+      if (!isRunning) return;
+      drawFrame(now);
+      if (!prefersReduced) {
+        rafId = requestAnimationFrame(loop);
+      } else {
+        isRunning = false;
+      }
+    };
+
+    const syncRunState = () => {
+      const shouldRun = isVisible && !document.hidden;
+      if (shouldRun && !isRunning) {
+        isRunning = true;
+        lastTime = performance.now();
+        rafId = requestAnimationFrame(loop);
+      } else if (!shouldRun && isRunning) {
+        isRunning = false;
+        cancelAnimationFrame(rafId);
+      }
+    };
+
+    drawFrame(performance.now());
+
+    let io: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      io = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (!entry) return;
+          isVisible = entry.isIntersecting;
+          syncRunState();
+        },
+        { rootMargin: "150px 0px" }
+      );
+      io.observe(runway);
+    } else {
+      syncRunState();
+    }
+
+    const onVisibilityChange = () => syncRunState();
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
+      isRunning = false;
       cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      if (io) io.disconnect();
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      } else {
+        window.removeEventListener("resize", resize);
+      }
       if (trigger) trigger.kill();
     };
   }, [stages]);
@@ -254,7 +321,7 @@ export default function CaseStudyScrollShowcase({
     <section
       ref={runwayRef}
       aria-label="Scroll-Scrubbed Architecture Disassembly"
-      className="mb-20 rounded-3xl border border-[#212226]/[0.08] bg-[#F8F9FC] p-6 sm:p-10"
+      className="mb-20 rounded-3xl border border-[#212226]/[0.08] bg-[#F8F9FC] p-4 sm:p-10"
     >
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
@@ -280,7 +347,7 @@ export default function CaseStudyScrollShowcase({
           </div>
           <canvas
             ref={canvasRef}
-            className="w-full h-[320px] sm:h-[380px] block"
+            className="w-full h-[280px] sm:h-[380px] block"
           />
         </div>
 
@@ -288,16 +355,26 @@ export default function CaseStudyScrollShowcase({
         <div className="lg:col-span-6 space-y-5">
           {stages.map((stage, idx) => {
             const isCurrent = activeLayer === idx;
+            const selectStage = () => {
+              progressRef.current = (idx + 0.5) / 4;
+              setActiveLayer(idx);
+            };
             return (
               <div
                 key={stage.index}
-                onMouseEnter={() => {
-                  progressRef.current = (idx + 0.5) / 4;
-                  setActiveLayer(idx);
+                role="button"
+                tabIndex={0}
+                onMouseEnter={selectStage}
+                onClick={selectStage}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    selectStage();
+                  }
                 }}
-                className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                className={`p-5 sm:p-6 rounded-2xl border transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] ${
                   isCurrent
-                    ? "bg-[#FFFFFF] border-[#3186FF] shadow-[0_14px_34px_rgba(49,134,255,0.12)] translate-x-1"
+                    ? "bg-[#FFFFFF] border-[#3186FF] shadow-[0_14px_34px_rgba(49,134,255,0.12)] lg:translate-x-1"
                     : "bg-[#FFFFFF]/80 border-[#212226]/[0.08] hover:border-[#212226]/20"
                 }`}
               >

@@ -170,3 +170,7 @@ All visual components adhere strictly to `/Animations.md`:
 | **Odometer Digit Strips** | `cubic-bezier(0.16, 1, 0.3, 1)` | `1800ms` + `120ms`/col | Snaps directly to final target digit without vertical roll |
 | **Mega-Menu / Stage Swap** | `cubic-bezier(0.16, 1, 0.3, 1)` / Spring (`380/32`) | `220ms – 500ms` | Instant state swap (`duration: 0.01ms`) |
 | **LightRays & Marquee Loops** | `ease-in-out` / `linear infinite` | `6s – 28s` | Static ambient glow & static centered partner row |
+
+
+### Responsive motion implementation (2026-10-28)
+See [responsive audit](responsive-audit.md) for changed files, actual constants, validation boundaries and outstanding device QA. Frontend-only changes; backend remains independently built/deployed.

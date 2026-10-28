@@ -61,6 +61,7 @@ function PhaseTiltCard({
   }>({ rx: 0, ry: 0, spotX: 50, spotY: 50, hovered: false });
 
   const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const nx = (e.clientX - rect.left) / rect.width;
     const ny = (e.clientY - rect.top) / rect.height;

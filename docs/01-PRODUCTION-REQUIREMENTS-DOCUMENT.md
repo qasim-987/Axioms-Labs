@@ -149,3 +149,7 @@ Dossier slugs: `strata-systems`, `zenith-health`, `vortex-capital`, `helix-cyber
 - [x] `grep -rn -i "axiom labs\|axiomlabs\|anti-quanta"` returns `0` matches across source files.
 - [x] `POST /api/contact` passes valid payload (`200`), missing required fields (`400`), invalid email (`400`), honeypot trap (`200` silent drop), and `<1000ms` bot velocity trap (`200` silent drop).
 - [x] All `antimatterai.agency` motion upgrades follow `/Animations.md` GPU compositor rules (`transform`/`opacity` only) and `prefers-reduced-motion` accessibility standards.
+
+
+### Responsive motion implementation (2026-10-28)
+See [responsive audit](responsive-audit.md) for changed files, actual constants, validation boundaries and outstanding device QA. Frontend-only changes; backend remains independently built/deployed.

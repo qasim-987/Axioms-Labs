@@ -1195,3 +1195,20 @@ Use this exact sequence when applying all `antimatterai.agency` animations to **
 - [x] **Step 11**: Upgrade `src/components/Navbar.tsx` with `AnimatePresence` spring mega-menus (`OUR LATEST WORK` preview card) and `src/components/Footer.tsx` with the magnetic CTA pill + 1Hz studio clock.
 - [x] **Step 12**: Add `ScrollProgressBar.tsx`, `SpotlightCard.tsx`, Talitrix-style `CaseStudyScrollShowcase.tsx` + radial SVG dial gauges on `/work/[slug]`, pulsing SFO ⇄ LDN map + Story Reel Cinema Modal on `/company`, 3D `OrbitalThreatGlobe.tsx` on `/demos/threat-monitor`, Subsea Optical Fiber GIS map on `/demos/infrastructure-atlas`, and 60fps Dual-Harmonic Oscilloscope on `/demos/voice-sentiment`.
 - [x] **Step 13**: Run `npm run typecheck`, `npm run lint`, and `npm run build` with 0 errors, 0 warnings, and full `prefers-reduced-motion` compliance.
+
+---
+
+## 14. Responsive motion (implementation notes, October 2026)
+
+- Breakpoints: phone <640px; tablet 640–1023px; desktop >=1024px. Short landscape <500px height uses two columns.
+- Services: `100svh - --nav-h` with vh fallback, native touch scrolling, transform/opacity card transitions, shared reversible shape timeline and dust midpoint. Mobile scroll travel is configured at 320% (four 80% steps); ScrollTrigger percentages use viewport height, not an independently measured svh. Soft snap targets .16/.43/.70/.95.
+- Tier module: high 7200/DPR2/AA; medium 3600/DPR1.5/AA; low 2160/DPR1/no AA. Coarse pointers or width <1024 default medium; <=4 cores or <=4GB on small/coarse devices, Save-Data/2G, and detected uncharged battery <=20% select low. Battery hint is asynchronous. Unknown hardware defaults to 8 cores/8GB.
+- Governor: 1700ms active sample window, minimum 45 samples, <45fps steps down, 12000ms cooldown, no automatic upgrades. Draw-range/DPR changes are immediate, not crossfaded. Low services tier removes idle wobble and reduces noise amplitude; it does not use a separate simplified shader.
+- Static service fallback uses 900-point 2D canvases with no WebGL contexts for reduced motion or unavailable/lost services WebGL. Hero uses static 2D for reduced motion or failed initialization; Three.js restores its context internally.
+- Fonts, image decode, routes and orientation schedule refreshes. Touch devices do not mount Lenis. Desktop retains lerp .075 / wheel multiplier .95. Mobile resize toolbar changes are ignored by ScrollTrigger.
+- Remaining limitations and test status are in `docs/responsive-audit.md`; performance targets are goals, not measured guarantees.
+
+### Screenshot follow-up: ribbon and short-screen card fit
+- Technology marquee uses two equal intrinsic-width groups, each with the same trailing gap. Track, groups and pills are nonshrinking; -50% travel is exactly one group. Duplicate content is aria-hidden; reduced motion stops travel.
+- Portrait Services reserves 328px (compact) / 344px (normal) for card content before assigning canvas height; canvas minimum is 96px. Full portrait descriptions are not line-clamped. Desktop Services is unchanged.
+- Chromium 4× CPU emulation and screenshot follow-up results/limits are recorded in `docs/responsive-audit.md`. No real-device or measured FPS guarantee is implied.

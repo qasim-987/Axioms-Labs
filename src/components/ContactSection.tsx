@@ -245,10 +245,12 @@ export default function ContactSection() {
                         id="contact-name"
                         type="text"
                         required
+                        autoComplete="name"
+                        inputMode="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Alex Rivera"
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15 transition-all"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15 transition-all"
                       />
                     </div>
 
@@ -263,10 +265,12 @@ export default function ContactSection() {
                         id="contact-email"
                         type="email"
                         required
+                        autoComplete="email"
+                        inputMode="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="alex@yourbrand.com"
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15 transition-all"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15 transition-all"
                       />
                     </div>
                   </div>
@@ -282,10 +286,12 @@ export default function ContactSection() {
                       <input
                         id="contact-company"
                         type="text"
+                        autoComplete="organization"
+                        inputMode="text"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         placeholder="Acme Studio"
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15 transition-all"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15 transition-all"
                       />
                     </div>
 
@@ -300,7 +306,7 @@ export default function ContactSection() {
                         id="contact-budget"
                         value={budget}
                         onChange={(e) => setBudget(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       >
                         {budgetRanges.map((b) => (
                           <option
@@ -326,7 +332,7 @@ export default function ContactSection() {
                       id="contact-scope"
                       value={scope}
                       onChange={(e) => setScope(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                      className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                     >
                       {projectScopes.map((s) => (
                         <option
@@ -355,7 +361,7 @@ export default function ContactSection() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Tell us what you want to design or build, any reference links you love, and your target launch window..."
-                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15 transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15 transition-all"
                     />
                   </div>
 

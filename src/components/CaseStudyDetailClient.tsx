@@ -41,16 +41,19 @@ export default function CaseStudyDetailClient({
       >
         <LightRays />
 
-        <div className="max-w-5xl mx-auto px-8 sm:px-12 lg:px-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-16">
           {/* Breadcrumbs */}
-          <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#6A6A71] mb-8">
-            <Link href="/" className="hover:text-[#121317] transition-colors">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-[#6A6A71] mb-8">
+            <Link
+              href="/"
+              className="min-h-[44px] lg:min-h-0 inline-flex items-center px-1.5 hover:text-[#121317] transition-colors"
+            >
               Home
             </Link>
             <span>/</span>
             <Link
               href="/work"
-              className="hover:text-[#121317] transition-colors"
+              className="min-h-[44px] lg:min-h-0 inline-flex items-center px-1.5 hover:text-[#121317] transition-colors"
             >
               Concept Showcase
             </Link>
@@ -108,7 +111,7 @@ export default function CaseStudyDetailClient({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.7, ease: MOTION_EASE.cinematicOut }}
-            className="p-8 sm:p-10 rounded-3xl bg-[#121317] text-white mb-16 shadow-[0_24px_64px_rgba(18,19,23,0.16)]"
+            className="p-5 sm:p-10 rounded-3xl bg-[#121317] text-white mb-16 shadow-[0_24px_64px_rgba(18,19,23,0.16)]"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 mb-8 border-b border-white/10">
               <div>
@@ -126,7 +129,7 @@ export default function CaseStudyDetailClient({
             </div>
 
             {/* 4 Scroll-Driven Multicolor Antigravity Radial SVG Dial Gauges */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
               {dialGauges.map((g, idx) => {
                 const targetOffset = circumference * (1 - g.pct / 100);
                 return (
@@ -343,7 +346,7 @@ export default function CaseStudyDetailClient({
           </div>
 
           {/* Bottom Consultation CTA */}
-          <div className="p-8 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="p-6 sm:p-8 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div>
               <h4 className="text-xl font-bold text-[#121317] mb-1">
                 Want something like this built for your brand?
@@ -355,7 +358,7 @@ export default function CaseStudyDetailClient({
             </div>
             <Link
               href="/contact"
-              className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors shrink-0"
+              className="w-full sm:w-auto min-h-[48px] lg:min-h-0 inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors shrink-0"
             >
               Start Your Project
             </Link>

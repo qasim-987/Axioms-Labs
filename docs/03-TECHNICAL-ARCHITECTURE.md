@@ -264,3 +264,7 @@ SUPABASE_SERVICE_ROLE_KEY=""
 - **Static Route Count**: `42` compiled routes (`next build`).
 - **Node.js Compatibility**: Node `18.17+`, `20 LTS`, `22 LTS`, and `24+`.
 - **Zero External Image Host Dependency**: Renders instant vector icons (`lucide-react`), CSS shaders, and inline SVG/Canvas primitives—eliminating external CDN image 404s, CORS failures, and LCP layout shifts.
+
+
+### Responsive motion implementation (2026-10-28)
+See [responsive audit](responsive-audit.md) for changed files, actual constants, validation boundaries and outstanding device QA. Frontend-only changes; backend remains independently built/deployed.

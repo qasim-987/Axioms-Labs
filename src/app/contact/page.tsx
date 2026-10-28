@@ -116,7 +116,7 @@ export default function DedicatedContactPage() {
       >
         <LightRays />
 
-        <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
           {/* Centered Character-Split Hero */}
           <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-[#3186FF] text-xs font-mono font-semibold mb-6">
@@ -187,7 +187,7 @@ export default function DedicatedContactPage() {
             </div>
 
             {/* Right Column: Scoping Form */}
-            <div className="lg:col-span-7 rounded-3xl bg-[#FFFFFF] border border-[#212226]/[0.09] p-7 sm:p-10 shadow-[0_24px_64px_rgba(18,19,23,0.07)]">
+            <div className="lg:col-span-7 rounded-3xl bg-[#FFFFFF] border border-[#212226]/[0.09] p-5 sm:p-10 shadow-[0_24px_64px_rgba(18,19,23,0.07)]">
               {isSuccess ? (
                 <div className="py-12 text-center">
                   <div className="w-16 h-16 rounded-full bg-[#00B95C]/10 border border-[#00B95C]/25 flex items-center justify-center mx-auto mb-5">
@@ -250,6 +250,8 @@ export default function DedicatedContactPage() {
                       <input
                         type="text"
                         required
+                        autoComplete="given-name"
+                        inputMode="text"
                         value={formData.firstName}
                         onChange={(e) =>
                           setFormData({
@@ -258,7 +260,7 @@ export default function DedicatedContactPage() {
                           })
                         }
                         placeholder="Alex"
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       />
                     </div>
                     <div>
@@ -267,12 +269,14 @@ export default function DedicatedContactPage() {
                       </label>
                       <input
                         type="text"
+                        autoComplete="family-name"
+                        inputMode="text"
                         value={formData.lastName}
                         onChange={(e) =>
                           setFormData({ ...formData, lastName: e.target.value })
                         }
                         placeholder="Lindholm"
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       />
                     </div>
                   </div>
@@ -285,12 +289,14 @@ export default function DedicatedContactPage() {
                       <input
                         type="email"
                         required
+                        autoComplete="email"
+                        inputMode="email"
                         value={formData.email}
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
                         placeholder="alex@company.com"
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       />
                     </div>
                     <div>
@@ -299,12 +305,14 @@ export default function DedicatedContactPage() {
                       </label>
                       <input
                         type="text"
+                        autoComplete="organization"
+                        inputMode="text"
                         value={formData.company}
                         onChange={(e) =>
                           setFormData({ ...formData, company: e.target.value })
                         }
                         placeholder="Your Brand"
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                       />
                     </div>
                   </div>
@@ -319,7 +327,7 @@ export default function DedicatedContactPage() {
                         onChange={(e) =>
                           setFormData({ ...formData, service: e.target.value })
                         }
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF]"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF]"
                       >
                         <option value="">Select a Service...</option>
                         {servicesData.map((s) => (
@@ -338,7 +346,7 @@ export default function DedicatedContactPage() {
                         onChange={(e) =>
                           setFormData({ ...formData, budget: e.target.value })
                         }
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF]"
+                        className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF]"
                       >
                         <option value="$1,000 - $2,500">$1,000 – $2,500</option>
                         <option value="$2,500 - $5,000">$2,500 – $5,000</option>
@@ -359,7 +367,7 @@ export default function DedicatedContactPage() {
                         setFormData({ ...formData, message: e.target.value })
                       }
                       placeholder="Describe the website, UI/UX design, web application, or AI agent you want to build and your target timeline..."
-                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:bg-white focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                     />
                   </div>
 
@@ -373,7 +381,7 @@ export default function DedicatedContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#121317] hover:bg-[#2F3034] text-white text-sm font-semibold transition-all shadow-[0_8px_24px_rgba(18,19,23,0.16)] disabled:opacity-50"
+                    className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-[#121317] hover:bg-[#2F3034] text-white text-sm font-semibold transition-all shadow-[0_8px_24px_rgba(18,19,23,0.16)] disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>

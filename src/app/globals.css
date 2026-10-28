@@ -80,8 +80,9 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  overflow-x: hidden;
   min-height: 100vh;
+  min-height: 100svh;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Antigravity Crisp Airy Surface Cards (Light Surface + Faint Structural Line) */
@@ -135,7 +136,8 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 1400px;
+  width: 100%;
+  max-width: 1400px;
   height: 900px;
   pointer-events: none;
   z-index: 0;
@@ -210,7 +212,8 @@ body {
 /* Antigravity Horizon Light Curve */
 .horizon-light-curve {
   position: relative;
-  width: 150%;
+  width: 100%;
+  max-width: 1440px;
   height: 120px;
   margin-top: 1.75rem;
   margin-left: auto;
@@ -278,14 +281,71 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Pinned Services Stage: Fits strictly inside `100dvh - navHeight` right below sticky Navbar */
+/* Pinned Services Stage:
+   - Desktop (>= 1024px): Fits inside `100dvh - navHeight` right below sticky Navbar.
+   - Mobile & Tablet (< 1024px): Uses `100svh` (`100vh` fallback) so mobile address-bar
+     expand/collapse never jumps the pinned stage mid-scroll. */
 .services-pinned-stage {
   height: calc(100vh - var(--section-nav-h, var(--nav-h, 68px)));
   height: calc(100dvh - var(--section-nav-h, var(--nav-h, 68px)));
 }
 
+.services-mobile-pinned-stage {
+  height: calc(100vh - var(--section-nav-h, var(--nav-h, 68px)));
+  height: calc(100svh - var(--section-nav-h, var(--nav-h, 68px)));
+}
+
 .services-mobile-sticky {
   top: var(--section-nav-h, var(--nav-h, 68px));
   height: calc(100vh - var(--section-nav-h, var(--nav-h, 68px)));
-  height: calc(100dvh - var(--section-nav-h, var(--nav-h, 68px)));
+  height: calc(100svh - var(--section-nav-h, var(--nav-h, 68px)));
+}
+
+/* Progressive Enhancement: Keep SSR Framer Motion elements 100% visible if JS is disabled */
+@media (scripting: none) {
+  [style*="opacity: 0"],
+  [style*="opacity:0"] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-beam-pulse,
+  .animate-dash-flow {
+    animation: none !important;
+  }
+}
+
+/* Narrow-screen overrides only: approved >=1024px presentation is untouched. */
+@media (max-width: 1023px) {
+  main, main > *, section > *, .grid > *, .flex > * { min-width: 0; }
+  img, video { max-width: 100%; height: auto; }
+  input, textarea, select { max-width: 100%; font-size: 16px; scroll-margin-top: calc(var(--nav-h, 68px) + 24px); }
+  button, a { touch-action: manipulation; }
+  footer a, main a[href^="mailto:"] { min-height: 44px; display: inline-flex; align-items: center; overflow-wrap: anywhere; }
+  main a[href^="mailto:"] { max-width: 100%; }
+  main h1 { font-size: clamp(2rem, 6vw, 4rem); }
+  .hero-responsive { min-height: 100svh; }
+  .hero-responsive > .relative { padding-inline: 16px; }
+  .hero-responsive h1 { font-size: clamp(2rem, 7vw, 4rem); }
+  .hero-responsive [class*="text-xs"] { white-space: normal; }
+  .hero-responsive [class*="inline-flex"] { max-width: 100%; }
+  /* Character reveals keep transforms/opacity but avoid dozens of blurred layers. */
+  main [style*="filter:"], footer [style*="filter:"] { filter: none !important; }
+  .services-mobile-pinned-stage li { overflow-wrap: anywhere; }
+}
+@media (max-width: 639px) {
+  .hero-responsive { padding-top: calc(var(--nav-h, 72px) + 24px); }
+  .hero-responsive h1 { font-size: clamp(2rem, 7vw, 2.75rem); }
+  #contact a[href^="mailto:"] { font-size: 14px; }
+  #work a.aspect-\[16\/10\] { aspect-ratio: 4 / 3; }
+  #work [class*="items-baseline"] { flex-wrap: wrap; }
+  .services-mobile-pinned-stage p { font-size: 14px; }
+}
+@media (max-width: 1023px) {
+  [data-site-navbar] > div:first-child {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  }
 }

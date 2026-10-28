@@ -67,6 +67,18 @@ const coreBeliefs = [
 ];
 
 export default function CompanyPageContent() {
+  const [useBlurFilter, setUseBlurFilter] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    const mq = window.matchMedia(
+      "(min-width: 1024px) and (hover: hover) and (pointer: fine)"
+    );
+    const sync = () => setUseBlurFilter(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   return (
     <section className="pt-36 pb-24 sm:pt-44 sm:pb-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -113,7 +125,7 @@ export default function CompanyPageContent() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.75, ease: MOTION_EASE.cinematicOut }}
-          className="relative rounded-[32px] p-7 sm:p-10 mb-14 bg-[#121317] text-white border border-[#212226]/[0.12] overflow-hidden shadow-[0_24px_64px_rgba(18,19,23,0.16)]"
+          className="relative rounded-[32px] p-5 sm:p-10 mb-14 bg-[#121317] text-white border border-[#212226]/[0.12] overflow-hidden shadow-[0_24px_64px_rgba(18,19,23,0.16)]"
         >
           {/* Halftone World Grid Matrix */}
           <div
@@ -313,15 +325,23 @@ export default function CompanyPageContent() {
             {coreBeliefs.map((belief, idx) => (
               <motion.div
                 key={belief.num}
-                initial={{ opacity: 0, y: 26, filter: "blur(6px)" }}
-                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                initial={
+                  useBlurFilter
+                    ? { opacity: 0, y: 26, filter: "blur(6px)" }
+                    : { opacity: 0, y: 22 }
+                }
+                whileInView={
+                  useBlurFilter
+                    ? { opacity: 1, y: 0, filter: "blur(0px)" }
+                    : { opacity: 1, y: 0 }
+                }
                 viewport={{ once: true, amount: 0.25 }}
                 transition={{
                   duration: 0.68,
                   delay: idx * 0.08,
                   ease: MOTION_EASE.cinematicOut,
                 }}
-                className="group rounded-3xl p-8 bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 shadow-[0_8px_30px_rgba(18,19,23,0.03)] hover:shadow-[0_18px_44px_rgba(18,19,23,0.08)] transition-all"
+                className="group rounded-3xl p-6 sm:p-8 bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 shadow-[0_8px_30px_rgba(18,19,23,0.03)] hover:shadow-[0_18px_44px_rgba(18,19,23,0.08)] transition-all"
               >
                 <div className="flex items-center justify-between mb-5">
                   <div className="w-11 h-11 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] flex items-center justify-center group-hover:scale-105 transition-transform">
@@ -361,7 +381,7 @@ export default function CompanyPageContent() {
           </div>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-[#121317] text-sm font-semibold hover:bg-[#EFF2F7] transition-all shrink-0"
+            className="w-full sm:w-auto min-h-[48px] lg:min-h-0 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-[#121317] text-sm font-semibold hover:bg-[#EFF2F7] transition-all shrink-0"
           >
             <span>Start a Conversation</span>
             <ArrowUpRight className="w-4 h-4" />

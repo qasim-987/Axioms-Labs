@@ -8,7 +8,10 @@ import {
   createSharedParticleStage,
   generateFibonacciSphereBuffer,
   ProjectionMetrics,
+  renderStaticParticleCloud2D,
 } from "@/lib/particleEngine";
+
+import { getPerformanceTier, createAdaptiveFpsMonitor } from "@/lib/performanceTier";
 
 interface ParticleSphereProps {
   className?: string;
@@ -38,12 +41,23 @@ export default function ParticleSphereHero({
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
+    const mountStatic = () => {
+      const canvas = document.createElement("canvas");
+      canvas.style.cssText = "width:100%;height:100%;display:block";
+      container.appendChild(canvas);
+      const positions = generateFibonacciSphereBuffer(900);
+      const draw = () => renderStaticParticleCloud2D(canvas, positions);
+      draw();
+      const observer = new ResizeObserver(draw);
+      observer.observe(container);
+      return () => { observer.disconnect(); canvas.remove(); };
+    };
+    if (prefersReducedMotion) return mountStatic();
     const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
     const isMobileViewport = window.innerWidth < 768;
 
-    const PARTICLE_COUNT = isMobileViewport
-      ? PARTICLE_ENGINE_DEFAULTS.MOBILE_COUNT
-      : PARTICLE_ENGINE_DEFAULTS.DESKTOP_COUNT;
+    const tier = getPerformanceTier();
+    const PARTICLE_COUNT = tier.particleCount;
     const HOVER_TINT_COLOR = new THREE.Color("#3186FF");
     const INFLUENCE_RADIUS = PARTICLE_ENGINE_DEFAULTS.MOUSE_INFLUENCE_RADIUS_PX;
     const SPRING_STIFFNESS = PARTICLE_ENGINE_DEFAULTS.SPRING_STIFFNESS;
@@ -92,10 +106,12 @@ export default function ParticleSphereHero({
       fov: PARTICLE_ENGINE_DEFAULTS.CAMERA_FOV,
       cameraZ: PARTICLE_ENGINE_DEFAULTS.CAMERA_Z,
       onResize: applyStageMetrics,
+      maxDpr: tier.dprCap,
+      antialias: tier.antialias,
     });
     if (!stage) {
       glow.dispose();
-      return;
+      return mountStatic();
     }
 
     stage.scene.add(sphereGroup);
@@ -189,6 +205,10 @@ export default function ParticleSphereHero({
       blending: THREE.NormalBlending,
     });
 
+    const monitor = createAdaptiveFpsMonitor(tier.tier, (next) => {
+      geometry.setDrawRange(0, Math.min(PARTICLE_COUNT, next.particleCount));
+      stage.setMaxDpr(next.dprCap);
+    });
     const points = new THREE.Points(geometry, shaderMaterial);
     sphereGroup.add(points);
 
@@ -204,7 +224,8 @@ export default function ParticleSphereHero({
         return;
       }
 
-      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      monitor.recordFrame((now - lastTime) / 1000, now);
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
       const time = now * 0.001;
 

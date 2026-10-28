@@ -53,6 +53,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
 };
 
 const organizationJsonLd = {
@@ -90,8 +91,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className="font-sans min-h-screen bg-[#FFFFFF] text-[#121317] antialiased selection:bg-[#3186FF] selection:text-white overflow-x-hidden">
+    <html lang="en">
+      <body className="font-sans min-h-screen bg-[#FFFFFF] text-[#121317] antialiased selection:bg-[#3186FF] selection:text-white">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

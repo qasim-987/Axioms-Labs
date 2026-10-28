@@ -148,6 +148,7 @@ export default function Hero() {
   }, [prefersReduced]);
 
   const handleMagneticMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     if (prefersReduced) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.2;
@@ -169,7 +170,7 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen bg-[#FFFFFF] overflow-hidden flex flex-col justify-between pt-28 pb-12 sm:pb-16 selection:bg-[#3186FF] selection:text-white"
+      className="hero-responsive relative w-full min-h-screen bg-[#FFFFFF] overflow-hidden flex flex-col justify-between pt-28 pb-12 sm:pb-16 selection:bg-[#3186FF] selection:text-white"
     >
       {/* LAYER 1B: Centered Radial Precision Micro-Grid Backdrop (#212226 specks on #FFFFFF) */}
       <div

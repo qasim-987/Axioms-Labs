@@ -7,6 +7,7 @@ import * as THREE from "three";
 export const PARTICLE_ENGINE_DEFAULTS = {
   DESKTOP_COUNT: 7200, // Shared count across Hero sphere & Services morph stage
   MOBILE_COUNT: 3600,
+  LOW_TIER_COUNT: 2160,
   CAMERA_FOV: 45,
   CAMERA_Z: 800,
   DPR_CAP: 2,
@@ -38,6 +39,25 @@ export function easeOutOdometer(t: number): number {
 }
 
 /**
+ * Safe feature probe for WebGL support before constructing `THREE.WebGLRenderer`.
+ */
+export function isWebGLAvailable(): boolean {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return false;
+  }
+  try {
+    const testCanvas = document.createElement("canvas");
+    const gl =
+      testCanvas.getContext("webgl2") ||
+      testCanvas.getContext("webgl") ||
+      testCanvas.getContext("experimental-webgl");
+    return Boolean(gl);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Deterministic 32-bit PRNG (Mulberry32) so particle layouts are reproducible
  * and SSR/client safe without allocations.
  */
@@ -52,11 +72,20 @@ export function createSeededRandom(seed: number): () => number {
   };
 }
 
+function findCoprimeStride(n: number): number {
+  if (n <= 2) return 1;
+  const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+  let candidate = Math.max(3, Math.floor(n * 0.61803398875));
+  while (gcd(candidate, n) !== 1) {
+    candidate += 1;
+  }
+  return candidate;
+}
+
 /**
  * Shared Fibonacci + volumetric sphere generator derived from `ParticleSphereHero`.
- * - `surfaceBias = 1.0`: crisp Fibonacci shell with subtle jitter (Hero sphere).
- * - `surfaceBias < 1.0`: blends shell particles with core-weighted volumetric dust
- *   so the sphere reads as a luminous 3D point cloud with soft fuzzy edges.
+ * Permutes Fibonacci indices via a golden-ratio coprime stride so `geometry.setDrawRange(0, activeCount)`
+ * uniformly covers all latitudes from north pole to south pole at any adaptive particle tier!
  */
 export function generateFibonacciSphereBuffer(
   count: number,
@@ -70,13 +99,15 @@ export function generateFibonacciSphereBuffer(
   const rand = createSeededRandom(seed);
   const out = new Float32Array(count * 3);
   const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  const stride = findCoprimeStride(count);
 
   for (let i = 0; i < count; i++) {
     const i3 = i * 3;
+    const fibIdx = count === 7200 ? i : (i * stride) % Math.max(1, count);
     if (rand() <= surfaceBias) {
-      const y = 1 - (i / Math.max(1, count - 1)) * 2;
+      const y = 1 - (fibIdx / Math.max(1, count - 1)) * 2;
       const radiusAtY = Math.sqrt(Math.max(0, 1 - y * y));
-      const theta = goldenAngle * i;
+      const theta = goldenAngle * fibIdx;
       const x = Math.cos(theta) * radiusAtY;
       const z = Math.sin(theta) * radiusAtY;
       const j = 1 + (rand() - 0.5) * jitter;
@@ -85,7 +116,6 @@ export function generateFibonacciSphereBuffer(
       out[i3 + 1] = y * j;
       out[i3 + 2] = z * j;
     } else {
-      // Core-weighted volumetric stardust interior + faint outer halo
       const u = rand() * 2 - 1;
       const theta = rand() * Math.PI * 2;
       const s = Math.sqrt(Math.max(0, 1 - u * u));
@@ -106,6 +136,7 @@ export function generateFibonacciSphereBuffer(
 export interface ProjectionMetrics {
   width: number;
   height: number;
+  dpr: number;
   visibleWidthAtZ0: number;
   visibleHeightAtZ0: number;
   pxToWorld: number;
@@ -114,29 +145,34 @@ export interface ProjectionMetrics {
 export function computeStageProjectionMetrics(
   camera: THREE.PerspectiveCamera,
   renderer: THREE.WebGLRenderer,
-  container: HTMLElement
+  container: HTMLElement,
+  dprCap: number = PARTICLE_ENGINE_DEFAULTS.DPR_CAP
 ): ProjectionMetrics {
   const rect = container.getBoundingClientRect();
-  const width = rect.width || container.clientWidth || window.innerWidth;
-  const height = rect.height || container.clientHeight || window.innerHeight;
-  const dpr = Math.min(
-    window.devicePixelRatio || 1,
-    PARTICLE_ENGINE_DEFAULTS.DPR_CAP
+  const width = Math.max(
+    1,
+    rect.width || container.clientWidth || window.innerWidth
   );
+  const height = Math.max(
+    1,
+    rect.height || container.clientHeight || window.innerHeight
+  );
+  const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
 
-  camera.aspect = width / Math.max(1, height);
+  camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(dpr);
-  renderer.setSize(width, height);
+  renderer.setSize(width, height, false);
 
   const visibleHeightAtZ0 =
     2 * Math.tan(((camera.fov * Math.PI) / 180) / 2) * camera.position.z;
   const visibleWidthAtZ0 = visibleHeightAtZ0 * camera.aspect;
-  const pxToWorld = visibleWidthAtZ0 / Math.max(1, width);
+  const pxToWorld = visibleWidthAtZ0 / width;
 
   return {
     width,
     height,
+    dpr,
     visibleWidthAtZ0,
     visibleHeightAtZ0,
     pxToWorld,
@@ -212,14 +248,7 @@ export interface ScreenSpaceRepulsionParams {
 }
 
 /**
- * Shared screen-space damped-spring repulsion solver reused from `ParticleSphereHero`:
- * - Projects each particle's live 3D rotated world coordinate to CSS screen pixels
- * - Repels particles within `influenceRadiusPx` (90-120px) away from the cursor with
- *   smooth exponential + linear falloff and subtle tangential swirl
- * - Inverse-rotates the screen-space force back into the cloud's local 3D frame so
- *   repulsion stays 100% accurate regardless of `rotationY` / `rotationX`
- * - Relaxes smoothly back to `(0, 0, 0)` via Hookean spring + velocity damping when
- *   the cursor moves away. Returns `true` while any particle still has residual motion.
+ * Shared screen-space damped-spring repulsion solver reused from `ParticleSphereHero`.
  */
 export function stepScreenSpaceRepulsionSpring(
   params: ScreenSpaceRepulsionParams
@@ -321,7 +350,6 @@ export function stepScreenSpaceRepulsionSpring(
         const targetHl = Math.min(1.0, falloff * 1.45);
         hl += (targetHl - hl) * 0.24;
 
-        // Outward repulsion vector away from cursor + subtle organic tangent swirl
         const dirX = fromCursorX / (screenDist + 1e-4);
         const dirY = fromCursorY / (screenDist + 1e-4);
         const tanX = -dirY;
@@ -334,7 +362,6 @@ export function stepScreenSpaceRepulsionSpring(
         const pushWorldX = (pushPxX * pxToWorld) / projScale;
         const pushWorldY = -(pushPxY * pxToWorld) / projScale;
 
-        // Inverse rotate from world space back into cloud local space: R_y(-rotY) * R_x(-rotX)
         const invRy = pushWorldY * cosX;
         const invRz = pushWorldY * sinX;
         const localPushX = (pushWorldX * cosY - invRz * sinY) * invScale;
@@ -351,7 +378,6 @@ export function stepScreenSpaceRepulsionSpring(
       hl *= 0.88;
     }
 
-    // Damped Hookean spring return back to rest shape
     vx = (vx - dx * springStiffness) * springDamping;
     vy = (vy - dy * springStiffness) * springDamping;
     vz = (vz - dz * springStiffness) * springDamping;
@@ -390,7 +416,9 @@ export interface SharedParticleStage {
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
   getMetrics: () => ProjectionMetrics;
+  setMaxDpr: (nextMaxDpr: number) => number;
   isActive: () => boolean;
+  isContextLost: () => boolean;
   pointer: {
     targetX: number;
     targetY: number;
@@ -403,73 +431,123 @@ export interface SharedParticleStage {
 }
 
 /**
- * Shared Three.js WebGL stage lifecycle manager:
- * - Creates Scene, PerspectiveCamera, and alpha WebGLRenderer (DPR capped at 2)
- * - Handles window resize + ResizeObserver
+ * Shared Three.js WebGL stage lifecycle manager for `ServicesParticleCanvas`:
+ * - Creates Scene, PerspectiveCamera, and alpha WebGLRenderer with tier DPR & antialias
+ * - Handles ResizeObserver + debounced `onResizeSettled` (180ms)
  * - Tracks off-screen IntersectionObserver + document.visibilitychange pause state
- * - Tracks container-relative smoothed fine-pointer coordinates (accounting for
- *   bounding rect, DPR, and pinned/transformed ancestors; ignores touch pointers)
- * - Cleanly disposes all DOM listeners and WebGL context handles on unmount
+ * - Handles `webglcontextlost` / `webglcontextrestored` cleanly without crashes
  */
 export function createSharedParticleStage(
   container: HTMLElement,
   options: {
     fov?: number;
     cameraZ?: number;
+    maxDpr?: number;
+    antialias?: boolean;
     onResize?: (metrics: ProjectionMetrics) => void;
+    onResizeSettled?: (metrics: ProjectionMetrics) => void;
+    onContextLost?: () => void;
+    onContextRestored?: () => void;
   } = {}
 ): SharedParticleStage | null {
   const {
     fov = PARTICLE_ENGINE_DEFAULTS.CAMERA_FOV,
     cameraZ = PARTICLE_ENGINE_DEFAULTS.CAMERA_Z,
+    antialias = true,
     onResize,
+    onResizeSettled,
+    onContextLost,
+    onContextRestored,
   } = options;
 
-  // Verify WebGL support cleanly
-  try {
-    const testCanvas = document.createElement("canvas");
-    const gl =
-      testCanvas.getContext("webgl2") ||
-      testCanvas.getContext("webgl") ||
-      testCanvas.getContext("experimental-webgl");
-    if (!gl) return null;
-  } catch {
+  let currentDprCap = options.maxDpr ?? PARTICLE_ENGINE_DEFAULTS.DPR_CAP;
+
+  if (!isWebGLAvailable()) {
     return null;
   }
 
   const initRect = container.getBoundingClientRect();
-  const width = initRect.width || container.clientWidth || window.innerWidth;
-  const height = initRect.height || container.clientHeight || window.innerHeight;
+  const width = Math.max(
+    1,
+    initRect.width || container.clientWidth || window.innerWidth
+  );
+  const height = Math.max(
+    1,
+    initRect.height || container.clientHeight || window.innerHeight
+  );
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(
-    fov,
-    width / Math.max(1, height),
-    0.1,
-    2500
-  );
+  const camera = new THREE.PerspectiveCamera(fov, width / height, 0.1, 2500);
   camera.position.set(0, 0, cameraZ);
 
-  const renderer = new THREE.WebGLRenderer({
-    alpha: true,
-    antialias: true,
-    powerPreference: "high-performance",
-  });
+  let renderer: THREE.WebGLRenderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias,
+      powerPreference: "high-performance",
+    });
+  } catch {
+    return null;
+  }
+
   renderer.setClearColor(0x000000, 0);
   renderer.domElement.style.display = "block";
   renderer.domElement.style.width = "100%";
   renderer.domElement.style.height = "100%";
   container.appendChild(renderer.domElement);
 
-  let metrics = computeStageProjectionMetrics(camera, renderer, container);
+  let contextLost = false;
+  let settleTimer: ReturnType<typeof setTimeout> | null = null;
+  let metrics = computeStageProjectionMetrics(
+    camera,
+    renderer,
+    container,
+    currentDprCap
+  );
+  let lastSettledW = metrics.width;
+  let lastSettledH = metrics.height;
 
   const handleResize = () => {
-    metrics = computeStageProjectionMetrics(camera, renderer, container);
+    if (contextLost) return;
+    metrics = computeStageProjectionMetrics(
+      camera,
+      renderer,
+      container,
+      currentDprCap
+    );
     onResize?.(metrics);
+
+    if (
+      onResizeSettled &&
+      (Math.abs(metrics.width - lastSettledW) > 2 ||
+        Math.abs(metrics.height - lastSettledH) > 2)
+    ) {
+      if (settleTimer) clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        lastSettledW = metrics.width;
+        lastSettledH = metrics.height;
+        onResizeSettled(metrics);
+      }, 180);
+    }
   };
   onResize?.(metrics);
 
-  window.addEventListener("resize", handleResize);
+  const setMaxDpr = (nextMaxDpr: number): number => {
+    currentDprCap = Math.max(1, nextMaxDpr);
+    if (!contextLost) {
+      metrics = computeStageProjectionMetrics(
+        camera,
+        renderer,
+        container,
+        currentDprCap
+      );
+      onResize?.(metrics);
+    }
+    return metrics.dpr;
+  };
+
+  window.addEventListener("resize", handleResize, { passive: true });
   let resizeObserver: ResizeObserver | null = null;
   if (typeof ResizeObserver !== "undefined") {
     resizeObserver = new ResizeObserver(handleResize);
@@ -489,9 +567,27 @@ export function createSharedParticleStage(
         isIntersecting = entry.isIntersecting;
       });
     },
-    { threshold: 0.03 }
+    { threshold: 0.02, rootMargin: "120px 0px" }
   );
   observer.observe(container);
+
+  const onWebglContextLost = (e: Event) => {
+    e.preventDefault();
+    contextLost = true;
+    onContextLost?.();
+  };
+
+  const onWebglContextRestored = () => {
+    contextLost = false;
+    handleResize();
+    onContextRestored?.();
+  };
+
+  renderer.domElement.addEventListener("webglcontextlost", onWebglContextLost);
+  renderer.domElement.addEventListener(
+    "webglcontextrestored",
+    onWebglContextRestored
+  );
 
   const fineHoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 
@@ -564,15 +660,26 @@ export function createSharedParticleStage(
     camera,
     renderer,
     getMetrics: () => metrics,
-    isActive: () => isTabVisible && isIntersecting,
+    setMaxDpr,
+    isActive: () => isTabVisible && isIntersecting && !contextLost,
+    isContextLost: () => contextLost,
     pointer,
     dispose: () => {
+      if (settleTimer) clearTimeout(settleTimer);
       window.removeEventListener("resize", handleResize);
       resizeObserver?.disconnect();
       window.removeEventListener("pointermove", onPointerMove);
       container.removeEventListener("pointerleave", onContainerPointerLeave);
       document.removeEventListener("mouseleave", onDocumentMouseLeave);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      renderer.domElement.removeEventListener(
+        "webglcontextlost",
+        onWebglContextLost
+      );
+      renderer.domElement.removeEventListener(
+        "webglcontextrestored",
+        onWebglContextRestored
+      );
       observer.disconnect();
       renderer.dispose();
       if (renderer.domElement.parentElement) {
@@ -580,4 +687,103 @@ export function createSharedParticleStage(
       }
     },
   };
+}
+
+/**
+ * Lightweight zero-WebGL 2D static particle-cloud renderer used for:
+ * - `prefers-reduced-motion: reduce` non-pinned fallback cards (avoids spawning 4 WebGL contexts!)
+ * - Browsers/devices where WebGL is unavailable or evicted without recovery
+ */
+export function renderStaticParticleCloud2D(
+  canvas: HTMLCanvasElement,
+  positions: Float32Array,
+  options?: {
+    maxPoints?: number;
+    yawRad?: number;
+    pitchRad?: number;
+    fitPadding?: number;
+  }
+): void {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const cssW = Math.max(120, rect.width || canvas.clientWidth || 240);
+  const cssH = Math.max(120, rect.height || canvas.clientHeight || 180);
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, cssW, cssH);
+
+  const cx = cssW * 0.5;
+  const cy = cssH * 0.5;
+  const radius = Math.min(cssW, cssH) * 0.46;
+  const glow = ctx.createRadialGradient(cx, cy, radius * 0.06, cx, cy, radius);
+  glow.addColorStop(0, "rgba(49, 134, 255, 0.14)");
+  glow.addColorStop(0.55, "rgba(116, 155, 255, 0.05)");
+  glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, cssW, cssH);
+
+  const total = Math.floor(positions.length / 3);
+  if (total === 0) return;
+
+  const targetCount = Math.min(total, options?.maxPoints ?? 900);
+  const stride = Math.max(1, Math.floor(total / targetCount));
+  const yaw = options?.yawRad ?? 0.28;
+  const pitch = options?.pitchRad ?? -0.14;
+  const cosY = Math.cos(yaw);
+  const sinY = Math.sin(yaw);
+  const cosX = Math.cos(pitch);
+  const sinX = Math.sin(pitch);
+
+  let maxExtent = 1;
+  for (let i = 0; i < total; i += stride) {
+    const i3 = i * 3;
+    const x = Math.abs(positions[i3]);
+    const y = Math.abs(positions[i3 + 1]);
+    const z = Math.abs(positions[i3 + 2]);
+    if (x > maxExtent) maxExtent = x;
+    if (y > maxExtent) maxExtent = y;
+    if (z > maxExtent) maxExtent = z;
+  }
+
+  const fitScale =
+    (Math.min(cssW, cssH) * (options?.fitPadding ?? 0.39)) / maxExtent;
+
+  for (let i = 0; i < total; i += stride) {
+    const i3 = i * 3;
+    const px = positions[i3];
+    const py = positions[i3 + 1];
+    const pz = positions[i3 + 2];
+
+    const rx = px * cosY + pz * sinY;
+    const rz1 = -px * sinY + pz * cosY;
+    const ry = py * cosX - rz1 * sinX;
+    const rz = py * sinX + rz1 * cosX;
+
+    const perspective = 260 / Math.max(110, 260 - rz);
+    const sx = cx + rx * fitScale * perspective;
+    const sy = cy - ry * fitScale * perspective;
+
+    const depthAlpha = Math.max(
+      0.24,
+      Math.min(0.86, 0.48 + (rz / maxExtent) * 0.3)
+    );
+    const mod = i % 11;
+    if (mod === 0) {
+      ctx.fillStyle = `rgba(49, 134, 255, ${depthAlpha.toFixed(2)})`;
+    } else if (mod === 3) {
+      ctx.fillStyle = `rgba(116, 155, 255, ${(depthAlpha * 0.9).toFixed(2)})`;
+    } else {
+      ctx.fillStyle = `rgba(18, 19, 23, ${(depthAlpha * 0.85).toFixed(2)})`;
+    }
+
+    const r = mod === 0 ? 1.55 : 1.15;
+    ctx.beginPath();
+    ctx.arc(sx, sy, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }

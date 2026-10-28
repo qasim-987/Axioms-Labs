@@ -116,16 +116,19 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
       >
         <LightRays />
 
-        <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
           {/* Breadcrumbs */}
-          <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#6A6A71] mb-8">
-            <Link href="/" className="hover:text-[#121317] transition-colors">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-[#6A6A71] mb-8">
+            <Link
+              href="/"
+              className="min-h-[44px] lg:min-h-0 inline-flex items-center px-1.5 hover:text-[#121317] transition-colors"
+            >
               Home
             </Link>
             <span>/</span>
             <Link
               href="/#services"
-              className="hover:text-[#121317] transition-colors"
+              className="min-h-[44px] lg:min-h-0 inline-flex items-center px-1.5 hover:text-[#121317] transition-colors"
             >
               Services
             </Link>
@@ -404,12 +407,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                   <input
                     type="text"
                     required
+                    autoComplete="name"
+                    inputMode="text"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
                     placeholder="Alex Lindholm"
-                    className="w-full px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                   />
                 </div>
 
@@ -420,12 +425,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                   <input
                     type="email"
                     required
+                    autoComplete="email"
+                    inputMode="email"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
                     placeholder="alex@company.com"
-                    className="w-full px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                   />
                 </div>
 
@@ -435,12 +442,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                   </label>
                   <input
                     type="text"
+                    autoComplete="organization"
+                    inputMode="text"
                     value={formData.company}
                     onChange={(e) =>
                       setFormData({ ...formData, company: e.target.value })
                     }
                     placeholder="Your Brand"
-                    className="w-full px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                   />
                 </div>
 
@@ -453,7 +462,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     onChange={(e) =>
                       setFormData({ ...formData, budget: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-sm text-[#121317] focus:outline-none focus:border-[#3186FF]"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] focus:outline-none focus:border-[#3186FF]"
                   >
                     <option value="$1,000 - $2,500">$1,000 – $2,500</option>
                     <option value="$2,500 - $5,000">$2,500 – $5,000</option>
@@ -475,7 +484,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                       setFormData({ ...formData, message: e.target.value })
                     }
                     placeholder={`Tell us about your ${service.title} goals, desired features, and target launch timeline...`}
-                    className="w-full px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
+                    className="w-full px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                   />
                 </div>
 
@@ -490,7 +499,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors disabled:opacity-50"
+                    className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors disabled:opacity-50"
                   >
                     {submitting ? (
                       <>

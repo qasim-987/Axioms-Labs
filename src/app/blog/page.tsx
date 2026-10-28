@@ -38,7 +38,7 @@ export default function BlogIndexPage() {
 
       <main
         id="main-content"
-        className="relative pt-32 pb-24 px-8 sm:px-12 lg:px-16 max-w-6xl mx-auto w-full flex-1"
+        className="relative pt-32 pb-24 px-4 sm:px-8 lg:px-16 max-w-6xl mx-auto w-full flex-1"
       >
         <LightRays />
 
@@ -80,7 +80,7 @@ export default function BlogIndexPage() {
                 key={cat}
                 type="button"
                 onClick={() => setActiveCategory(cat)}
-                className={`relative px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
+                className={`relative min-h-[44px] lg:min-h-0 inline-flex items-center justify-center px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                   isSelected
                     ? "text-white"
                     : "bg-[#B7BFD9]/[0.16] text-[#45474D] hover:bg-[#F0F1F5] hover:text-[#121317] border border-[#212226]/[0.07]"

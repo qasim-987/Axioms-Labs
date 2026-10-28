@@ -61,14 +61,14 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
 
       <main
         id="main-content"
-        className="relative pt-32 pb-24 px-8 sm:px-12 lg:px-16 max-w-4xl mx-auto w-full flex-1"
+        className="relative pt-32 pb-24 px-4 sm:px-8 lg:px-16 max-w-4xl mx-auto w-full flex-1"
       >
         <LightRays />
 
         {/* Back Link */}
         <Link
           href="/blog"
-          className="inline-flex items-center gap-2 text-xs font-mono text-[#6A6A71] hover:text-[#121317] transition-colors mb-8"
+          className="min-h-[44px] lg:min-h-0 inline-flex items-center gap-2 text-xs font-mono text-[#6A6A71] hover:text-[#121317] transition-colors mb-8"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Insights &amp; Guides
@@ -166,7 +166,7 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
           </div>
           <Link
             href="/contact"
-            className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors shrink-0"
+            className="w-full sm:w-auto min-h-[48px] lg:min-h-0 inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors shrink-0"
           >
             Start Your Project
           </Link>
