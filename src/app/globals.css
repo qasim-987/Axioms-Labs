@@ -349,3 +349,33 @@ body {
     padding-top: calc(12px + env(safe-area-inset-top, 0px));
   }
 }
+
+/* Services deck: opaque shells mask all ghost content beneath the active card. */
+#services [data-preview="true"] h3 { color: #454b60; }
+#services [data-preview="true"] p,
+#services [data-preview="true"] ul { color: #596174; opacity: .5; }
+#services [data-preview="true"] a { color: #596174 !important; }
+#services [data-preview="true"] svg { color: #596174; }
+@media (hover: hover) and (pointer: fine) {
+  .technology-ribbon:hover .technology-track { animation-play-state: paused !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .technology-ribbon { overflow: visible; mask-image: none !important; -webkit-mask-image: none !important; }
+  .technology-track { animation: none; width: 100%; justify-content: center; }
+  .technology-group { width: 100%; flex-wrap: wrap; justify-content: center; padding: 0 16px; }
+  .technology-group[aria-hidden="true"] { display: none; }
+}
+/* Resize-only fit ladder: preserve whole service rows before scaling content. */
+#services [data-fit-level="1"] { padding: 16px; }
+#services [data-fit-level="2"] { padding: 12px; }
+#services :is([data-fit-level="1"], [data-fit-level="2"]) li:nth-child(n+4) { display: none; }
+#services [data-fit-level="2"] h3 { font-size: 18px; }
+#services [data-fit-level="2"] p {
+  font-size: 12px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+#services [data-fit-level="2"] ul { font-size: 11px; line-height: 1.3; }
