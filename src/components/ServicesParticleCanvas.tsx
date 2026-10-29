@@ -32,7 +32,7 @@ export const PARTICLE_TUNING = {
   MOBILE_COUNT: PARTICLE_ENGINE_DEFAULTS.MOBILE_COUNT, // 3,600 (medium tier)
   LOW_TIER_COUNT: PARTICLE_ENGINE_DEFAULTS.LOW_TIER_COUNT, // 2,160 (low tier)
   PROGRESS_LERP: 0.12, // Crisp follow of GSAP scrubbed scroll progress
-  HOVER_MORPH_DURATION_S: 0.78, // Preview-tab shape morph duration through dust-sphere midpoint
+  HOVER_MORPH_DURATION_S: 0.78, // Preview-tab shape morph duration through irregular dust midpoint
   HOVER_PULSE_STRENGTH: 0.36, // 36% outward loosening on active-card hover / mobile canvas tap (target: 30-40%)
   HOVER_PULSE_DURATION_MS: 820, // 820ms ease-in-out breathing loosen + re-assemble pulse
   HOVER_ROTATION_MULTIPLIER: 1.5, // 1.5x rotation/sway speed while card is hovered/focused
@@ -42,12 +42,11 @@ export const PARTICLE_TUNING = {
   REPEL_STRENGTH_PX: 78, // Crisp tactile repulsion impulse with damped spring return
   SWAY_AMPLITUDE_Y: 0.26, // ~15 deg gentle Y-axis depth sway for wireframe, </> & growth chart
   SWAY_SPEED: 0.55, // rad/s idle sway frequency
-  HELIX_ROTATION_SPEED: 0.36, // rad/s continuous Y-axis spin for initial sphere & DNA helix
+  HELIX_ROTATION_SPEED: 0.36, // rad/s continuous Y-axis spin for DNA helix
   MIDPOINT_NOISE_AMOUNT: 0.42, // Outward curl turbulence peaking at uMorph = 0.5
-  INTRO_BURST_AMOUNT: 0.4, // Subtle outward stardust dispersion as initial sphere forms Step 1
   IDLE_WOBBLE_AMOUNT: 0.015, // Continuous per-particle organic breathing wobble
-  SHAPE_RADIUS_CLAMP_MIN: 126,
-  SHAPE_RADIUS_CLAMP_MAX: 184,
+  SHAPE_RADIUS_CLAMP_MIN: 60,
+  SHAPE_RADIUS_CLAMP_MAX: 320,
 } as const;
 
 // Exact Black & White + Antigravity Spectrum matching `ParticleSphereHero.tsx`
@@ -75,56 +74,26 @@ export interface MasterTimelineState {
   fromShape: ServiceShapeId;
   toShape: ServiceShapeId;
   shapeMorphT: number; // 0..1 morph progress between fromShape and toShape
-  introBurst: number; // 0..1 stardust dispersion during initial sphere -> Step 1 morph
 }
 
 export interface ServicesHoverBridge {
-  previewIndex: number | null; // Non-null when SHOW_UPCOMING_PREVIEW=true & hovering a collapsed tab
+  previewIndex: number | null; // Optional shape override (deck previews themselves are decorative)
   cardHovered: boolean; // True when active card (or its arrow) is hovered or keyboard-focused
   pulseSeq: number; // Increments on each genuine hover/focus enter or mobile canvas tap
 }
 
-export const STEP_HOLD_PROGRESS = [0.16, 0.43, 0.7, 0.95] as const;
+export const MORPH_DISPERSAL = 0.35;
+export const ENTRY_ASSEMBLE_MS = 900;
+
+export const STEP_HOLD_PROGRESS = [0.075, 0.385, 0.695, 0.96] as const;
 
 export function evaluateServicesMasterTimeline(
   rawP: number
 ): MasterTimelineState {
   const p = Math.max(0, Math.min(1, rawP));
 
-  // Initial entry [0.00 .. 0.115]: Default rotating Particle Sphere (`blob`) morphs into
-  // Service 0's shape (`wireframe`) while Service 0 card is visible.
-  const INTRO_HOLD_SPHERE = 0.025;
-  const INTRO_END = 0.115;
-
-  if (p <= INTRO_HOLD_SPHERE) {
-    return {
-      scrollIndex: 0,
-      fromCardIndex: 0,
-      toCardIndex: 0,
-      cardTransitionT: 0,
-      fromShape: "blob",
-      toShape: ORDERED_SERVICE_SHAPES[0],
-      shapeMorphT: 0,
-      introBurst: 0,
-    };
-  }
-
-  if (p <= INTRO_END) {
-    const introT = (p - INTRO_HOLD_SPHERE) / (INTRO_END - INTRO_HOLD_SPHERE);
-    const burst = Math.sin(Math.PI * introT);
-    return {
-      scrollIndex: 0,
-      fromCardIndex: 0,
-      toCardIndex: 0,
-      cardTransitionT: 0,
-      fromShape: "blob",
-      toShape: ORDERED_SERVICE_SHAPES[0],
-      shapeMorphT: introT,
-      introBurst: burst,
-    };
-  }
-
-  const u = (p - INTRO_END) / (1 - INTRO_END);
+  // Scroll begins and returns to the first service, never the Hero sphere.
+  const u = p;
 
   const windows = [
     { type: "hold" as const, start: 0.0, end: 0.15, idx: 0 },
@@ -147,7 +116,6 @@ export function evaluateServicesMasterTimeline(
           fromShape: ORDERED_SERVICE_SHAPES[w.idx],
           toShape: ORDERED_SERVICE_SHAPES[w.idx],
           shapeMorphT: 0,
-          introBurst: 0,
         };
       }
       const localT = Math.max(
@@ -162,7 +130,6 @@ export function evaluateServicesMasterTimeline(
         fromShape: ORDERED_SERVICE_SHAPES[w.from],
         toShape: ORDERED_SERVICE_SHAPES[w.to],
         shapeMorphT: localT,
-        introBurst: 0,
       };
     }
   }
@@ -175,7 +142,6 @@ export function evaluateServicesMasterTimeline(
     fromShape: ORDERED_SERVICE_SHAPES[3],
     toShape: ORDERED_SERVICE_SHAPES[3],
     shapeMorphT: 0,
-    introBurst: 0,
   };
 }
 
@@ -273,14 +239,14 @@ export default function ServicesParticleCanvas({
     const applyStageMetrics = (metrics: ProjectionMetrics) => {
       const { width, height, pxToWorld } = metrics;
       if (layoutMode === "desktop") {
-        // Approved Desktop Stage: 100% unchanged sizing & centering
+        // Fit the requested larger shape into the existing desktop canvas.
         const targetScreenX = width * 0.5;
         const targetScreenY = height * 0.5;
         const radiusPx = Math.max(
           PARTICLE_TUNING.SHAPE_RADIUS_CLAMP_MIN,
           Math.min(
-            width * 0.25,
-            height * 0.285,
+            width * 0.37,
+            height * 0.37,
             PARTICLE_TUNING.SHAPE_RADIUS_CLAMP_MAX
           )
         );
@@ -292,7 +258,7 @@ export default function ServicesParticleCanvas({
         // with comfortable margin so shapes never clip top/bottom or left/right!
         const radiusPx = Math.max(
           52,
-          Math.min(width * 0.31, height * 0.34, 146)
+          Math.min(width * 0.37, height * 0.39, 220)
         );
         shapeScaleWorld = radiusPx * pxToWorld;
         baseCenterWorldX = 0;
@@ -397,13 +363,30 @@ export default function ServicesParticleCanvas({
     // ------------------------------------------------------------------------
     const geometry = new THREE.BufferGeometry();
 
-    const startArray = new Float32Array(shapes.blob);
+    const startArray = new Float32Array(shapes[ORDERED_SERVICE_SHAPES[0]]);
     const targetArray = new Float32Array(
       ORDERED_SERVICE_SHAPES[0]
         ? shapes[ORDERED_SERVICE_SHAPES[0]]
         : shapes.wireframe
     );
-    const blobArray = new Float32Array(shapes.blob);
+    // Independent seeded, axis-stretched volume: no sphere target or shell.
+    const cloudArray = new Float32Array(maxCount * 3);
+    const cloudRng = createSeededRandom(18391);
+    let shapeRadius = 0;
+    for (const id of ORDERED_SERVICE_SHAPES) {
+      const points = shapes[id];
+      for (let i = 0; i < points.length; i += 3) {
+        shapeRadius = Math.max(shapeRadius, Math.hypot(points[i], points[i + 1], points[i + 2]));
+      }
+    }
+    const cloudRadius = shapeRadius * 1.3;
+    for (let i = 0; i < maxCount; i++) {
+      const x = (cloudRng() - 0.5) * 2.4;
+      const y = (cloudRng() - 0.5) * 1.35;
+      const z = (cloudRng() - 0.5) * 1.7;
+      const scale = Math.min(1, cloudRadius / Math.max(0.001, Math.hypot(x, y, z)));
+      cloudArray.set([x * scale, y * scale, z * scale], i * 3);
+    }
 
     const repelDisplacements = new Float32Array(maxCount * 3);
     const repelVelocities = new Float32Array(maxCount * 3);
@@ -449,7 +432,7 @@ export default function ServicesParticleCanvas({
 
     geometry.setAttribute("position", startAttr);
     geometry.setAttribute("aTarget", targetAttr);
-    geometry.setAttribute("aBlob", new THREE.BufferAttribute(blobArray, 3));
+    geometry.setAttribute("aCloud", new THREE.BufferAttribute(cloudArray, 3));
     geometry.setAttribute("aRepelOffset", repelOffsetAttr);
     geometry.setAttribute("aRepelHighlight", repelHighlightAttr);
     geometry.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
@@ -465,7 +448,8 @@ export default function ServicesParticleCanvas({
     const uniforms = {
       uTime: { value: 0 },
       uMorph: { value: 0 },
-      uBurst: { value: 0 },
+      uAssemble: { value: 0 },
+      uCloudRadius: { value: cloudRadius },
       uMidpointDust: { value: 0 },
       uPixelRatio: { value: initialMetrics.dpr },
       uShapeScale: { value: shapeScaleWorld },
@@ -490,7 +474,7 @@ export default function ServicesParticleCanvas({
       uniforms,
       vertexShader: `
         attribute vec3 aTarget;
-        attribute vec3 aBlob;
+        attribute vec3 aCloud;
         attribute vec3 aRepelOffset;
         attribute float aRepelHighlight;
         attribute vec3 aColor;
@@ -500,7 +484,8 @@ export default function ServicesParticleCanvas({
 
         uniform float uTime;
         uniform float uMorph;
-        uniform float uBurst;
+        uniform float uAssemble;
+        uniform float uCloudRadius;
         uniform float uMidpointDust;
         uniform float uPixelRatio;
         uniform float uShapeScale;
@@ -529,18 +514,16 @@ export default function ServicesParticleCanvas({
           vec3 basePos = mix(position, aTarget, eased);
 
           float midBell = sin(3.14159265 * staggered) * uMidpointDust;
-          basePos = mix(basePos, aBlob * 1.05, midBell * 0.68);
+          basePos = mix(basePos, aCloud, midBell * ${MORPH_DISPERSAL.toFixed(2)});
           if (midBell > 0.002) {
             vec3 midNoise = curlNoise3D(basePos * 1.45, uTime, aSeed) * midBell * uNoiseAmount * (0.45 + aSeed * 0.75);
-            basePos += midNoise;
+            basePos += midNoise * vec3(1.3, 0.65, 0.9) * ${MORPH_DISPERSAL.toFixed(2)};
+            basePos *= min(1.0, uCloudRadius / max(length(basePos), 0.001));
           }
 
-          if (uBurst > 0.001) {
-            vec3 radialDir = normalize(position + vec3(0.0001));
-            vec3 burstScatter = radialDir * (0.3 + aSeed * 0.85) * uBurst * ${PARTICLE_TUNING.INTRO_BURST_AMOUNT.toFixed(2)};
-            burstScatter += curlNoise3D(position * 1.7, uTime * 0.9, aSeed) * uBurst * 0.22;
-            basePos += burstScatter;
-          }
+          float entryRipple = mix(aSeed, clamp(length(aTarget.xy) / max(uCloudRadius, 0.001), 0.0, 1.0), 0.65);
+          float assemble = smoothstep(0.0, 1.0, clamp(uAssemble * 1.25 - entryRipple * 0.25, 0.0, 1.0));
+          basePos = mix(aCloud, basePos, assemble);
 
           // Card-hover OR mobile canvas-tap breathing pulse (~36% loosen + re-assemble)
           float pulseWave = 0.0;
@@ -548,7 +531,7 @@ export default function ServicesParticleCanvas({
             float pStagger = clamp((uPulseProgress * 1.28) - aSeed * 0.28, 0.0, 1.0);
             float bell = sin(3.14159265 * pStagger);
             pulseWave = bell * bell;
-            vec3 outwardDir = normalize(basePos + aBlob * 0.32 + vec3(0.0001));
+            vec3 outwardDir = normalize(basePos + aCloud * 0.32 + vec3(0.0001));
             vec3 loosenedPos = basePos * (1.0 + 0.94 * uPulseStrength) + outwardDir * (0.28 * uPulseStrength);
             vec3 pulseCurl = curlNoise3D(basePos * 1.65, uTime * 1.2, aSeed) * pulseWave * uPulseStrength * 0.92;
             basePos = mix(basePos, loosenedPos, pulseWave) + pulseCurl;
@@ -569,7 +552,7 @@ export default function ServicesParticleCanvas({
           float depthAlpha = mix(0.28, 0.96, relDepth);
           float depthSize = mix(0.76, 1.28, relDepth);
 
-          float scatterDim = 1.0 - 0.16 * max(uBurst, midBell);
+          float scatterDim = 1.0 - 0.16 * max(1.0 - uAssemble, midBell);
           vAlpha = clamp(aAlpha * depthAlpha * scatterDim * (1.0 + uHoverEnergy * 0.14 + pulseWave * 0.12), 0.10, 0.96);
 
           vec3 electricBlue = vec3(0.192, 0.525, 1.0);
@@ -638,10 +621,10 @@ export default function ServicesParticleCanvas({
 
         if (midpointDustWeight > 0.001) {
           const midBell =
-            Math.sin(Math.PI * stag) * midpointDustWeight * 0.68;
-          x += (blobArray[i3] * 1.05 - x) * midBell;
-          y += (blobArray[i3 + 1] * 1.05 - y) * midBell;
-          z += (blobArray[i3 + 2] * 1.05 - z) * midBell;
+            Math.sin(Math.PI * stag) * midpointDustWeight * MORPH_DISPERSAL;
+          x += (cloudArray[i3] - x) * midBell;
+          y += (cloudArray[i3 + 1] - y) * midBell;
+          z += (cloudArray[i3 + 2] - z) * midBell;
         }
 
         if (activePulse) {
@@ -652,9 +635,9 @@ export default function ServicesParticleCanvas({
           const bell = Math.sin(Math.PI * pStag);
           const pw = bell * bell;
           if (pw > 0.001) {
-            const ox = x + blobArray[i3] * 0.32;
-            const oy = y + blobArray[i3 + 1] * 0.32;
-            const oz = z + blobArray[i3 + 2] * 0.32;
+            const ox = x + cloudArray[i3] * 0.32;
+            const oy = y + cloudArray[i3 + 1] * 0.32;
+            const oz = z + cloudArray[i3 + 2] * 0.32;
             const len = Math.sqrt(ox * ox + oy * oy + oz * oz) || 1;
             const lx =
               x * (1 + 0.94 * pStrength) + (ox / len) * (0.28 * pStrength);
@@ -675,7 +658,7 @@ export default function ServicesParticleCanvas({
       startAttr.needsUpdate = true;
     };
 
-    let scrollFromShape: ServiceShapeId = "blob";
+    let scrollFromShape: ServiceShapeId = ORDERED_SERVICE_SHAPES[0];
     let scrollToShape: ServiceShapeId = ORDERED_SERVICE_SHAPES[0];
 
     let isPreviewOverride = false;
@@ -711,6 +694,14 @@ export default function ServicesParticleCanvas({
     let rafId = 0;
     let lastNow = performance.now();
     let elapsed = 0;
+    let entryStartedAt: number | null = null;
+    const entryObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && entryStartedAt === null) {
+        entryStartedAt = performance.now();
+        entryObserver.disconnect();
+      }
+    }, { threshold: 0.02 });
+    entryObserver.observe(container);
     let smoothProgress = scrollProgressRef.current;
     let spinAngleY = 0;
 
@@ -727,6 +718,7 @@ export default function ServicesParticleCanvas({
       const dtMs = dt * 1000;
       lastNow = now;
       elapsed += dt;
+      uniforms.uAssemble.value = prefersReducedMotion ? 1 : entryStartedAt === null ? 0 : Math.min(1, (now - entryStartedAt) / ENTRY_ASSEMBLE_MS);
 
       fpsMonitor.recordFrame(dt, now);
       uniforms.uPixelRatio.value = stage.getMetrics().dpr;
@@ -860,7 +852,7 @@ export default function ServicesParticleCanvas({
         }
 
         uniforms.uMorph.value = overrideMorphT;
-        uniforms.uBurst.value = 0;
+
         uniforms.uMidpointDust.value = overrideMorphT < 1 ? 1.0 : 0.0;
 
         activeFromShapeForSpin = desiredShape;
@@ -895,7 +887,7 @@ export default function ServicesParticleCanvas({
             overrideMorphT + dt / PARTICLE_TUNING.HOVER_MORPH_DURATION_S
           );
           uniforms.uMorph.value = overrideMorphT;
-          uniforms.uBurst.value = 0;
+
           uniforms.uMidpointDust.value = overrideMorphT < 1 ? 1.0 : 0.0;
 
           activeFromShapeForSpin = scrollImpliedShape;
@@ -923,9 +915,9 @@ export default function ServicesParticleCanvas({
         }
 
         uniforms.uMorph.value = scrollState.shapeMorphT;
-        uniforms.uBurst.value = scrollState.introBurst;
+
         uniforms.uMidpointDust.value =
-          scrollState.fromShape === "blob" ? 0.0 : 1.0;
+          1.0;
       }
 
       const speedMul = prefersReducedMotion
@@ -939,12 +931,11 @@ export default function ServicesParticleCanvas({
         PARTICLE_TUNING.SWAY_AMPLITUDE_Y;
 
       const fromSpins =
-        activeFromShapeForSpin === "blob" ||
         activeFromShapeForSpin === "dnaHelix"
           ? 1
           : 0;
       const toSpins =
-        activeToShapeForSpin === "blob" || activeToShapeForSpin === "dnaHelix"
+        activeToShapeForSpin === "dnaHelix"
           ? 1
           : 0;
       const spinWeight =
@@ -1018,6 +1009,7 @@ export default function ServicesParticleCanvas({
     return () => {
       container.removeEventListener("pointerdown", handleCanvasTap);
       cancelAnimationFrame(rafId);
+      entryObserver.disconnect();
       geometry.dispose();
       shaderMaterial.dispose();
       accentGlow.dispose();

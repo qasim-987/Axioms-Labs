@@ -90,3 +90,6 @@ Earlier source-audit notes and pending acceptance items below are retained for c
 - `src/lib/particleEngine.ts` — DPR controls, context lifecycle, static point-cloud rendering.
 - `src/lib/performanceTier.ts` — shared hardware hints and one-way FPS governor.
 - `scripts/check-performance-tier.cjs` — repeatable tier and cooldown tests.
+
+## Subsequent Services-specific update — 29 October 2026
+The later deck/entry/ticker specification supersedes this report's hidden-upcoming-card, initial-blob and old seek-target notes. See [Services polish and measured regression results](services-polish.md) and Animations.md §15 for current constants and scope. Earlier whole-site limitations remain applicable.

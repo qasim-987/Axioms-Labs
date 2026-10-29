@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import SplitTextReveal from "./SplitTextReveal";
+import { renderServiceToolIcon } from "./ServiceToolIcons";
 import { MOTION_EASE } from "@/lib/motionTokens";
 
 const techEcosystem = [
@@ -19,16 +20,29 @@ const techEcosystem = [
 ];
 
 export default function LogoStrip() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [paused, setPaused] = useState(true);
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    let visible = false;
+    const update = () => setPaused(!visible || document.hidden);
+    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; update(); });
+    observer.observe(section);
+    document.addEventListener("visibilitychange", update);
+    return () => { observer.disconnect(); document.removeEventListener("visibilitychange", update); };
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       aria-label="Core Technology Stack"
       className="relative py-20 sm:py-24 border-y border-[#212226]/[0.07] bg-[#F8F9FC] overflow-hidden"
     >
       {/* Antimatter-inspired `clientsLightCurve` Horizon Arc in Antigravity Electric Blue + Obsidian */}
       <div
         aria-hidden="true"
-        className="pointer-events-none select-none absolute inset-x-0 -bottom-44 flex justify-center"
+        className="pointer-events-none select-none absolute inset-x-0 -bottom-56 flex justify-center"
       >
         <div
           className="w-[130vw] max-w-[1680px] h-[290px] rounded-[100%]"
@@ -67,7 +81,7 @@ export default function LogoStrip() {
 
       {/* Infinite Marquee with True Alpha Mask Edge Fade */}
       <div
-        className="relative z-10 flex overflow-x-hidden group"
+        className="technology-ribbon relative z-10 flex overflow-x-hidden group"
         style={{
           WebkitMaskImage:
             "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -75,23 +89,23 @@ export default function LogoStrip() {
             "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
         }}
       >
-        <div className="flex w-max shrink-0 animate-marquee group-hover:[animation-play-state:paused] py-2 items-center motion-reduce:animate-none">
+        <div className="technology-track flex w-max shrink-0 animate-marquee py-2 items-center" style={{ animationPlayState: paused ? "paused" : undefined }}>
           {[0, 1].map((copy) => (
             <div
               key={copy}
               aria-hidden={copy === 1 ? true : undefined}
-              className="flex w-max shrink-0 items-center gap-5 pr-5 sm:gap-7 sm:pr-7"
+              className="technology-group flex w-max shrink-0 items-center gap-4 pr-4"
             >
               {techEcosystem.map((item) => (
                 <div
                   key={item.name}
-                  className="inline-flex shrink-0 items-center gap-3 whitespace-nowrap px-5 py-3 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/45 shadow-[0_4px_16px_rgba(18,19,23,0.04)] hover:shadow-[0_10px_26px_rgba(49,134,255,0.12)] hover:-translate-y-0.5 transition-all duration-300 select-none"
+                  className="technology-pill inline-flex shrink-0 items-center gap-3 whitespace-nowrap h-12 sm:h-14 px-4 sm:px-5 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/45 shadow-[0_4px_16px_rgba(18,19,23,0.04)] hover:shadow-[0_10px_26px_rgba(49,134,255,0.12)] hover:-translate-y-0.5 transition-all duration-300 select-none"
                 >
-                  <span className="w-2 h-2 shrink-0 rounded-full bg-[#121317]" />
-                  <span className="text-sm sm:text-base font-bold tracking-tight text-[#121317]">
+                  <span aria-hidden="true" className="w-5 h-5 shrink-0">{renderServiceToolIcon(item.name)}</span>
+                  <span className="text-sm sm:text-[15px] font-medium tracking-tight text-[#121317]">
                     {item.name}
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#EFF2F7] text-[#45474D]">
+                  <span className="hidden sm:inline-flex rounded-full bg-[#EFF2F7] px-2 py-0.5 text-[10px] uppercase tracking-wide text-[#45474D]">
                     {item.badge}
                   </span>
                 </div>

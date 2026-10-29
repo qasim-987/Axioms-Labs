@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ServiceItem, servicesData } from "@/data/services";
-import { easeInOutCubic, easeOutOdometer } from "@/lib/particleEngine";
+import { easeInOutCubic } from "@/lib/particleEngine";
 import {
   SERVICE_STAGE_ORDER,
   ServiceShapeId,
@@ -32,13 +32,17 @@ gsap.registerPlugin(ScrollTrigger);
 // TOP-LEVEL FEATURE & TUNING CONSTANTS
 // ============================================================================
 
-/**
- * When `false` (default), only one service card is visible at a time and
- * upcoming cards remain hidden (`opacity: 0; visibility: hidden; pointer-events: none`)
- * until the scroll transition slides them in.
- * Flip to `true` to show compact, non-overlapping upcoming preview tabs on desktop.
- */
-export const SHOW_UPCOMING_PREVIEW: boolean = false;
+/** Upcoming full-size decorative cards replace the old collapsed tabs. */
+export const SHOW_UPCOMING_PREVIEW: boolean = true;
+export const DECK_TUNING = {
+  FIRST_VW: 0.05, FIRST_MIN: 56, FIRST_MAX: 96,
+  SECOND_VW: 0.095, SECOND_MIN: 108, SECOND_MAX: 176,
+  FIRST_SCALE: 0.96, SECOND_SCALE: 0.92,
+  FIRST_GHOST: 0.35, SECOND_GHOST: 0.18,
+  EXIT_X: -40,
+  FROST: "linear-gradient(135deg, rgba(230,232,239,.92), rgba(236,238,244,.90)), #fff",
+  DETAIL_GHOST_MULTIPLIER: 0.5,
+} as const;
 
 export const SERVICES_SECTION_TUNING = {
   SHOW_UPCOMING_PREVIEW,
@@ -48,12 +52,10 @@ export const SERVICES_SECTION_TUNING = {
   INACTIVE_CARD_BG: "#F8F9FC",
   SCROLL_VH_PER_STEP: 82, // Desktop: 328vh smooth pinned travel across 4 services (unchanged)
   MOBILE_SCROLL_SVH_PER_STEP: 80, // Mobile/Tablet (<1024px): 80svh per step (target: 70-90svh)
-  COMPACT_VIEWPORT_MAX_HEIGHT_PX: 700,
+  COMPACT_VIEWPORT_MAX_HEIGHT_PX: 720,
   LANDSCAPE_SHORT_MAX_HEIGHT_PX: 500, // Landscape phone (<500px height): 2-column stage
   MIN_BOTTOM_PADDING_PX: 28,
   HOVER_DEBOUNCE_LEAVE_MS: 60,
-  PREVIEW_HOVER_INTENT_DELAY_MS: 100,
-  PREVIEW_HOVER_LEAVE_DELAY_MS: 250,
   HOVER_PULSE_STRENGTH: PARTICLE_TUNING.HOVER_PULSE_STRENGTH, // 0.36
   HOVER_PULSE_DURATION_MS: PARTICLE_TUNING.HOVER_PULSE_DURATION_MS, // 820ms
   HOVER_ROTATION_MULTIPLIER: PARTICLE_TUNING.HOVER_ROTATION_MULTIPLIER, // 1.5x
@@ -267,6 +269,25 @@ function FallbackServiceCard({
   );
 }
 
+/** Resize-only fallback: tighten in two levels before proportional scaling. */
+function measureCardFit(el: HTMLDivElement | null, height: number): number {
+  if (!el || height <= 0) return 1;
+  const saved = {height: el.style.height, minHeight: el.style.minHeight, transform: el.style.transform, width: el.style.width};
+  el.style.height = "auto";
+  el.style.minHeight = "0px";
+  el.style.transform = "none";
+  el.style.width = "100%";
+  let level = 0;
+  el.dataset.fitLevel = "0";
+  let natural = el.scrollHeight;
+  while (natural > height - 2 && level < 2) {
+    el.dataset.fitLevel = `${++level}`;
+    natural = el.scrollHeight;
+  }
+  Object.assign(el.style, saved);
+  return Number(Math.min(1, (height - 2) / Math.max(1, natural)).toFixed(3));
+}
+
 export default function ServicesGrid() {
   const router = useRouter();
   const entries = useMemo(() => buildOrderedServices(), []);
@@ -276,16 +297,13 @@ export default function ServicesGrid() {
   const rightColRef = useRef<HTMLDivElement>(null);
   const headerBlockRef = useRef<HTMLDivElement>(null);
   const cardsViewportRef = useRef<HTMLDivElement>(null);
-  const cardsTrackRef = useRef<HTMLDivElement>(null);
   const singleCardHitboxRef = useRef<HTMLDivElement>(null);
 
   const cardShellRefs = useRef<(HTMLDivElement | null)[]>([]);
   const cardInnerMeasureRefs = useRef<(HTMLDivElement | null)[]>([]);
   const activeContentWrapRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const collapsedOverlayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const darkFillRefs = useRef<(HTMLDivElement | null)[]>([]);
   const sweepGlowRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const halftoneRefs = useRef<(HTMLDivElement | null)[]>([]);
   const arrowWrapRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const arrowIconRefs = useRef<(SVGSVGElement | null)[]>([]);
   const disciplineLabelRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -496,23 +514,7 @@ export default function ServicesGrid() {
         const nextScales: number[] = [];
         let changed = false;
         for (let i = 0; i < entries.length; i++) {
-          const el = mobileCardInnerMeasureRefs.current[i];
-          let s = 1;
-          if (el && cardH > 0) {
-            const prevH = el.style.height;
-            const prevMinH = el.style.minHeight;
-            const prevTransform = el.style.transform;
-            el.style.transform = "none";
-            el.style.height = "auto";
-            el.style.minHeight = "0px";
-            const naturalH = el.scrollHeight;
-            el.style.height = prevH;
-            el.style.minHeight = prevMinH;
-            el.style.transform = prevTransform;
-            if (naturalH > cardH - 2) {
-              s = Number(Math.max(0.78, (cardH - 2) / naturalH).toFixed(3));
-            }
-          }
+          const s = measureCardFit(mobileCardInnerMeasureRefs.current[i], cardH);
           nextScales.push(s);
         }
         setMobileCardScales((prev) => {
@@ -530,7 +532,7 @@ export default function ServicesGrid() {
     }
 
     // ========================================================================
-    // DESKTOP (>= 1024px): 100% Unchanged Approved Stage Sizing
+    // DESKTOP: measured header, fully visible card and reserved deck width
     // ========================================================================
     const compact =
       vh < SERVICES_SECTION_TUNING.COMPACT_VIEWPORT_MAX_HEIGHT_PX;
@@ -550,7 +552,7 @@ export default function ServicesGrid() {
           )
         );
 
-    let headerTotalH = compact ? 64 : 88;
+    let headerTotalH = compact ? 78 : 104;
     if (headerBlockRef.current) {
       const hRect = headerBlockRef.current.getBoundingClientRect();
       const hStyle = window.getComputedStyle(headerBlockRef.current);
@@ -560,11 +562,8 @@ export default function ServicesGrid() {
       }
     }
 
-    const availableForCard = Math.max(
-      248,
-      Math.floor(usableH - padTop - padBottom - headerTotalH)
-    );
-    const preferredMaxCardH = compact ? 404 : 472;
+    const availableForCard = Math.max(180, Math.floor(usableH - padTop - padBottom - headerTotalH));
+    const preferredMaxCardH = compact ? 404 : 480;
     const cardH = Math.min(preferredMaxCardH, availableForCard);
 
     const rightColTotalW =
@@ -573,25 +572,13 @@ export default function ServicesGrid() {
     const availRightW = Math.max(320, rightColTotalW - rightMarginPx);
     const gap = vw >= 1440 ? 14 : 11;
 
-    let expandedW: number;
-    let collapsedW: number;
 
-    if (SHOW_UPCOMING_PREVIEW) {
-      expandedW = Math.round(
-        Math.max(292, Math.min(availRightW * 0.45, 368))
-      );
-      collapsedW = Math.round(
-        Math.max(
-          92,
-          Math.min(196, Math.floor((availRightW - expandedW - 3 * gap) / 3))
-        )
-      );
-    } else {
-      expandedW = Math.round(
-        Math.max(336, Math.min(vw * 0.235, availRightW - 16, 416))
-      );
-      collapsedW = 160;
-    }
+
+    const deckReserve = SHOW_UPCOMING_PREVIEW
+      ? Math.min(DECK_TUNING.SECOND_MAX, Math.max(DECK_TUNING.SECOND_MIN, vw * DECK_TUNING.SECOND_VW))
+      : 0;
+    const expandedW = Math.floor(Math.min(680, availRightW - deckReserve));
+    const collapsedW = expandedW;
 
     setLayout((prev) => {
       if (
@@ -622,20 +609,7 @@ export default function ServicesGrid() {
       const nextScales: number[] = [];
       let changed = false;
       for (let i = 0; i < entries.length; i++) {
-        const el = cardInnerMeasureRefs.current[i];
-        let s = 1;
-        if (el && cardH > 0) {
-          const prevHeight = el.style.height;
-          const prevMinHeight = el.style.minHeight;
-          el.style.height = "auto";
-          el.style.minHeight = "0px";
-          const naturalH = el.scrollHeight;
-          el.style.height = prevHeight;
-          el.style.minHeight = prevMinHeight;
-          if (naturalH > cardH - 2) {
-            s = Number(Math.max(0.76, (cardH - 2) / naturalH).toFixed(3));
-          }
-        }
+        const s = measureCardFit(cardInnerMeasureRefs.current[i], cardH);
         nextScales.push(s);
       }
       setCardContentScales((prev) => {
@@ -690,6 +664,8 @@ export default function ServicesGrid() {
       if (pinSectionRef.current) ro.observe(pinSectionRef.current);
       if (headerBlockRef.current) ro.observe(headerBlockRef.current);
       if (mobileHeaderRef.current) ro.observe(mobileHeaderRef.current);
+      if (cardsViewportRef.current) ro.observe(cardsViewportRef.current);
+      if (mobilePinSectionRef.current) ro.observe(mobilePinSectionRef.current);
       const navEl = document.querySelector<HTMLElement>(
         '[data-site-navbar="true"]'
       );
@@ -825,60 +801,6 @@ export default function ServicesGrid() {
     [triggerVisibleCardHoverOff]
   );
 
-  const activatePreviewTab = useCallback(
-    (idx: number, immediate = false) => {
-      clearAllHoverTimers();
-      const apply = () => {
-        const currentScrollIdx = evaluateServicesMasterTimeline(
-          scrollProgressRef.current
-        ).scrollIndex;
-        hoverLockedScrollStepRef.current = currentScrollIdx;
-        const isSameAsScroll = idx === currentScrollIdx;
-        const wasHovered = isCardHoveredRef.current;
-
-        isCardHoveredRef.current = true;
-        setIsCardHovered(true);
-        setHoverIndex(idx);
-
-        hoverBridgeRef.current = {
-          previewIndex: isSameAsScroll ? null : idx,
-          cardHovered: true,
-          pulseSeq:
-            isSameAsScroll && !wasHovered
-              ? hoverBridgeRef.current.pulseSeq + 1
-              : hoverBridgeRef.current.pulseSeq,
-        };
-      };
-
-      if (immediate) {
-        apply();
-      } else {
-        hoverIntentTimerRef.current = setTimeout(
-          apply,
-          SERVICES_SECTION_TUNING.PREVIEW_HOVER_INTENT_DELAY_MS
-        );
-      }
-    },
-    [clearAllHoverTimers]
-  );
-
-  const schedulePreviewTabClear = useCallback(
-    (delayMs: number = SERVICES_SECTION_TUNING.PREVIEW_HOVER_LEAVE_DELAY_MS) => {
-      clearAllHoverTimers();
-      hoverLeaveTimerRef.current = setTimeout(() => {
-        isCardHoveredRef.current = false;
-        setIsCardHovered(false);
-        setHoverIndex(null);
-        hoverBridgeRef.current = {
-          previewIndex: null,
-          cardHovered: false,
-          pulseSeq: hoverBridgeRef.current.pulseSeq,
-        };
-      }, delayMs);
-    },
-    [clearAllHoverTimers]
-  );
-
   // --------------------------------------------------------------------------
   // GSAP `matchMedia()` SCROLLTRIGGER PINNING:
   // Cleanly switches between Desktop `(min-width: 1024px)` and Mobile/Tablet
@@ -893,7 +815,7 @@ export default function ServicesGrid() {
 
     const mm = gsap.matchMedia();
 
-    // 1. DESKTOP (>= 1024px): 100% Unchanged Approved Choreography
+    // 1. DESKTOP (>= 1024px): existing pin and progress driver; opaque deck choreography
     if (isDesktop) {
       mm.add("(min-width: 1024px)", () => {
         const sectionEl = pinSectionRef.current;
@@ -948,12 +870,9 @@ export default function ServicesGrid() {
         let smoothP = scrollProgressRef.current;
         let lastReportedScrollIdx = -1;
 
-        const liveWeights: number[] = entries.map((_, idx) =>
-          idx === 0 ? 1 : 0
-        );
-        const prevWeights: number[] = [...liveWeights];
-        let liveTrackX = 0;
         let liveHoverLift = 0;
+        const firstX = Math.min(DECK_TUNING.FIRST_MAX, Math.max(DECK_TUNING.FIRST_MIN, window.innerWidth * DECK_TUNING.FIRST_VW));
+        const secondX = Math.min(DECK_TUNING.SECOND_MAX, Math.max(DECK_TUNING.SECOND_MIN, window.innerWidth * DECK_TUNING.SECOND_VW));
 
         const applyChoreography = () => {
           rafId = requestAnimationFrame(applyChoreography);
@@ -970,294 +889,77 @@ export default function ServicesGrid() {
             setScrollIndex(state.scrollIndex);
           }
 
-          const { expandedW, collapsedW } = layout;
-          const previewIdx = hoverBridgeRef.current.previewIndex;
-          const hoveredFlag = isCardHoveredRef.current;
-
-          const targetLift = hoveredFlag ? 1 : 0;
-          liveHoverLift += (targetLift - liveHoverLift) * 0.18;
-
-          if (!SHOW_UPCOMING_PREVIEW) {
-            const isScrollTrans =
-              fromCardIndex !== toCardIndex && cardTransitionT > 0.001;
-            const t = easeInOutCubic(cardTransitionT);
-
-            for (let i = 0; i < entries.length; i++) {
-              const shell = cardShellRefs.current[i];
-              if (!shell) continue;
-
-              let cardOpacity = 0;
-              let slideX = 0;
-              let cardScale = 1;
-              let revealWeight = 0;
-              let sweepAmount = 0;
-
-              if (!isScrollTrans) {
-                if (i === state.scrollIndex) {
-                  cardOpacity = 1;
-                  slideX = 0;
-                  cardScale = 1;
-                  revealWeight = 1;
-                  sweepAmount = liveHoverLift * 0.34;
-                }
-              } else if (i === fromCardIndex) {
-                cardOpacity = Math.max(
-                  0,
-                  1 - easeInOutCubic(Math.min(1, cardTransitionT * 1.16))
-                );
-                slideX = -t * 82;
-                cardScale = 1 - t * 0.032;
-                revealWeight = 1 - t * 0.45;
-                sweepAmount = Math.sin(Math.PI * t) * 0.25;
-              } else if (i === toCardIndex) {
-                cardOpacity = easeInOutCubic(
-                  Math.max(0, (cardTransitionT - 0.05) / 0.95)
-                );
-                slideX = (1 - t) * 82;
-                cardScale = 0.968 + t * 0.032;
-                revealWeight = t;
-                sweepAmount = Math.sin(Math.PI * t) * 0.85;
-              }
-
-              const isVisible = cardOpacity > 0.004;
-              const isPrimaryInteractive = !isScrollTrans
-                ? i === state.scrollIndex
-                : cardTransitionT < 0.5
-                ? i === fromCardIndex
-                : i === toCardIndex;
-
-              const liftY =
-                isPrimaryInteractive && !isScrollTrans ? -4 * liveHoverLift : 0;
-
-              shell.style.visibility = isVisible ? "visible" : "hidden";
-              shell.style.opacity = cardOpacity.toFixed(3);
-              shell.style.pointerEvents = isPrimaryInteractive
-                ? "auto"
-                : "none";
-              shell.style.zIndex = isPrimaryInteractive ? "20" : "10";
-              shell.style.transform = `translate3d(${slideX.toFixed(
-                2
-              )}px, ${liftY.toFixed(2)}px, 0) scale(${cardScale.toFixed(4)})`;
-
-              if (liveHoverLift > 0.05 && isPrimaryInteractive) {
-                shell.style.borderColor = `rgba(49, 134, 255, ${(
-                  0.18 +
-                  liveHoverLift * 0.42
-                ).toFixed(2)})`;
-                shell.style.boxShadow =
-                  "0 30px 66px -12px rgba(18, 19, 23, 0.34), 0 10px 28px -8px rgba(49, 134, 255, 0.20)";
-              } else {
-                shell.style.borderColor = "rgba(18, 19, 23, 0.92)";
-                shell.style.boxShadow =
-                  "0 20px 48px -14px rgba(18, 19, 23, 0.20)";
-              }
-
-              const sweepEl = sweepGlowRefs.current[i];
-              if (sweepEl) {
-                sweepEl.style.opacity = sweepAmount.toFixed(3);
-                sweepEl.style.transform = `translate3d(${(
-                  (1 - revealWeight) *
-                  -20
-                ).toFixed(1)}px, 0, 0)`;
-              }
-
-              const isHoveredActiveCard = isPrimaryInteractive && hoveredFlag;
-              const arrowEl = arrowWrapRefs.current[i];
-              if (arrowEl) {
-                arrowEl.style.backgroundColor = isHoveredActiveCard
-                  ? "#3186FF"
-                  : "rgba(255, 255, 255, 0.10)";
-                arrowEl.style.color = "#FFFFFF";
-                arrowEl.style.transform = isHoveredActiveCard
-                  ? "scale(1.06)"
-                  : "scale(1)";
-              }
-
-              const arrowSvg = arrowIconRefs.current[i];
-              if (arrowSvg) {
-                arrowSvg.style.transform = isHoveredActiveCard
-                  ? "translate3d(2.5px, -2.5px, 0)"
-                  : "translate3d(0, 0, 0)";
-              }
-
-              const discLabel = disciplineLabelRefs.current[i];
-              if (discLabel) {
-                discLabel.style.color = isHoveredActiveCard
-                  ? "#A8C7FA"
-                  : "#749BFF";
-                discLabel.style.opacity = isHoveredActiveCard ? "1" : "0.9";
-              }
-
-              const settleT =
-                isScrollTrans && i === toCardIndex
-                  ? easeOutOdometer(Math.max(0, (t - 0.12) / 0.88))
-                  : 1;
-              const titleEl = activeTitleRefs.current[i];
-              if (titleEl) {
-                titleEl.style.opacity = settleT.toFixed(3);
-                titleEl.style.transform = `translate3d(0, ${(
-                  (1 - settleT) *
-                  8
-                ).toFixed(1)}px, 0)`;
-              }
-              const descEl = activeDescRefs.current[i];
-              if (descEl) {
-                descEl.style.opacity = settleT.toFixed(3);
-                descEl.style.transform = `translate3d(0, ${(
-                  (1 - settleT) *
-                  8
-                ).toFixed(1)}px, 0)`;
-              }
-              const colsEl = activeColumnsRefs.current[i];
-              if (colsEl) {
-                colsEl.style.opacity = settleT.toFixed(3);
-                colsEl.style.transform = `translate3d(0, ${(
-                  (1 - settleT) *
-                  10
-                ).toFixed(1)}px, 0)`;
-              }
-
-              const toolNodes = activeToolItemRefs.current[i] || [];
-              for (let k = 0; k < toolNodes.length; k++) {
-                const node = toolNodes[k];
-                if (!node) continue;
-                node.style.opacity = settleT.toFixed(3);
-                node.style.transitionDelay = isHoveredActiveCard
-                  ? `${k * 36}ms`
-                  : `${(toolNodes.length - 1 - k) * 20}ms`;
-                node.style.transform = isHoveredActiveCard
-                  ? "translate3d(0, -2.5px, 0) scale(1.15)"
-                  : "translate3d(0, 0, 0) scale(1)";
-              }
-            }
-            return;
-          }
-
-          const isScrollTrans = fromCardIndex !== toCardIndex;
-          const easedScrollMove = easeInOutCubic(cardTransitionT);
-
-          const targetTrackX = 0;
-          liveTrackX += (targetTrackX - liveTrackX) * 0.2;
-          if (cardsTrackRef.current) {
-            cardsTrackRef.current.style.transform = `translate3d(${liveTrackX.toFixed(
-              2
-            )}px, 0, 0)`;
-          }
-
-          const resolvedActive = previewIdx ?? state.scrollIndex;
-
+          const t = easeInOutCubic(cardTransitionT);
+          const transitioning = fromCardIndex !== toCardIndex;
+          const front = transitioning ? fromCardIndex : state.scrollIndex;
+          const active = state.scrollIndex;
+          const hovered = isCardHoveredRef.current;
+          liveHoverLift += ((hovered ? 1 : 0) - liveHoverLift) * 0.18;
           for (let i = 0; i < entries.length; i++) {
-            let targetW = 0;
-            if (previewIdx !== null) {
-              targetW = i === previewIdx ? 1 : 0;
-            } else if (!isScrollTrans) {
-              targetW = i === state.scrollIndex ? 1 : 0;
-            } else if (i === fromCardIndex) {
-              targetW = 1 - easedScrollMove;
-            } else if (i === toCardIndex) {
-              targetW = easedScrollMove;
-            }
-
-            prevWeights[i] = liveWeights[i];
-            const wRate = previewIdx !== null ? 0.16 : 0.24;
-            liveWeights[i] += (targetW - liveWeights[i]) * wRate;
-            const w = Math.max(0, Math.min(1, liveWeights[i]));
-            const deltaW = w - prevWeights[i];
-
-            const widthPx = collapsedW + (expandedW - collapsedW) * w;
-            const isHoveredActive =
-              i === resolvedActive && hoveredFlag && w > 0.7;
-            const liftY = isHoveredActive ? -4 * liveHoverLift : (1 - w) * 8;
-            const isPointedCollapsed =
-              rawPointedTabRef.current === i && w < 0.25;
-
             const shell = cardShellRefs.current[i];
-            if (shell) {
-              shell.style.width = `${widthPx.toFixed(1)}px`;
-              shell.style.transform = `translate3d(0, ${liftY.toFixed(
-                2
-              )}px, 0)`;
-              if (w > 0.45) {
-                shell.style.borderColor = isHoveredActive
-                  ? "rgba(49, 134, 255, 0.52)"
-                  : "rgba(18, 19, 23, 0.92)";
-                shell.style.boxShadow = isHoveredActive
-                  ? "0 28px 62px -12px rgba(18, 19, 23, 0.32)"
-                  : "0 20px 48px -14px rgba(18, 19, 23, 0.20)";
-              } else if (isPointedCollapsed) {
-                shell.style.borderColor = "rgba(49, 134, 255, 0.45)";
-                shell.style.boxShadow =
-                  "0 14px 32px -12px rgba(49, 134, 255, 0.14)";
-              } else {
-                shell.style.borderColor = "rgba(33, 34, 38, 0.09)";
-                shell.style.boxShadow =
-                  "0 4px 18px -6px rgba(18, 19, 23, 0.05)";
-              }
+            if (!shell) continue;
+            const slot = i - front;
+            let x = 0, scale = 1, dark = 0, content = 0, visible = false, z = 10;
+            if (slot === 0) {
+              visible = !transitioning || cardTransitionT < 0.999;
+              x = transitioning ? DECK_TUNING.EXIT_X * t : 0;
+              dark = 1;
+              content = transitioning ? Math.max(0, 1 - cardTransitionT / 0.45) : 1;
+              z = !transitioning || cardTransitionT < 0.5 ? 40 : 20;
+            } else if (slot === 1) {
+              visible = SHOW_UPCOMING_PREVIEW || transitioning;
+              x = firstX * (transitioning ? 1 - t : 1);
+              scale = DECK_TUNING.FIRST_SCALE + (transitioning ? t * (1 - DECK_TUNING.FIRST_SCALE) : 0);
+              dark = transitioning ? easeInOutCubic(Math.max(0, (cardTransitionT - 0.4) / 0.6)) : 0;
+              content = transitioning
+                ? Math.max(0, (cardTransitionT - 0.45) / 0.55)
+                : DECK_TUNING.FIRST_GHOST;
+              z = transitioning && cardTransitionT >= 0.5 ? 40 : 30;
+            } else if (slot === 2 && SHOW_UPCOMING_PREVIEW) {
+              visible = true;
+              x = secondX + (transitioning ? (firstX - secondX) * t : 0);
+              scale = DECK_TUNING.SECOND_SCALE + (transitioning ? (DECK_TUNING.FIRST_SCALE - DECK_TUNING.SECOND_SCALE) * t : 0);
+              content = DECK_TUNING.SECOND_GHOST + (transitioning ? (DECK_TUNING.FIRST_GHOST - DECK_TUNING.SECOND_GHOST) * t : 0);
+              z = 15;
+            } else if (slot === 3 && transitioning && SHOW_UPCOMING_PREVIEW) {
+              visible = t > 0.02;
+              x = secondX;
+              scale = DECK_TUNING.SECOND_SCALE;
+              content = DECK_TUNING.SECOND_GHOST * t;
+              z = 10;
             }
-
-            const darkFill = darkFillRefs.current[i];
-            if (darkFill) darkFill.style.opacity = w.toFixed(3);
-
-            const sweepEl = sweepGlowRefs.current[i];
-            if (sweepEl) {
-              const isExpanding = deltaW > 0.0005;
-              const sweepPeak =
-                Math.sin(Math.PI * w) * (isExpanding ? 0.9 : 0.3);
-              sweepEl.style.opacity = sweepPeak.toFixed(3);
-            }
-
-            const inactiveAlpha = Math.max(0, 1 - w * 1.85);
-            const collapsedEl = collapsedOverlayRefs.current[i];
-            if (collapsedEl) {
-              collapsedEl.style.opacity = inactiveAlpha.toFixed(3);
-              collapsedEl.style.visibility =
-                inactiveAlpha > 0.02 ? "visible" : "hidden";
-            }
-
-            const halftoneEl = halftoneRefs.current[i];
-            if (halftoneEl) {
-              halftoneEl.style.opacity = (inactiveAlpha * 0.72).toFixed(3);
-            }
-
-            const activeWrap = activeContentWrapRefs.current[i];
-            if (activeWrap) {
-              const activeAlpha = Math.max(0, Math.min(1, (w - 0.28) / 0.72));
-              activeWrap.style.opacity = activeAlpha.toFixed(3);
-              activeWrap.style.visibility =
-                activeAlpha > 0.02 ? "visible" : "hidden";
-            }
-
-            const arrowEl = arrowWrapRefs.current[i];
-            if (arrowEl) {
-              arrowEl.style.backgroundColor = isHoveredActive
-                ? "#3186FF"
-                : "rgba(255, 255, 255, 0.10)";
-              arrowEl.style.color = "#FFFFFF";
-            }
-
-            const arrowSvg = arrowIconRefs.current[i];
-            if (arrowSvg) {
-              arrowSvg.style.transform = isHoveredActive
-                ? "translate3d(2.5px, -2.5px, 0)"
-                : "translate3d(0, 0, 0)";
-            }
-
-            const discLabel = disciplineLabelRefs.current[i];
-            if (discLabel) {
-              discLabel.style.color = isHoveredActive ? "#A8C7FA" : "#749BFF";
-            }
-
-            const toolNodes = activeToolItemRefs.current[i] || [];
-            for (let k = 0; k < toolNodes.length; k++) {
-              const node = toolNodes[k];
-              if (!node) continue;
-              node.style.transitionDelay = isHoveredActive
-                ? `${k * 36}ms`
-                : "0ms";
-              node.style.transform = isHoveredActive
-                ? "translate3d(0, -2.5px, 0) scale(1.15)"
-                : "translate3d(0, 0, 0) scale(1)";
-            }
+            const primary = i === active;
+            shell.style.visibility = visible ? "visible" : "hidden";
+            shell.style.opacity = "1"; // Backgrounds NEVER fade through another card.
+            shell.style.zIndex = `${z}`;
+            shell.style.pointerEvents = primary ? "auto" : "none";
+            shell.style.transform = `translate3d(${x}px, ${primary && !transitioning ? -4 * liveHoverLift : 0}px, 0) scale(${scale})`;
+            shell.style.borderColor = dark > 0.5 ? "rgba(18,19,23,.92)" : "rgba(15,15,30,.06)";
+            shell.style.boxShadow = "0 20px 48px -14px rgba(18,19,23,.16)";
+            shell.setAttribute("aria-hidden", primary ? "false" : "true");
+            shell.tabIndex = primary ? 0 : -1;
+            const link = arrowWrapRefs.current[i];
+            if (link) link.tabIndex = primary ? 0 : -1;
+            shell.dataset.preview = dark < 0.5 ? "true" : "false";
+            const fill = darkFillRefs.current[i];
+            if (fill) fill.style.opacity = `${dark}`;
+            const wrap = activeContentWrapRefs.current[i];
+            if (wrap) wrap.style.opacity = `${content}`;
+            [activeTitleRefs.current[i], activeDescRefs.current[i], activeColumnsRefs.current[i]].forEach((node, order) => {
+              if (!node) return;
+              const reveal = transitioning && slot === 1 ? Math.max(0, Math.min(1, (cardTransitionT - 0.45 - order * 0.035) / (0.55 - order * 0.035))) : 1;
+              node.style.opacity = `${reveal * (dark < 0.5 && order > 0 ? DECK_TUNING.DETAIL_GHOST_MULTIPLIER : 1)}`;
+              node.style.transform = `translate3d(0, ${(1 - reveal) * 8}px, 0)`;
+            });
+            const arrow = arrowWrapRefs.current[i];
+            if (arrow) arrow.style.backgroundColor = hovered && primary ? "#3186FF" : "rgba(255,255,255,.10)";
+            const arrowIcon = arrowIconRefs.current[i];
+            if (arrowIcon) arrowIcon.style.transform = hovered && primary ? "translate3d(2.5px,-2.5px,0)" : "none";
+            (activeToolItemRefs.current[i] || []).forEach((node, k) => {
+              if (!node) return;
+              node.style.transitionDelay = `${k * 36}ms`;
+              node.style.transform = hovered && primary ? "translateY(-2.5px) scale(1.15)" : "none";
+            });
           }
         };
 
@@ -1371,7 +1073,9 @@ export default function ServicesGrid() {
               : i === toCardIndex;
 
             shell.style.visibility = isVisible ? "visible" : "hidden";
-            shell.style.opacity = opacity.toFixed(3);
+            shell.style.opacity = "1";
+            const content = mobileCardInnerMeasureRefs.current[i];
+            if (content) content.style.opacity = !isScrollTrans ? "1" : i === fromCardIndex ? `${Math.max(0, 1 - cardTransitionT / 0.45)}` : `${Math.max(0, (cardTransitionT - 0.45) / 0.55)}`;
             shell.style.pointerEvents = isPrimary ? "auto" : "none";
             shell.style.zIndex = isPrimary ? "20" : "10";
             shell.style.transform = `translate3d(0, ${slideY.toFixed(
@@ -1943,7 +1647,7 @@ export default function ServicesGrid() {
   }
 
   // --------------------------------------------------------------------------
-  // 3. DESKTOP (>= 1024px) PINNED STAGE (`100dvh - navHeight` — 100% UNCHANGED)
+  // 3. DESKTOP (>= 1024px) PINNED STAGE (`100dvh - navHeight` — measured deck layout)
   // --------------------------------------------------------------------------
   const showCollapsedSubLabel =
     layout.collapsedW >= SERVICES_SECTION_TUNING.COLLAPSED_LABEL_MIN_WIDTH_PX;
@@ -1992,7 +1696,7 @@ export default function ServicesGrid() {
       {/* Two-Column Stage Inside `100dvh - navHeight` */}
       <div className="relative z-10 w-full h-full flex items-stretch min-h-0">
         {/* LEFT COLUMN (~45%): Dedicated Interactive Particle Canvas Stage */}
-        <div className="relative w-[45%] xl:w-[46%] shrink-0 h-full pointer-events-auto">
+        <div className="relative w-[43%] xl:w-[43%] shrink-0 h-full pointer-events-auto">
           <ServicesParticleCanvas
             scrollProgressRef={scrollProgressRef}
             hoverBridgeRef={hoverBridgeRef}
@@ -2010,14 +1714,14 @@ export default function ServicesGrid() {
             paddingTop: `${layout.padTop}px`,
             paddingBottom: `${layout.padBottom}px`,
           }}
-          className="w-[55%] xl:w-[54%] h-full min-h-0 flex flex-col justify-center pr-6 lg:pr-10 xl:pr-14"
+          className="w-[57%] xl:w-[57%] h-full min-h-0 flex flex-col justify-center pr-6 lg:pr-10 xl:pr-14"
         >
           <div className="w-full max-h-full min-h-0 flex flex-col">
             {/* 1. Section Header Block (shrink-0) */}
             <div
               ref={headerBlockRef}
-              className={`shrink-0 flex items-end justify-between gap-6 max-w-[760px] ${
-                layout.isCompact ? "mb-3" : "mb-[clamp(14px,2dvh,22px)]"
+              className={`shrink-0 flex items-start justify-between gap-5 max-w-[856px] ${
+                layout.isCompact ? "mb-6" : "mb-7"
               }`}
             >
               <div>
@@ -2031,6 +1735,7 @@ export default function ServicesGrid() {
                   <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
                   <span>04 CORE CAPABILITIES</span>
                 </div>
+                <div className="flex items-baseline flex-wrap gap-x-4 gap-y-2">
                 <SplitTextReveal
                   as="h2"
                   text="Our Services"
@@ -2042,12 +1747,17 @@ export default function ServicesGrid() {
                       : "text-[clamp(28px,3.9dvh,40px)] font-bold tracking-[-0.025em] leading-[1.06] text-[#121317]"
                   }
                 />
+                <div className="flex items-center gap-2 text-[11px] font-mono" aria-label={`Service ${scrollIndex + 1} of 4`}>
+                  <span className="text-[#3186FF]">0{scrollIndex + 1} / 04</span>
+                  {entries.map((_, index) => <span key={index} aria-hidden="true" className={`h-1 rounded-full ${index === scrollIndex ? "w-5 bg-[#121317]" : "w-1 bg-[#C8CED8]"}`} />)}
+                </div>
+                </div>
               </div>
 
               <p
                 className={`text-[#45474D] max-w-[285px] pb-0.5 font-normal ${
                   layout.isCompact
-                    ? "text-[11.5px] leading-[1.45]"
+                    ? "hidden"
                     : "text-[clamp(12px,1.5dvh,13.5px)] leading-[1.55]"
                 }`}
               >
@@ -2060,31 +1770,8 @@ export default function ServicesGrid() {
             <div
               ref={cardsViewportRef}
               style={{ height: `${layout.cardH}px` }}
-              onPointerLeave={
-                SHOW_UPCOMING_PREVIEW
-                  ? () => {
-                      rawPointedTabRef.current = null;
-                      hoverSuppressedByScrollRef.current = false;
-                      if (canHover) schedulePreviewTabClear();
-                    }
-                  : undefined
-              }
-              onBlur={
-                SHOW_UPCOMING_PREVIEW
-                  ? (e) => {
-                      if (
-                        !e.currentTarget.contains(
-                          e.relatedTarget as Node | null
-                        )
-                      ) {
-                        schedulePreviewTabClear(160);
-                      }
-                    }
-                  : undefined
-              }
-              className="relative shrink-0 w-full [overflow-x:clip] overflow-y-visible"
+              className="relative shrink-0 w-full overflow-visible"
             >
-              {!SHOW_UPCOMING_PREVIEW ? (
                 <div
                   ref={singleCardHitboxRef}
                   style={{
@@ -2130,15 +1817,23 @@ export default function ServicesGrid() {
                         style={{
                           width: `${layout.expandedW}px`,
                           height: `${layout.cardH}px`,
-                          opacity: idx === 0 ? 1 : 0,
+                          opacity: 1,
                           visibility: idx === 0 ? "visible" : "hidden",
                           pointerEvents: idx === 0 ? "auto" : "none",
-                          background: `linear-gradient(152deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP} 0%, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 65%, #0D0E12 100%)`,
+                          background: DECK_TUNING.FROST,
+                          isolation: "isolate",
+                          transformOrigin: "left center",
                           transition:
                             "box-shadow 260ms ease, border-color 260ms ease",
                         }}
-                        className="absolute top-0 left-0 rounded-[24px] border border-[#121317] cursor-pointer select-text will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
+                        className="absolute top-0 left-0 rounded-[28px] border border-[#121317] cursor-pointer select-text will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
                       >
+                        <div
+                          ref={(el) => { darkFillRefs.current[idx] = el; }}
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 rounded-[27px]"
+                          style={{ background: `linear-gradient(152deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP}, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 65%, #0D0E12)`, opacity: idx === 0 ? 1 : 0 }}
+                        />
                         <div
                           aria-hidden="true"
                           className="pointer-events-none absolute inset-0 rounded-[23px] overflow-hidden"
@@ -2168,6 +1863,7 @@ export default function ServicesGrid() {
                         <div
                           ref={(el) => {
                             cardInnerMeasureRefs.current[idx] = el;
+                            activeContentWrapRefs.current[idx] = el;
                           }}
                           style={
                             contentScale < 0.999
@@ -2201,8 +1897,8 @@ export default function ServicesGrid() {
                                 }}
                                 className={`font-bold tracking-tight text-white leading-[1.18] will-change-transform ${
                                   layout.isCompact
-                                    ? "text-[16.5px]"
-                                    : "text-[clamp(17.5px,2.25dvh,21px)]"
+                                    ? "text-[20px]"
+                                    : "text-[clamp(22px,2.7dvh,26px)]"
                                 }`}
                               >
                                 {entry.service.title}
@@ -2224,7 +1920,7 @@ export default function ServicesGrid() {
                                 color: "#FFFFFF",
                               }}
                               className={`shrink-0 rounded-full flex items-center justify-center transition-[background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] ${
-                                layout.isCompact ? "w-8 h-8" : "w-9 h-9"
+                                "w-11 h-11"
                               }`}
                             >
                               <svg
@@ -2247,8 +1943,8 @@ export default function ServicesGrid() {
                           </div>
 
                           <div
-                            className={`flex-1 min-h-0 flex items-center ${
-                              layout.isCompact ? "py-2" : "py-2.5"
+                            className={`shrink-0 min-h-0 ${
+                              layout.isCompact ? "mt-4 mb-4" : "mt-5 mb-5"
                             }`}
                           >
                             <p
@@ -2257,8 +1953,8 @@ export default function ServicesGrid() {
                               }}
                               className={`text-[#B2BBC5] font-normal will-change-transform ${
                                 layout.isCompact
-                                  ? "text-[11.5px] leading-[1.48] line-clamp-3"
-                                  : "text-[clamp(11.8px,1.5dvh,13px)] leading-[1.56] line-clamp-4"
+                                  ? "text-[13px] leading-[1.48] line-clamp-3"
+                                  : "text-[15px] leading-[1.56] line-clamp-4"
                               }`}
                             >
                               {entry.service.shortDesc}
@@ -2269,7 +1965,7 @@ export default function ServicesGrid() {
                             ref={(el) => {
                               activeColumnsRefs.current[idx] = el;
                             }}
-                            className={`shrink-0 grid grid-cols-[1.42fr_0.92fr] gap-3.5 items-start border-t border-white/10 will-change-transform ${
+                            className={`mt-auto shrink-0 grid grid-cols-[1.42fr_0.92fr] gap-3.5 items-start border-t border-white/10 will-change-transform ${
                               layout.isCompact ? "pt-2.5" : "pt-3"
                             }`}
                           >
@@ -2280,8 +1976,8 @@ export default function ServicesGrid() {
                               <ul
                                 className={`text-white/95 font-normal ${
                                   layout.isCompact
-                                    ? "space-y-1 text-[11px] leading-[1.32]"
-                                    : "space-y-1.5 text-[clamp(11px,1.38dvh,12px)] leading-[1.36]"
+                                    ? "space-y-1 text-[12px] leading-[1.32]"
+                                    : "space-y-1.5 text-[13.5px] leading-[1.36]"
                                 }`}
                               >
                                 {bullets.map((line) => (
@@ -2295,8 +1991,8 @@ export default function ServicesGrid() {
                                 Tools
                               </div>
                               <div
-                                className={`grid grid-cols-3 max-w-[106px] text-white/95 ${
-                                  layout.isCompact ? "gap-2" : "gap-2.5"
+                                className={`grid text-white/95 ${
+                                  layout.isCompact ? "grid-cols-6 gap-1.5" : "grid-cols-3 max-w-[120px] gap-2.5"
                                 }`}
                               >
                                 {entry.displayTools.map((tool, tIdx) => (
@@ -2324,270 +2020,7 @@ export default function ServicesGrid() {
                     );
                   })}
                 </div>
-              ) : (
-                <div
-                  ref={cardsTrackRef}
-                  style={{
-                    gap: `${layout.gap}px`,
-                    height: `${layout.cardH}px`,
-                  }}
-                  className="flex items-start h-full will-change-transform"
-                >
-                  {entries.map((entry, idx) => {
-                    const isCurrentActive = activeIndex === idx;
-                    const indexNumber = String(idx + 1).padStart(2, "0");
-                    const serviceHref = `/services/${entry.service.slug}`;
-                    const bullets = layout.isCompact
-                      ? entry.compactBullets
-                      : entry.normalBullets;
-                    const contentScale = cardContentScales[idx] ?? 1;
 
-                    return (
-                      <div
-                        key={entry.service.id}
-                        ref={(el) => {
-                          cardShellRefs.current[idx] = el;
-                        }}
-                        role="link"
-                        tabIndex={0}
-                        aria-label={`${indexNumber} ${entry.service.title}`}
-                        aria-current={isCurrentActive ? "true" : undefined}
-                        onPointerEnter={(e) => {
-                          if (e.pointerType === "touch" || !canHover) return;
-                          rawPointedTabRef.current = idx;
-                          if (!hoverSuppressedByScrollRef.current) {
-                            activatePreviewTab(idx, false);
-                          }
-                        }}
-                        onPointerMove={(e) => {
-                          if (e.pointerType === "touch" || !canHover) return;
-                          rawPointedTabRef.current = idx;
-                          if (hoverSuppressedByScrollRef.current) {
-                            hoverSuppressedByScrollRef.current = false;
-                            activatePreviewTab(idx, false);
-                          }
-                        }}
-                        onPointerLeave={() => {
-                          if (rawPointedTabRef.current === idx) {
-                            rawPointedTabRef.current = null;
-                          }
-                        }}
-                        onFocus={() => activatePreviewTab(idx, true)}
-                        onClick={() => router.push(serviceHref)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            router.push(serviceHref);
-                          }
-                        }}
-                        style={{
-                          width:
-                            idx === 0
-                              ? `${layout.expandedW}px`
-                              : `${layout.collapsedW}px`,
-                          height: `${layout.cardH}px`,
-                          backgroundColor:
-                            SERVICES_SECTION_TUNING.INACTIVE_CARD_BG,
-                        }}
-                        className="relative shrink-0 rounded-[24px] border border-[#212226]/[0.09] overflow-hidden cursor-pointer select-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
-                      >
-                        <div
-                          ref={(el) => {
-                            halftoneRefs.current[idx] = el;
-                          }}
-                          aria-hidden="true"
-                          className="pointer-events-none absolute inset-0"
-                          style={{
-                            opacity: idx === 0 ? 0 : 0.72,
-                            backgroundImage:
-                              "radial-gradient(circle, rgba(49, 134, 255, 0.36) 1.35px, transparent 1.5px)",
-                            backgroundSize: "13px 13px",
-                            maskImage:
-                              "radial-gradient(circle at 92% 92%, black 0%, rgba(0,0,0,0.55) 36%, transparent 68%)",
-                            WebkitMaskImage:
-                              "radial-gradient(circle at 92% 92%, black 0%, rgba(0,0,0,0.55) 36%, transparent 68%)",
-                          }}
-                        />
-
-                        <div
-                          ref={(el) => {
-                            darkFillRefs.current[idx] = el;
-                          }}
-                          aria-hidden="true"
-                          className="pointer-events-none absolute inset-0"
-                          style={{
-                            opacity: idx === 0 ? 1 : 0,
-                            background: `linear-gradient(152deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP} 0%, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 65%, #0D0E12 100%)`,
-                          }}
-                        />
-
-                        <div
-                          ref={(el) => {
-                            sweepGlowRefs.current[idx] = el;
-                          }}
-                          aria-hidden="true"
-                          className="pointer-events-none absolute -inset-8 will-change-transform"
-                          style={{
-                            opacity: 0,
-                            background:
-                              "linear-gradient(135deg, rgba(49, 134, 255, 0.40) 0%, rgba(116, 155, 255, 0.20) 38%, rgba(18, 19, 23, 0) 70%)",
-                          }}
-                        />
-
-                        <div
-                          ref={(el) => {
-                            collapsedOverlayRefs.current[idx] = el;
-                          }}
-                          aria-hidden="true"
-                          style={{
-                            opacity: idx === 0 ? 0 : 1,
-                            visibility: idx === 0 ? "hidden" : "visible",
-                          }}
-                          className="pointer-events-none absolute inset-0 z-20 p-4 flex flex-col justify-between"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-[20px] font-mono font-bold tracking-tight text-[#121317] tabular-nums leading-none">
-                                {indexNumber}
-                              </span>
-                              <span className="w-8 h-8 rounded-full bg-[#121317]/[0.06] text-[#121317] flex items-center justify-center shrink-0">
-                                <svg
-                                  viewBox="0 0 22 22"
-                                  className="w-[14px] h-[14px]"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="1.75"
-                                >
-                                  <path
-                                    d="M5.5 16.5L15.5 6.5M7.5 6.5h8v8"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </span>
-                            </div>
-                            {showCollapsedSubLabel && (
-                              <span className="block mt-2 text-[10px] font-mono uppercase tracking-widest text-[#3186FF]">
-                                DISCIPLINE
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="text-[12px] font-semibold text-[#121317] truncate">
-                            {entry.service.title}
-                          </div>
-                        </div>
-
-                        <div
-                          ref={(el) => {
-                            activeContentWrapRefs.current[idx] = el;
-                            cardInnerMeasureRefs.current[idx] = el;
-                          }}
-                          style={{
-                            width: `${layout.expandedW}px`,
-                            opacity: idx === 0 ? 1 : 0,
-                            visibility: idx === 0 ? "visible" : "hidden",
-                            ...(contentScale < 0.999
-                              ? {
-                                  transform: `scale(${contentScale})`,
-                                  transformOrigin: "top left",
-                                }
-                              : {}),
-                          }}
-                          className={`relative z-20 h-full min-h-0 flex flex-col ${
-                            layout.isCompact ? "p-4" : "p-5"
-                          }`}
-                        >
-                          <div className="shrink-0 flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <span
-                                ref={(el) => {
-                                  disciplineLabelRefs.current[idx] = el;
-                                }}
-                                className="inline-block text-[10px] font-mono uppercase tracking-widest text-[#749BFF] mb-1"
-                              >
-                                {indexNumber} / DISCIPLINE
-                              </span>
-                              <h3 className="text-[18px] font-bold tracking-tight text-white leading-[1.2]">
-                                {entry.service.title}
-                              </h3>
-                            </div>
-
-                            <Link
-                              ref={(el) => {
-                                arrowWrapRefs.current[idx] = el;
-                              }}
-                              href={serviceHref}
-                              tabIndex={-1}
-                              aria-label={`Open ${entry.service.title} service page`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center shrink-0"
-                            >
-                              <svg
-                                ref={(el) => {
-                                  arrowIconRefs.current[idx] = el;
-                                }}
-                                viewBox="0 0 22 22"
-                                className="w-[14px] h-[14px] transition-transform duration-200"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.75"
-                              >
-                                <path
-                                  d="M5.5 16.5L15.5 6.5M7.5 6.5h8v8"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </Link>
-                          </div>
-
-                          <div className="flex-1 min-h-0 flex items-center py-2">
-                            <p className="text-[12px] leading-[1.52] text-[#B2BBC5] line-clamp-4">
-                              {entry.service.shortDesc}
-                            </p>
-                          </div>
-
-                          <div className="shrink-0 grid grid-cols-[1.35fr_0.95fr] gap-3 items-start pt-2.5 border-t border-white/10">
-                            <div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-[#749BFF] mb-1.5">
-                                Services
-                              </div>
-                              <ul className="space-y-1 text-[11px] leading-[1.34] text-white/95">
-                                {bullets.map((line) => (
-                                  <li key={line}>{line}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-[#749BFF] mb-1.5">
-                                Tools
-                              </div>
-                              <div className="grid grid-cols-3 gap-2 max-w-[100px] text-white/95">
-                                {entry.displayTools.map((tool, tIdx) => (
-                                  <div
-                                    key={`${tool}-${tIdx}`}
-                                    ref={(el) => {
-                                      if (!activeToolItemRefs.current[idx]) {
-                                        activeToolItemRefs.current[idx] = [];
-                                      }
-                                      activeToolItemRefs.current[idx][tIdx] = el;
-                                    }}
-                                    title={tool}
-                                    className="w-5 h-5 flex items-center justify-center transition-transform duration-200"
-                                  >
-                                    {renderServiceToolIcon(tool)}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           </div>
         </div>
