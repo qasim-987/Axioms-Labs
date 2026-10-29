@@ -2,7 +2,11 @@
 
 Date: 2026-10-29. Branch: `arena/3c08dc97-axioms-labs`. Baseline: `b513e59`.
 
-## Status and scope
+## Merge update — 2026-10-30
+
+PR #8 resolves conflicts with newer main by explicit owner choice: retain this session’s light homepage/service routes and root scrolling/layout, rather than the dark landing routes from PRs #6–7. Unrelated main additions remain. Post-resolution build and frontend/backend typecheck pass; lint exits successfully with five existing hook warnings in the retained, inactive `landing/` components. npm reports five dependency advisories (four high, one critical); no force-upgrade was applied. Original timing/FPS limitations still apply.
+
+## Status and scope (implementation snapshot)
 
 Implemented locally; **not committed, pushed, merged or deployed**. No application dependencies added. Desktop >=1024 retains its existing renderer, deck, hover and choreography; pricing is intentionally site-wide. Coarse/no-hover Hero selection follows input capability, including a coarse-pointer large screen, rather than user-agent strings.
 

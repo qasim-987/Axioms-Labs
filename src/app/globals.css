@@ -350,6 +350,75 @@ body {
   }
 }
 
+/* ============================================================================
+   [NAME] Landing brand canvas — near-black background, white text.
+   Applied via .brand-dark on document.documentElement (landing route only).
+   ============================================================================ */
+.brand-dark {
+  background-color: #05060A;
+  color: #FFFFFF;
+}
+
+.brand-dark ::selection {
+  background: #6C6FD8;
+  color: #FFFFFF;
+}
+
+/* Custom slim scrollbar — dark track (landing route). */
+.brand-dark ::-webkit-scrollbar {
+  width: 10px;
+}
+.brand-dark ::-webkit-scrollbar-track {
+  background: #05060A;
+}
+.brand-dark ::-webkit-scrollbar-thumb {
+  background: #1A1B1F;
+  border-radius: 9999px;
+  border: 3px solid #05060A;
+}
+.brand-dark ::-webkit-scrollbar-thumb:hover {
+  background: #2A2B33;
+}
+
+/* Odometer digit columns (0-9 ribbon) used by the "100%" stat. */
+.odometer {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.1em;
+}
+.odometer-wrap {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+}
+.odometer-column {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+.odometer-digit {
+  height: 1em;
+  line-height: 1;
+}
+.odometer-gap {
+  margin-top: 0.05em;
+}
+
+/* Halftone dot pattern (mask-image gradient fade). */
+.halftone-dots {
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 10px 10px;
+  mask-image: linear-gradient(to top, transparent, black 55%);
+  -webkit-mask-image: linear-gradient(to top, transparent, black 55%);
+}
+
+/* Split-text mask: clips animated characters without clipping descenders. */
+.split-mask {
+  overflow: hidden;
+  padding-bottom: 0.18em;
+}
+
 /* Services deck: opaque shells mask all ghost content beneath the active card. */
 #services [data-preview="true"] h3 { color: #454b60; }
 #services [data-preview="true"] p,
