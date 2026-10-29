@@ -120,7 +120,7 @@ export default function Hero() {
         );
       }
 
-      if (sphereStageRef.current) {
+      if (sphereStageRef.current && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
         tl.to(
           sphereStageRef.current,
           {
@@ -222,7 +222,7 @@ export default function Hero() {
         {/* Centered Main Hero Stack */}
         <div
           ref={foregroundCopyRef}
-          className="my-auto py-10 sm:py-14 flex flex-col items-center justify-center text-center max-w-4xl mx-auto pointer-events-auto will-change-transform"
+          className="hero-touch-copy my-auto py-10 sm:py-14 flex flex-col items-center justify-center text-center max-w-4xl mx-auto pointer-events-auto will-change-transform"
         >
           {/* Subtle Antigravity Eyebrow Pill */}
           <motion.div

@@ -1,5 +1,8 @@
 "use client";
 
+import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
+import LaunchPricing, { PricingTrustCopy } from "@/components/LaunchPricing";
+import ToolChipContent from "@/components/ToolChipContent";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll } from "framer-motion";
@@ -51,7 +54,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
     name: "",
     email: "",
     company: "",
-    budget: "$2,500 - $5,000",
+    budget: DEFAULT_BUDGET,
     message: "",
     botField: "",
   });
@@ -166,6 +169,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             <p className="text-base sm:text-lg text-[#45474D] leading-relaxed font-normal mb-8 max-w-3xl mx-auto">
               {service.longDesc}
             </p>
+              <LaunchPricing slug={service.slug} />
 
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
               <span className="px-3.5 py-1.5 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-[#121317] font-medium">
@@ -290,9 +294,9 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
               {service.tools.map((tool) => (
                 <span
                   key={tool}
-                  className="px-3.5 py-2 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] shadow-sm"
+                  className="tool-chip-shell px-3.5 py-2 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] shadow-sm"
                 >
-                  {tool}
+                  <ToolChipContent name={tool} />
                 </span>
               ))}
             </div>
@@ -464,11 +468,9 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     }
                     className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] focus:outline-none focus:border-[#3186FF]"
                   >
-                    <option value="$1,000 - $2,500">$1,000 – $2,500</option>
-                    <option value="$2,500 - $5,000">$2,500 – $5,000</option>
-                    <option value="$5,000 - $15,000">$5,000 – $15,000</option>
-                    <option value="$15,000+">$15,000+ Custom Scope</option>
+                    {pricing.budgetBands.map(band=><option key={band} value={band}>{band}</option>)}
                   </select>
+                  <PricingTrustCopy />
                 </div>
 
                 <div className="sm:col-span-2">

@@ -285,6 +285,10 @@ function ProjectShowcaseVisual({
 }
 
 export default function CaseStudies() {
+  useEffect(() => {
+    const timer=setTimeout(()=>ScrollTrigger.refresh(),220);
+    return()=>clearTimeout(timer);
+  }, []);
   const featuredShowcase = clientsData.slice(0, 2);
   const allStudies = clientsData.slice(0, 4);
   const [selectedIdx, setSelectedIdx] = useState<number>(2);

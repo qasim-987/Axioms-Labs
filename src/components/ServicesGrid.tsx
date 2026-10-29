@@ -19,10 +19,10 @@ import {
 } from "@/lib/serviceParticleShapes";
 import ServicesParticleCanvas, {
   PARTICLE_TUNING,
-  STEP_HOLD_PROGRESS,
   ServicesHoverBridge,
   evaluateServicesMasterTimeline,
 } from "./ServicesParticleCanvas";
+import MobileServices from "./MobileServices";
 import SplitTextReveal from "./SplitTextReveal";
 import { renderServiceToolIcon } from "./ServiceToolIcons";
 
@@ -135,14 +135,6 @@ interface StageLayoutMetrics {
   gap: number;
 }
 
-interface MobileStageMetrics {
-  navH: number;
-  isLandscapeShort: boolean;
-  isCompactPhone: boolean;
-  canvasH: number;
-  cardH: number;
-}
-
 /**
  * Non-pinned fallback card with lightweight zero-WebGL 2D shape visual and
  * `IntersectionObserver` viewport fade-in (`prefers-reduced-motion` or no-WebGL).
@@ -199,7 +191,7 @@ function FallbackServiceCard({
             }
           : undefined
       }
-      className="group/reduced grid grid-cols-1 md:grid-cols-[240px_1fr] items-center gap-6 rounded-[24px] p-5 sm:p-8 border border-[#212226]/[0.1] hover:border-[#3186FF]/55 focus-within:border-[#3186FF]/65 bg-[#121317] text-white shadow-[0_20px_50px_rgba(18,19,23,0.12)] hover:shadow-[0_26px_60px_rgba(18,19,23,0.24)] transition-[border-color,box-shadow] duration-200"
+      className="services-static-card group/reduced grid grid-cols-1 md:grid-cols-[240px_1fr] items-center gap-6 rounded-[24px] p-5 sm:p-8 border border-[#212226]/[0.1] hover:border-[#3186FF]/55 focus-within:border-[#3186FF]/65 bg-[#121317] text-white shadow-[0_20px_50px_rgba(18,19,23,0.12)] hover:shadow-[0_26px_60px_rgba(18,19,23,0.24)] transition-[border-color,box-shadow] duration-200"
     >
       <div className="relative h-44 w-full rounded-2xl bg-[#FFFFFF] border border-white/10 overflow-hidden">
         <ServicesParticleCanvas
@@ -251,11 +243,13 @@ function FallbackServiceCard({
             <div className="text-xs font-mono uppercase tracking-wider text-[#749BFF] mb-2">
               Tools
             </div>
-            <div className="grid grid-cols-3 gap-2.5 max-w-[120px] text-white/95">
+            <div className="static-service-tools grid grid-cols-3 gap-2.5 max-w-[120px] text-white/95">
               {entry.displayTools.map((tool, tIdx) => (
                 <span
                   key={`${tool}-${tIdx}`}
                   title={tool}
+                  aria-label={tool}
+                  role="img"
                   className="w-7 h-7 rounded-md bg-white/10 flex items-center justify-center"
                 >
                   {renderServiceToolIcon(tool)}
@@ -313,13 +307,6 @@ export default function ServicesGrid() {
   const activeColumnsRefs = useRef<(HTMLDivElement | null)[]>([]);
   const activeToolItemRefs = useRef<(HTMLDivElement | null)[][]>([]);
 
-  // Mobile & Tablet (< 1024px) pinned stage refs
-  const mobilePinSectionRef = useRef<HTMLElement>(null);
-  const mobileHeaderRef = useRef<HTMLDivElement>(null);
-  const mobileCardSlotRef = useRef<HTMLDivElement>(null);
-  const mobileCardShellRefs = useRef<(HTMLElement | null)[]>([]);
-  const mobileCardInnerMeasureRefs = useRef<(HTMLDivElement | null)[]>([]);
-
   // Shared master refs consumed by BOTH ServicesGrid & ServicesParticleCanvas
   const scrollProgressRef = useRef<number>(0);
   const hoverBridgeRef = useRef<ServicesHoverBridge>({
@@ -364,21 +351,9 @@ export default function ServicesGrid() {
     gap: 14,
   });
 
-  const [mobileLayout, setMobileLayout] = useState<MobileStageMetrics>({
-    navH: 64,
-    isLandscapeShort: false,
-    isCompactPhone: false,
-    canvasH: 220,
-    cardH: 310,
-  });
-
   const [cardContentScales, setCardContentScales] = useState<number[]>([
     1, 1, 1, 1,
   ]);
-  const [mobileCardScales, setMobileCardScales] = useState<number[]>([
-    1, 1, 1, 1,
-  ]);
-
   const clearAllHoverTimers = useCallback(() => {
     if (hoverIntentTimerRef.current) {
       clearTimeout(hoverIntentTimerRef.current);
@@ -428,108 +403,8 @@ export default function ServicesGrid() {
     if (pinSectionRef.current) {
       pinSectionRef.current.style.setProperty("--section-nav-h", `${navH}px`);
     }
-    if (mobilePinSectionRef.current) {
-      mobilePinSectionRef.current.style.setProperty(
-        "--section-nav-h",
-        `${navH}px`
-      );
-    }
-
-    // ========================================================================
-    // MOBILE & TABLET (< 1024px): Portrait + Landscape Short (< 500px height)
-    // ========================================================================
-    if (!desktop) {
-      // Measure actual stage height (`100svh - navH`) if mounted, else compute from `vh - navH`
-      const stageEl = mobilePinSectionRef.current;
-      const stageRectH = stageEl ? stageEl.clientHeight : 0;
-      const usableH = Math.max(250, stageRectH > 120 ? stageRectH : vh - navH);
-
-      const isLandscapeShort =
-        vh < SERVICES_SECTION_TUNING.LANDSCAPE_SHORT_MAX_HEIGHT_PX && vw > vh;
-      const isCompactPhone =
-        !isLandscapeShort && (usableH < 630 || vw < 385);
-
-      let canvasH: number;
-      let cardH: number;
-
-      if (isLandscapeShort) {
-        // Two-column landscape layout (`667x375`, `844x390`): canvas on left, card on right
-        const verticalPad = 20;
-        cardH = Math.max(180, Math.floor(usableH - verticalPad - 12));
-        canvasH = Math.max(170, Math.floor(usableH - 56));
-      } else {
-        // Portrait layout (`360px - 820px`): top header + 34-38% particle canvas + full unclipped card
-        const stageStyle = stageEl ? getComputedStyle(stageEl) : null;
-        const safeBottom = stageStyle ? parseFloat(stageStyle.paddingBottom) || 12 : 12;
-        const topBottomPad = (vw >= 640 ? 16 : 10) + safeBottom + 8;
-        let measuredHeaderH = isCompactPhone ? 52 : vw >= 640 ? 78 : 56;
-        if (mobileHeaderRef.current) {
-          const hRect = mobileHeaderRef.current.getBoundingClientRect();
-          if (hRect.height > 0) {
-            measuredHeaderH = Math.ceil(hRect.height);
-          }
-        }
-
-        const innerUsable = Math.max(
-          0,
-          usableH - topBottomPad - measuredHeaderH - 10
-        );
-        const maxCanvasCap = vw >= 640 ? 400 : isCompactPhone ? 220 : 290;
-        const targetCanvasRatio = vw >= 640 ? 0.42 : 0.37;
-
-        // Prioritize readable card content over decorative canvas height on short screens.
-        const minCardNeeded = isCompactPhone ? 328 : 344;
-        const rawCanvas = Math.round(innerUsable * targetCanvasRatio);
-        canvasH = Math.max(
-          96,
-          Math.min(maxCanvasCap, rawCanvas, innerUsable - minCardNeeded)
-        );
-        cardH = Math.min(
-          vw >= 640 ? 396 : 368,
-          Math.max(236, Math.floor(innerUsable - canvasH))
-        );
-      }
-
-      setMobileLayout((prev) => {
-        if (
-          prev.navH === navH &&
-          prev.isLandscapeShort === isLandscapeShort &&
-          prev.isCompactPhone === isCompactPhone &&
-          prev.canvasH === canvasH &&
-          prev.cardH === cardH
-        ) {
-          return prev;
-        }
-        return {
-          navH,
-          isLandscapeShort,
-          isCompactPhone,
-          canvasH,
-          cardH,
-        };
-      });
-
-      // Last-resort proportional scale safety net on ultra-tight viewports (`360x640` / `667x375`)
-      requestAnimationFrame(() => {
-        const nextScales: number[] = [];
-        let changed = false;
-        for (let i = 0; i < entries.length; i++) {
-          const s = measureCardFit(mobileCardInnerMeasureRefs.current[i], cardH);
-          nextScales.push(s);
-        }
-        setMobileCardScales((prev) => {
-          for (let i = 0; i < nextScales.length; i++) {
-            if (Math.abs((prev[i] ?? 1) - nextScales[i]) > 0.005) {
-              changed = true;
-              break;
-            }
-          }
-          return changed ? nextScales : prev;
-        });
-      });
-
-      return;
-    }
+    // The mobile component owns its own sizing, pin and gesture lifecycle.
+    if (!desktop) return;
 
     // ========================================================================
     // DESKTOP: measured header, fully visible card and reserved deck width
@@ -663,9 +538,7 @@ export default function ServicesGrid() {
       });
       if (pinSectionRef.current) ro.observe(pinSectionRef.current);
       if (headerBlockRef.current) ro.observe(headerBlockRef.current);
-      if (mobileHeaderRef.current) ro.observe(mobileHeaderRef.current);
       if (cardsViewportRef.current) ro.observe(cardsViewportRef.current);
-      if (mobilePinSectionRef.current) ro.observe(mobilePinSectionRef.current);
       const navEl = document.querySelector<HTMLElement>(
         '[data-site-navbar="true"]'
       );
@@ -683,6 +556,7 @@ export default function ServicesGrid() {
     };
   }, [
     clearAllHoverTimers,
+    isDesktop,
     recomputeLayoutMetrics,
     scheduleScrollTriggerRefresh,
   ]);
@@ -691,14 +565,6 @@ export default function ServicesGrid() {
     recomputeLayoutMetrics();
     scheduleScrollTriggerRefresh();
   }, [isDesktop, reducedMotion, recomputeLayoutMetrics, scheduleScrollTriggerRefresh]);
-
-  const scrollToServiceStep = useCallback((stepIdx: number) => {
-    const st = scrollTriggerRef.current;
-    if (!st) return;
-    const targetP = STEP_HOLD_PROGRESS[stepIdx] ?? STEP_HOLD_PROGRESS[0];
-    const targetScrollY = st.start + (st.end - st.start) * targetP;
-    window.scrollTo({ top: targetScrollY, behavior: "smooth" });
-  }, []);
 
   // --------------------------------------------------------------------------
   // DESKTOP HOVER & KEYBOARD FOCUS HANDLERS (100% Unchanged)
@@ -813,6 +679,7 @@ export default function ServicesGrid() {
       return;
     }
 
+    if (!isDesktop) return;
     const mm = gsap.matchMedia();
 
     // 1. DESKTOP (>= 1024px): existing pin and progress driver; opaque deck choreography
@@ -971,127 +838,6 @@ export default function ServicesGrid() {
           scrollTriggerRef.current = null;
         };
       });
-    } else {
-      // 2. MOBILE & TABLET (< 1024px): Pinned `100svh - navHeight` Stage + Soft Snap
-      mm.add("(max-width: 1023px)", () => {
-        const mobileEl = mobilePinSectionRef.current;
-        if (!mobileEl) return;
-
-        isCardHoveredRef.current = false;
-        setIsCardHovered(false);
-        setHoverIndex(null);
-
-        const totalMobileSvh =
-          entries.length * SERVICES_SECTION_TUNING.MOBILE_SCROLL_SVH_PER_STEP;
-
-        const st = ScrollTrigger.create({
-          trigger: mobileEl,
-          start: () => `top ${getMeasuredNavHeight()}px`,
-          end: `+=${totalMobileSvh}%`,
-          pin: true,
-          pinSpacing: true,
-          scrub: 0.38,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          // Gentle soft-snap onto the nearest service step once touch scroll settles
-          snap: {
-            snapTo: [...STEP_HOLD_PROGRESS],
-            duration: { min: 0.18, max: 0.42 },
-            delay: 0.1,
-            ease: "power2.out",
-            directional: false,
-          },
-          onRefreshInit: () => {
-            const h = getMeasuredNavHeight();
-            document.documentElement.style.setProperty("--nav-h", `${h}px`);
-            mobileEl.style.setProperty("--section-nav-h", `${h}px`);
-          },
-          onUpdate: (self) => {
-            scrollProgressRef.current = self.progress;
-          },
-        });
-        scrollTriggerRef.current = st;
-
-        let rafId = 0;
-        let smoothP = scrollProgressRef.current;
-        let lastReportedIdx = -1;
-
-        // Vertical-friendly transform + opacity card choreography (GPU-only, reversible)
-        const applyMobileChoreography = () => {
-          rafId = requestAnimationFrame(applyMobileChoreography);
-
-          smoothP +=
-            (scrollProgressRef.current - smoothP) *
-            PARTICLE_TUNING.PROGRESS_LERP;
-
-          const state = evaluateServicesMasterTimeline(smoothP);
-          const { fromCardIndex, toCardIndex, cardTransitionT } = state;
-
-          if (state.scrollIndex !== lastReportedIdx) {
-            lastReportedIdx = state.scrollIndex;
-            setScrollIndex(state.scrollIndex);
-          }
-
-          const isScrollTrans =
-            fromCardIndex !== toCardIndex && cardTransitionT > 0.001;
-          const t = easeInOutCubic(cardTransitionT);
-
-          for (let i = 0; i < entries.length; i++) {
-            const shell = mobileCardShellRefs.current[i];
-            if (!shell) continue;
-
-            let opacity = 0;
-            let slideY = 0;
-            let scale = 1;
-
-            if (!isScrollTrans) {
-              if (i === state.scrollIndex) {
-                opacity = 1;
-                slideY = 0;
-                scale = 1;
-              }
-            } else if (i === fromCardIndex) {
-              opacity = Math.max(
-                0,
-                1 - easeInOutCubic(Math.min(1, cardTransitionT * 1.18))
-              );
-              slideY = -t * 24;
-              scale = 1 - t * 0.02;
-            } else if (i === toCardIndex) {
-              opacity = easeInOutCubic(
-                Math.max(0, (cardTransitionT - 0.06) / 0.94)
-              );
-              slideY = (1 - t) * 24;
-              scale = 0.98 + t * 0.02;
-            }
-
-            const isVisible = opacity > 0.004;
-            const isPrimary = !isScrollTrans
-              ? i === state.scrollIndex
-              : cardTransitionT < 0.5
-              ? i === fromCardIndex
-              : i === toCardIndex;
-
-            shell.style.visibility = isVisible ? "visible" : "hidden";
-            shell.style.opacity = "1";
-            const content = mobileCardInnerMeasureRefs.current[i];
-            if (content) content.style.opacity = !isScrollTrans ? "1" : i === fromCardIndex ? `${Math.max(0, 1 - cardTransitionT / 0.45)}` : `${Math.max(0, (cardTransitionT - 0.45) / 0.55)}`;
-            shell.style.pointerEvents = isPrimary ? "auto" : "none";
-            shell.style.zIndex = isPrimary ? "20" : "10";
-            shell.style.transform = `translate3d(0, ${slideY.toFixed(
-              1
-            )}px, 0) scale(${scale.toFixed(4)})`;
-          }
-        };
-
-        rafId = requestAnimationFrame(applyMobileChoreography);
-
-        return () => {
-          cancelAnimationFrame(rafId);
-          st.kill();
-          scrollTriggerRef.current = null;
-        };
-      });
     }
 
     return () => {
@@ -1113,7 +859,7 @@ export default function ServicesGrid() {
   // --------------------------------------------------------------------------
   if (reducedMotion || webglUnavailable) {
     return (
-      <section
+      <div key="static-services" style={{display:"contents"}}><section
         id="services"
         aria-labelledby="services-heading-reduced"
         className="relative py-20 sm:py-28 bg-[#FFFFFF] text-[#121317] border-t border-[#212226]/[0.07] overflow-hidden"
@@ -1149,7 +895,7 @@ export default function ServicesGrid() {
             ))}
           </div>
         </div>
-      </section>
+      </section></div>
     );
   }
 
@@ -1159,492 +905,7 @@ export default function ServicesGrid() {
   //      (~34-40% height, tap-to-pulse!), and unclipped bottom active card.
   //    - Landscape (< 500px height): Two-column side-by-side canvas + compact card.
   // --------------------------------------------------------------------------
-  if (!isDesktop) {
-    const activeNumStr = String(scrollIndex + 1).padStart(2, "0");
-    const totalNumStr = String(entries.length).padStart(2, "0");
-
-    return (
-      <section
-        ref={mobilePinSectionRef}
-        id="services"
-        aria-labelledby="services-heading-mobile"
-        style={
-          {
-            backgroundColor: SERVICES_SECTION_TUNING.SECTION_BG,
-            "--section-nav-h": `${mobileLayout.navH}px`,
-            paddingLeft: "max(16px, env(safe-area-inset-left, 0px))",
-            paddingRight: "max(16px, env(safe-area-inset-right, 0px))",
-            paddingBottom:
-              "calc(max(12px, env(safe-area-inset-bottom, 0px) + 8px))",
-          } as React.CSSProperties
-        }
-        className="services-mobile-pinned-stage relative w-full text-[#121317] border-t border-[#212226]/[0.07] select-none"
-      >
-        {/* Soft behind-cloud Antigravity radial glow */}
-        <div
-          aria-hidden="true"
-          className={`pointer-events-none absolute rounded-full blur-3xl ${
-            mobileLayout.isLandscapeShort
-              ? "left-[4%] top-1/2 -translate-y-1/2 w-[38vw] h-[72%]"
-              : "top-[8%] left-1/2 -translate-x-1/2 w-[82vw] max-w-[460px] h-[34%]"
-          }`}
-          style={{
-            background:
-              "radial-gradient(circle, rgba(49, 134, 255, 0.16) 0%, rgba(116, 155, 255, 0.11) 48%, rgba(255, 255, 255, 0) 76%)",
-          }}
-        />
-
-        {mobileLayout.isLandscapeShort ? (
-          /* ==================================================================
-             LANDSCAPE PHONE STAGE (`height < 500px`, e.g. `667x375`, `844x390`)
-             Two-column stage: Left particle canvas + Right compact active card
-             ================================================================== */
-          <div className="relative z-10 w-full h-full max-w-4xl mx-auto pt-2.5 flex items-center gap-4 min-h-0">
-            {/* Left Column (42%): Compact Heading + Tap-to-Pulse Particle Stage */}
-            <div className="w-[42%] h-full min-h-0 flex flex-col justify-between">
-              <div className="shrink-0 flex items-center justify-between gap-2">
-                <div>
-                  <span className="block text-[9.5px] font-mono uppercase tracking-widest text-[#3186FF]">
-                    04 CAPABILITIES
-                  </span>
-                  <h2
-                    id="services-heading-mobile"
-                    className="text-lg font-bold tracking-tight leading-tight text-[#121317]"
-                  >
-                    Our <span className="text-[#3186FF]">Services</span>
-                  </h2>
-                </div>
-                <span className="px-2.5 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.09] text-[11px] font-mono font-semibold text-[#121317] tabular-nums">
-                  {activeNumStr} / {totalNumStr}
-                </span>
-              </div>
-
-              <div
-                style={{ height: `${mobileLayout.canvasH}px` }}
-                className="relative w-full flex-1 min-h-0 pointer-events-auto"
-              >
-                <ServicesParticleCanvas
-                  scrollProgressRef={scrollProgressRef}
-                  hoverBridgeRef={hoverBridgeRef}
-                  layoutMode="mobile"
-                  onResizeSettled={scheduleScrollTriggerRefresh}
-                  onWebGLUnavailable={handleWebGLUnavailable}
-                  className="w-full h-full pointer-events-auto"
-                />
-              </div>
-            </div>
-
-            {/* Right Column (58%): Full Unclipped Single Active Service Card */}
-            <div
-              ref={mobileCardSlotRef}
-              style={{ height: `${mobileLayout.cardH}px` }}
-              className="relative flex-1 min-w-0"
-            >
-              {entries.map((entry, idx) => {
-                const isCurrentActive = idx === scrollIndex;
-                const indexNumber = String(idx + 1).padStart(2, "0");
-                const serviceHref = `/services/${entry.service.slug}`;
-                const mScale = mobileCardScales[idx] ?? 1;
-
-                return (
-                  <article
-                    key={entry.service.id}
-                    ref={(el) => {
-                      mobileCardShellRefs.current[idx] = el;
-                    }}
-                    role="link"
-                    tabIndex={isCurrentActive ? 0 : -1}
-                    aria-hidden={!isCurrentActive}
-                    aria-current={isCurrentActive ? "true" : undefined}
-                    aria-label={`${indexNumber} ${entry.service.title}`}
-                    onClick={() => router.push(serviceHref)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        router.push(serviceHref);
-                      }
-                    }}
-                    style={{
-                      height: `${mobileLayout.cardH}px`,
-                      opacity: idx === 0 ? 1 : 0,
-                      visibility: idx === 0 ? "visible" : "hidden",
-                      pointerEvents: idx === 0 ? "auto" : "none",
-                      background: `linear-gradient(152deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP} 0%, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 65%, #0D0E12 100%)`,
-                    }}
-                    className="absolute inset-x-0 top-0 rounded-[20px] border border-[#121317] text-white shadow-[0_18px_44px_rgba(18,19,23,0.2)] cursor-pointer will-change-transform active:scale-[0.99] transition-[border-color] duration-150"
-                  >
-                    <div
-                      ref={(el) => {
-                        mobileCardInnerMeasureRefs.current[idx] = el;
-                      }}
-                      style={
-                        mScale < 0.999
-                          ? {
-                              transform: `scale(${mScale})`,
-                              transformOrigin: "top left",
-                              width: `${(100 / mScale).toFixed(2)}%`,
-                              height: `${(100 / mScale).toFixed(2)}%`,
-                            }
-                          : undefined
-                      }
-                      className="h-full min-h-0 flex flex-col justify-between p-3.5"
-                    >
-                      <div className="shrink-0 flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <span className="block text-[9.5px] font-mono uppercase tracking-widest text-[#749BFF]">
-                            {indexNumber} / DISCIPLINE
-                          </span>
-                          <h3 className="text-base font-bold text-white tracking-tight truncate">
-                            {entry.service.title}
-                          </h3>
-                        </div>
-                        <Link
-                          href={serviceHref}
-                          tabIndex={isCurrentActive ? 0 : -1}
-                          aria-label={`Open ${entry.service.title} service page`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="w-11 h-11 rounded-full bg-white/10 active:bg-[#3186FF] active:scale-95 flex items-center justify-center text-white shrink-0 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF]"
-                        >
-                          <svg
-                            viewBox="0 0 22 22"
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.8"
-                          >
-                            <path
-                              d="M5.5 16.5L15.5 6.5M7.5 6.5h8v8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </Link>
-                      </div>
-
-                      <div className="flex-1 min-h-0 flex items-center py-1.5">
-                        <p className="text-xs leading-[1.42] text-[#B2BBC5] line-clamp-2">
-                          {entry.service.shortDesc}
-                        </p>
-                      </div>
-
-                      <div className="shrink-0 grid grid-cols-[1.35fr_0.95fr] gap-3 pt-2 border-t border-white/10">
-                        <div>
-                          <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#749BFF] mb-1">
-                            Services
-                          </div>
-                          <ul className="space-y-0.5 text-[11px] leading-[1.28] text-white/95">
-                            {entry.compactBullets.map((item) => (
-                              <li key={item} >
-                                {item}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div>
-                          <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#749BFF] mb-1">
-                            Tools
-                          </div>
-                          <div className="grid grid-cols-3 gap-1.5 max-w-[92px] text-white/95">
-                            {entry.displayTools.map((tool, tIdx) => (
-                              <div
-                                key={`${tool}-${tIdx}`}
-                                title={tool}
-                                className="w-5 h-5 flex items-center justify-center"
-                              >
-                                {renderServiceToolIcon(tool)}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        ) : (
-          /* ==================================================================
-             PORTRAIT PHONE & TABLET STAGE (`360px - 1023px`, `height >= 500px`)
-             Top: Compact heading + Step Indicator (`01 / 04` + 44x44 step dots)
-             Middle: Centered Particle Canvas (~34-40% usable height, tap-to-pulse!)
-             Bottom: Full-width (minus 16px gutters) single unclipped active card
-             ================================================================== */
-          <div className="relative z-10 w-full h-full max-w-2xl mx-auto pt-2.5 sm:pt-4 flex flex-col justify-between min-h-0">
-            {/* 1. Compact Heading + Step Indicator (`shrink-0`) */}
-            <div
-              ref={mobileHeaderRef}
-              className="shrink-0 flex items-end justify-between gap-3"
-            >
-              <div className="min-w-0">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] font-mono text-[10px] text-[#45474D] mb-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-                  <span>04 CORE CAPABILITIES</span>
-                </div>
-                <h2
-                  id="services-heading-mobile"
-                  className="text-[clamp(1.35rem,4.8vw,2rem)] font-bold tracking-[-0.025em] leading-[1.06] text-[#121317]"
-                >
-                  Our <span className="text-[#3186FF]">Services</span>
-                </h2>
-                <p className="hidden sm:block mt-1 text-xs text-[#45474D] max-w-md leading-relaxed">
-                  Comprehensive digital solutions that transform your business
-                  across web, design, and AI.
-                </p>
-              </div>
-
-              {/* Accessible Step Counter + 44x44px Interactive Step Dots */}
-              <div className="shrink-0 flex flex-col items-end">
-                <span
-                  aria-live="polite"
-                  className="text-xs font-mono font-bold text-[#121317] tabular-nums pr-1"
-                >
-                  <span className="text-[#3186FF]">{activeNumStr}</span>
-                  <span className="text-[#6A6A71]"> / {totalNumStr}</span>
-                </span>
-                <div
-                  role="tablist"
-                  aria-label="Service steps"
-                  className="hidden sm:flex items-center -mr-2"
-                >
-                  {entries.map((entry, idx) => {
-                    const isSelected = idx === scrollIndex;
-                    return (
-                      <button
-                        key={entry.service.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={isSelected}
-                        aria-label={`Step 0${idx + 1}: ${entry.service.title}`}
-                        onClick={() => scrollToServiceStep(idx)}
-                        className="w-11 h-11 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] rounded-full"
-                      >
-                        <span
-                          className={`block rounded-full transition-all duration-300 ${
-                            isSelected
-                              ? "w-5 h-2 bg-[#121317]"
-                              : "w-2 h-2 bg-[#CDD4DC]"
-                          }`}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Top Particle Morph Canvas (~34-40% usable height; tap triggers ~36% pulse!) */}
-            <div
-              style={{ height: `${mobileLayout.canvasH}px` }}
-              className="relative w-full shrink-0 my-1 pointer-events-auto"
-            >
-              <ServicesParticleCanvas
-                scrollProgressRef={scrollProgressRef}
-                hoverBridgeRef={hoverBridgeRef}
-                layoutMode="mobile"
-                onResizeSettled={scheduleScrollTriggerRefresh}
-                onWebGLUnavailable={handleWebGLUnavailable}
-                className="w-full h-full pointer-events-auto"
-              />
-            </div>
-
-            {/* 3. Bottom Single Active Service Card (100% visible, zero clipped content) */}
-            <div
-              ref={mobileCardSlotRef}
-              style={{ height: `${mobileLayout.cardH}px` }}
-              className="relative w-full shrink-0"
-            >
-              {entries.map((entry, idx) => {
-                const isCurrentActive = idx === scrollIndex;
-                const indexNumber = String(idx + 1).padStart(2, "0");
-                const serviceHref = `/services/${entry.service.slug}`;
-                const bullets = mobileLayout.isCompactPhone
-                  ? entry.compactBullets
-                  : entry.normalBullets;
-                const mScale = mobileCardScales[idx] ?? 1;
-
-                return (
-                  <article
-                    key={entry.service.id}
-                    ref={(el) => {
-                      mobileCardShellRefs.current[idx] = el;
-                    }}
-                    role="link"
-                    tabIndex={isCurrentActive ? 0 : -1}
-                    aria-hidden={!isCurrentActive}
-                    aria-current={isCurrentActive ? "true" : undefined}
-                    aria-label={`${indexNumber} ${entry.service.title}`}
-                    onClick={() => router.push(serviceHref)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        router.push(serviceHref);
-                      }
-                    }}
-                    style={{
-                      height: `${mobileLayout.cardH}px`,
-                      opacity: idx === 0 ? 1 : 0,
-                      visibility: idx === 0 ? "visible" : "hidden",
-                      pointerEvents: idx === 0 ? "auto" : "none",
-                      background: `linear-gradient(152deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP} 0%, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 65%, #0D0E12 100%)`,
-                    }}
-                    className="absolute inset-x-0 top-0 rounded-[22px] sm:rounded-[24px] border border-[#121317] text-white shadow-[0_20px_48px_-12px_rgba(18,19,23,0.24)] cursor-pointer select-text will-change-transform active:scale-[0.988] transition-[border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF]"
-                  >
-                    {/* Clipped decorative corner sheen (never clips text!) */}
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 rounded-[21px] sm:rounded-[23px] overflow-hidden"
-                    >
-                      <div
-                        className="pointer-events-none absolute -bottom-16 -right-14 w-44 h-44 rounded-full blur-3xl opacity-35"
-                        style={{
-                          background:
-                            "radial-gradient(circle, rgba(49, 134, 255, 0.55) 0%, transparent 72%)",
-                        }}
-                      />
-                    </div>
-
-                    {/* Flex Content Column (`min-h-0` + last-resort proportional scale safety net) */}
-                    <div
-                      ref={(el) => {
-                        mobileCardInnerMeasureRefs.current[idx] = el;
-                      }}
-                      style={
-                        mScale < 0.999
-                          ? {
-                              transform: `scale(${mScale})`,
-                              transformOrigin: "top left",
-                              width: `${(100 / mScale).toFixed(2)}%`,
-                              height: `${(100 / mScale).toFixed(2)}%`,
-                            }
-                          : undefined
-                      }
-                      className={`relative z-20 h-full min-h-0 flex flex-col justify-between ${
-                        mobileLayout.isCompactPhone
-                          ? "p-4"
-                          : "p-4 sm:p-6"
-                      }`}
-                    >
-                      {/* Card Header (shrink-0) */}
-                      <div className="shrink-0 flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <span className="inline-block text-[10px] sm:text-[10.5px] font-mono uppercase tracking-widest text-[#749BFF] mb-0.5">
-                            {indexNumber} / DISCIPLINE
-                          </span>
-                          <h3
-                            className={`font-bold tracking-tight text-white leading-[1.18] ${
-                              mobileLayout.isCompactPhone
-                                ? "text-[18px]"
-                                : "text-[clamp(18.5px,3.2vw,22px)]"
-                            }`}
-                          >
-                            {entry.service.title}
-                          </h3>
-                        </div>
-
-                        {/* >= 44x44px Tap Target Arrow Link with Quick Press Feedback */}
-                        <Link
-                          href={serviceHref}
-                          tabIndex={isCurrentActive ? 0 : -1}
-                          aria-label={`Open ${entry.service.title} service page`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="w-11 h-11 rounded-full bg-white/10 active:bg-[#3186FF] active:scale-95 flex items-center justify-center text-white shrink-0 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF]"
-                        >
-                          <svg
-                            viewBox="0 0 22 22"
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.75"
-                          >
-                            <path
-                              d="M5.5 16.5L15.5 6.5M7.5 6.5h8v8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </Link>
-                      </div>
-
-                      {/* Card Description (`flex-1 min-h-0`, 3-4 clamped lines, readable >= 14px where space allows) */}
-                      <div
-                        className={`flex-1 min-h-0 flex items-center ${
-                          mobileLayout.isCompactPhone ? "py-1.5" : "py-2"
-                        }`}
-                      >
-                        <p
-                          className={`text-[#B2BBC5] font-normal ${
-                            mobileLayout.isCompactPhone
-                              ? "text-[13.5px] leading-[1.45]"
-                              : "text-[14px] sm:text-[14.5px] leading-[1.52]"
-                          }`}
-                        >
-                          {entry.service.shortDesc}
-                        </p>
-                      </div>
-
-                      {/* Card Footer (shrink-0): First 3-4 bullets + 6 Tool Icons */}
-                      <div
-                        className={`shrink-0 grid grid-cols-[1.38fr_0.92fr] gap-3 sm:gap-5 items-start border-t border-white/10 ${
-                          mobileLayout.isCompactPhone ? "pt-2.5" : "pt-3"
-                        }`}
-                      >
-                        <div className="min-w-0">
-                          <div className="text-[10px] font-mono uppercase tracking-wider text-[#749BFF] mb-1.5">
-                            Services
-                          </div>
-                          <ul
-                            className={`text-white/95 font-normal ${
-                              mobileLayout.isCompactPhone
-                                ? "space-y-1 text-[11.5px] leading-[1.3]"
-                                : "space-y-1.5 text-[12px] sm:text-[12.5px] leading-[1.35]"
-                            }`}
-                          >
-                            {bullets.map((line) => (
-                              <li key={line} >
-                                {line}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div>
-                          <div className="text-[10px] font-mono uppercase tracking-wider text-[#749BFF] mb-1.5">
-                            Tools
-                          </div>
-                          <div
-                            className={`grid grid-cols-3 max-w-[108px] text-white/95 ${
-                              mobileLayout.isCompactPhone
-                                ? "gap-2"
-                                : "gap-2.5"
-                            }`}
-                          >
-                            {entry.displayTools.map((tool, tIdx) => (
-                              <div
-                                key={`${tool}-${tIdx}`}
-                                title={tool}
-                                className={`flex items-center justify-center ${
-                                  mobileLayout.isCompactPhone
-                                    ? "w-5 h-5"
-                                    : "w-6 h-6"
-                                }`}
-                              >
-                                {renderServiceToolIcon(tool)}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </section>
-    );
-  }
+  if (!isDesktop) return <div key="mobile-services" style={{display:"contents"}}><MobileServices entries={entries} progress={scrollProgressRef} bridge={hoverBridgeRef} onWebGLUnavailable={handleWebGLUnavailable} /></div>;
 
   // --------------------------------------------------------------------------
   // 3. DESKTOP (>= 1024px) PINNED STAGE (`100dvh - navHeight` — measured deck layout)
@@ -1653,7 +914,7 @@ export default function ServicesGrid() {
     layout.collapsedW >= SERVICES_SECTION_TUNING.COLLAPSED_LABEL_MIN_WIDTH_PX;
 
   return (
-    <section
+    <div key="desktop-services" style={{display:"contents"}}><section
       ref={pinSectionRef}
       id="services"
       aria-labelledby="services-heading-desktop"
@@ -2025,6 +1286,6 @@ export default function ServicesGrid() {
           </div>
         </div>
       </div>
-    </section>
+    </section></div>
   );
 }

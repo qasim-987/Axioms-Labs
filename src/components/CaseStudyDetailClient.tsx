@@ -1,5 +1,6 @@
 "use client";
 
+import ToolChipContent from "@/components/ToolChipContent";
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -308,9 +309,9 @@ export default function CaseStudyDetailClient({
               {study.techStack.map((tech, idx) => (
                 <span
                   key={idx}
-                  className="text-xs font-mono px-3 py-1.5 rounded-lg bg-[#F8F9FC] text-[#121317] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 transition-colors"
+                  className="tool-chip-shell text-xs font-mono px-3 py-1.5 rounded-lg bg-[#F8F9FC] text-[#121317] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 transition-colors"
                 >
-                  {tech}
+                  <ToolChipContent name={tech} />
                 </span>
               ))}
             </div>

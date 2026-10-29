@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import TouchHeroSphere from "./TouchHeroSphere";
 import * as THREE from "three";
 import {
   PARTICLE_ENGINE_DEFAULTS,
@@ -12,6 +13,17 @@ import {
 } from "@/lib/particleEngine";
 
 import { getPerformanceTier, createAdaptiveFpsMonitor } from "@/lib/performanceTier";
+
+export default function ParticleSphereHero(props: ParticleSphereProps) {
+  const [touch, setTouch] = useState<boolean | null>(null);
+  useEffect(() => {
+    const mq = matchMedia("(hover: none), (pointer: coarse)");
+    const update = () => setTouch(mq.matches);
+    update(); mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return touch === null ? null : touch ? <TouchHeroSphere {...props} /> : <DesktopParticleSphereHero {...props} />;
+}
 
 interface ParticleSphereProps {
   className?: string;
@@ -29,7 +41,7 @@ const ANTIGRAVITY_SPECTRUM = [
   new THREE.Color("#00B95C"), // Vivid Green
 ];
 
-export default function ParticleSphereHero({
+function DesktopParticleSphereHero({
   className = "",
 }: ParticleSphereProps) {
   const containerRef = useRef<HTMLDivElement>(null);

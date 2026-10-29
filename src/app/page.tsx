@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import LogoStrip from "@/components/LogoStrip";
 import StatsSection from "@/components/StatsSection";
 import ServicesGrid from "@/components/ServicesGrid";
-import CaseStudies from "@/components/CaseStudies";
+import ConceptBuildsGate from "@/components/ConceptBuildsGate";
 import MethodologySection from "@/components/MethodologySection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
@@ -16,7 +16,7 @@ export default function HomePage() {
         <Hero />
         <LogoStrip />
         <StatsSection />
-        <CaseStudies />
+        <ConceptBuildsGate />
         <ServicesGrid />
         <MethodologySection />
         <ContactSection />

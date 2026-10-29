@@ -1,5 +1,7 @@
 "use client";
 
+import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
+import { PricingTrustCopy } from "@/components/LaunchPricing";
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -49,7 +51,7 @@ export default function DedicatedContactPage() {
     email: "",
     company: "",
     service: "",
-    budget: "$2,500 - $5,000",
+    budget: DEFAULT_BUDGET,
     message: "",
     botField: "",
     websiteUrl: "",
@@ -348,11 +350,9 @@ export default function DedicatedContactPage() {
                         }
                         className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#F8F9FC] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] focus:outline-none focus:bg-white focus:border-[#3186FF]"
                       >
-                        <option value="$1,000 - $2,500">$1,000 – $2,500</option>
-                        <option value="$2,500 - $5,000">$2,500 – $5,000</option>
-                        <option value="$5,000 - $15,000">$5,000 – $15,000</option>
-                        <option value="$15,000+">$15,000+ Custom Scope</option>
+                        {pricing.budgetBands.map(band=><option key={band} value={band}>{band}</option>)}
                       </select>
+                  <PricingTrustCopy />
                     </div>
                   </div>
 

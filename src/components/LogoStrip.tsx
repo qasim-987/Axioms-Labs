@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import SplitTextReveal from "./SplitTextReveal";
-import { renderServiceToolIcon } from "./ServiceToolIcons";
+import { renderServiceToolIcon, hasServiceToolIcon } from "./ServiceToolIcons";
 import { MOTION_EASE } from "@/lib/motionTokens";
 
 const techEcosystem = [
@@ -99,10 +99,13 @@ export default function LogoStrip() {
               {techEcosystem.map((item) => (
                 <div
                   key={item.name}
-                  className="technology-pill inline-flex shrink-0 items-center gap-3 whitespace-nowrap h-12 sm:h-14 px-4 sm:px-5 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/45 shadow-[0_4px_16px_rgba(18,19,23,0.04)] hover:shadow-[0_10px_26px_rgba(49,134,255,0.12)] hover:-translate-y-0.5 transition-all duration-300 select-none"
+                  title={item.name}
+                  aria-label={item.name}
+                  role="img"
+                  className={`technology-pill inline-flex shrink-0 items-center gap-3 whitespace-nowrap h-12 sm:h-14 px-4 sm:px-5 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/45 shadow-[0_4px_16px_rgba(18,19,23,0.04)] hover:shadow-[0_10px_26px_rgba(49,134,255,0.12)] hover:-translate-y-0.5 transition-all duration-300 select-none ${hasServiceToolIcon(item.name) ? "" : "is-text-only"}`}
                 >
-                  <span aria-hidden="true" className="w-5 h-5 shrink-0">{renderServiceToolIcon(item.name)}</span>
-                  <span className="text-sm sm:text-[15px] font-medium tracking-tight text-[#121317]">
+                  {hasServiceToolIcon(item.name) && <span aria-hidden="true" className="w-5 h-5 shrink-0">{renderServiceToolIcon(item.name)}</span>}
+                  <span className="technology-tool-name text-sm sm:text-[15px] font-medium tracking-tight text-[#121317]">
                     {item.name}
                   </span>
                   <span className="hidden sm:inline-flex rounded-full bg-[#EFF2F7] px-2 py-0.5 text-[10px] uppercase tracking-wide text-[#45474D]">

@@ -214,3 +214,9 @@ export function renderServiceToolIcon(toolName: string): React.ReactNode {
     </svg>
   );
 }
+
+/** Allows responsive chips to fall back to text rather than a generic/broken logo. */
+export function hasServiceToolIcon(name: string): boolean {
+  const key=name.toLowerCase();
+  return ["figma", "auto layout", "variable", "figjam", "radix", "tailwind", "framer", "gsap", "lenis", "three", "next", "react", "typescript", "node", "supabase", "postgres", "openai", "claude", "anthropic", "langgraph", "vercel"].some(term=>key.includes(term));
+}

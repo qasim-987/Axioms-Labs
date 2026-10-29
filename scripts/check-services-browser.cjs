@@ -1,4 +1,5 @@
-/* Optional isolated QA tool, not an application dependency.
+/* Desktop-only; use check-mobile-view.cjs for the new mobile carousel.
+   Optional isolated QA tool, not an application dependency.
    NODE_PATH=/path/to/browser-tools/node_modules USE_BUNDLED_CHROMIUM=1 node scripts/check-services-browser.cjs
    Or use Playwright's installed browser (omit USE_BUNDLED_CHROMIUM).
    Set BASE_URL to test a different build. Uses software GPU in bundled mode; NOT a 60fps benchmark. */
@@ -14,7 +15,7 @@ const base = process.env.BASE_URL || 'http://localhost:3000';
   }
   const browser = await chromium.launch(options);
   try {
-    for (const [width, height] of [[1920,960],[1536,730],[1366,650],[1120,685],[1024,700],[360,640],[390,844],[768,1024],[820,1180],[667,375]]) {
+    for (const [width, height] of [[1920,960],[1536,730],[1366,650],[1120,685],[1024,700]]) {
       const page = await browser.newPage({viewport:{width,height},isMobile:width<1024,hasTouch:width<1024});
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
@@ -23,9 +24,10 @@ const base = process.env.BASE_URL || 'http://localhost:3000';
       await cdp.send('Emulation.setCPUThrottlingRate', {rate:4});
       await page.goto(base);
       await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#work'); // Lazy desktop Case Studies must finish mounting before measuring later pins.
       await page.locator('#services').scrollIntoViewIfNeeded();
       await page.waitForTimeout(1800);
-      const start = await page.locator('#services').evaluate(el => scrollY + el.getBoundingClientRect().top - document.querySelector('[data-site-navbar]').getBoundingClientRect().height);
+      const start = await page.locator('#services').evaluate(el => scrollY + (el.parentElement.classList.contains('pin-spacer') ? el.parentElement : el).getBoundingClientRect().top - document.querySelector('[data-site-navbar] > div:first-child').getBoundingClientRect().height);
       for (const [progress, expected] of [[.075,0],[.385,1],[.695,2],[.96,3],[.695,2],[.385,1],[.075,0],[0,0]]) {
         await page.evaluate(top => window.scrollTo({top,behavior:'instant'}), start + progress * height * (width < 1024 ? 3.2 : 3.28));
         await page.waitForFunction(({expected, desktop}) => {
