@@ -1,121 +1,140 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { motion } from "framer-motion";
+import SplitTextReveal from "./SplitTextReveal";
 import RollingNumber from "./RollingNumber";
 import { MOTION_EASE } from "@/lib/motionTokens";
-import { Award, CheckCircle2, TrendingUp, Clock } from "lucide-react";
 
-const statItems = [
+const stats = [
   {
-    icon: Award,
-    iconColor: "text-brand-primary",
-    label: "Production Deployments",
-    value: 74,
-    decimals: 0,
-    duration: 1800,
-    suffix: "+",
-    staticValue: null as string | null,
-    desc: "High-concurrency systems delivered across enterprise AI, fintech & healthcare.",
+    value: "04",
+    label: "Core Disciplines",
+    detail: "Web Dev • Web Design • UI/UX • AI Agents",
+    accent: "#3186FF",
   },
   {
-    icon: CheckCircle2,
-    iconColor: "text-emerald-400",
-    label: "Client Satisfaction",
-    value: 99.4,
-    decimals: 1,
-    duration: 2000,
-    suffix: "%",
-    staticValue: null as string | null,
-    desc: "Measured post-deployment partner retention and NPS benchmark over 36 months.",
+    value: "99+",
+    label: "Lighthouse Target",
+    detail: "Core Web Vitals & WCAG 2.1 AA",
+    accent: "#00B95C",
   },
   {
-    icon: TrendingUp,
-    iconColor: "text-brand-light",
-    label: "Agent Accuracy",
-    value: 94.8,
-    decimals: 1,
-    duration: 2200,
-    suffix: "%",
-    staticValue: null as string | null,
-    desc: "Autonomous tool execution fidelity validated through continuous automated eval suites.",
+    value: "02",
+    label: "Global Studio Hubs",
+    detail: "Kuopio, Finland & Lahore, Pakistan",
+    accent: "#FBBC04",
   },
   {
-    icon: Clock,
-    iconColor: "text-amber-400",
-    label: "Telemetry & Uptime",
-    value: 0,
-    decimals: 0,
-    duration: 1800,
-    suffix: "",
-    staticValue: "24/7",
-    desc: "Autonomous self-healing infrastructure monitoring and proactive telemetry guards.",
+    value: "24/7",
+    label: "Agentic Readiness",
+    detail: "Autonomous AI Workflows & Support",
+    accent: "#FC413D",
   },
 ];
 
+function TiltStatCard({
+  stat,
+  idx,
+}: {
+  stat: (typeof stats)[number];
+  idx: number;
+}) {
+  const [tilt, setTilt] = useState<{
+    rx: number;
+    ry: number;
+    spotX: number;
+    spotY: number;
+    hovered: boolean;
+  }>({ rx: 0, ry: 0, spotX: 50, spotY: 50, hovered: false });
+
+  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    setTilt({
+      rx: (0.5 - ny) * 8,
+      ry: (nx - 0.5) * 8,
+      spotX: nx * 100,
+      spotY: ny * 100,
+      hovered: true,
+    });
+  }, []);
+
+  const handleLeave = useCallback(() => {
+    setTilt((prev) => ({ ...prev, rx: 0, ry: 0, hovered: false }));
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 26, filter: "blur(6px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{
+        duration: 0.68,
+        delay: idx * 0.08,
+        ease: MOTION_EASE.cinematicOut,
+      }}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      style={{
+        transform: `perspective(900px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+        transition: tilt.hovered
+          ? "transform 120ms cubic-bezier(0.22, 1, 0.36, 1), border-color 300ms ease, box-shadow 300ms ease"
+          : "transform 520ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease, box-shadow 300ms ease",
+      }}
+      className="group relative rounded-3xl p-7 sm:p-8 bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 overflow-hidden shadow-[0_8px_30px_rgba(18,19,23,0.03)] hover:shadow-[0_18px_44px_rgba(18,19,23,0.08)] will-change-transform"
+    >
+      {/* Cursor-tracking Antigravity radial spotlight */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+        style={{
+          opacity: tilt.hovered ? 1 : 0,
+          background: `radial-gradient(320px circle at ${tilt.spotX}% ${tilt.spotY}%, rgba(49, 134, 255, 0.09), transparent 70%)`,
+        }}
+      />
+
+      <div
+        className="w-8 h-1 rounded-full mb-5 transition-all duration-300 group-hover:w-12"
+        style={{ backgroundColor: stat.accent }}
+      />
+      <div className="relative text-4xl sm:text-5xl font-extrabold font-mono tracking-tight text-[#121317] mb-3">
+        <RollingNumber value={stat.value} />
+      </div>
+      <div className="relative text-base font-bold text-[#121317] mb-1">
+        {stat.label}
+      </div>
+      <div className="relative text-xs font-mono text-[#6A6A71]">
+        {stat.detail}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function StatsSection() {
   return (
-    <section className="relative py-16 sm:py-20 border-y border-white/[0.08] bg-black/40 backdrop-blur-sm overflow-hidden">
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-          {statItems.map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, y: 22 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{
-                  duration: 0.65,
-                  delay: idx * 0.08,
-                  ease: MOTION_EASE.cinematicOut,
-                }}
-                className="relative flex flex-col pt-5 group"
-              >
-                {/* Animated Top Hairline Sweep */}
-                <motion.span
-                  aria-hidden="true"
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{
-                    duration: 0.85,
-                    delay: 0.1 + idx * 0.09,
-                    ease: MOTION_EASE.cinematicOut,
-                  }}
-                  style={{ transformOrigin: "0% 50%" }}
-                  className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-brand-primary/60 via-white/15 to-transparent"
-                />
+    <section className="relative py-20 sm:py-24 bg-[#F8F9FC] border-y border-[#212226]/[0.07] overflow-hidden">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
+            <span>STUDIO BENCHMARKS</span>
+          </div>
+          <SplitTextReveal
+            as="h2"
+            text="Crafted for Speed, Clarity, and Scale"
+            accentFromWordIndex={4}
+            accentClassName="text-[#3186FF]"
+            className="text-3xl sm:text-4xl font-bold tracking-tight text-[#121317]"
+          />
+        </div>
 
-                <div className="flex items-center gap-2 mb-2.5 text-zinc-400">
-                  <Icon className={`w-4 h-4 ${item.iconColor}`} />
-                  <span className="text-xs uppercase font-mono tracking-wider">
-                    {item.label}
-                  </span>
-                </div>
-
-                <div className="flex items-baseline text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight">
-                  {item.staticValue ? (
-                    <span className="font-mono tabular-nums">
-                      {item.staticValue}
-                    </span>
-                  ) : (
-                    <RollingNumber
-                      value={item.value}
-                      decimals={item.decimals}
-                      duration={item.duration}
-                      suffix={item.suffix}
-                    />
-                  )}
-                </div>
-
-                <p className="text-xs text-zinc-400 mt-2.5 leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            );
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {stats.map((stat, idx) => (
+            <TiltStatCard key={stat.label} stat={stat} idx={idx} />
+          ))}
         </div>
       </div>
     </section>

@@ -80,11 +80,10 @@ export default function ViewWorkCursor({
 
   useEffect(() => {
     const hoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-    if (!hoverQuery.matches) {
-      setEnabled(false);
-      return;
-    }
-    setEnabled(true);
+    const sync = () => setEnabled(hoverQuery.matches);
+    sync();
+    hoverQuery.addEventListener("change", sync);
+    return () => hoverQuery.removeEventListener("change", sync);
   }, []);
 
   useEffect(() => {

@@ -89,3 +89,7 @@ npm run build
 ```
 
 If any check fails, diagnose and fix the root cause in the same turn before finishing.
+
+
+### Responsive motion implementation (2026-10-28)
+See [responsive audit](responsive-audit.md) for changed files, actual constants, validation boundaries and outstanding device QA. Frontend-only changes; backend remains independently built/deployed.

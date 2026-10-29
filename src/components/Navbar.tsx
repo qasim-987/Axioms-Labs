@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { servicesData } from "@/data/services";
 import { clientsData } from "@/data/clients";
@@ -16,53 +17,118 @@ import {
   Bot,
   Globe,
   Layout,
-  Cloud,
-  Shield,
-  Layers,
-  FileText,
-  Activity,
   Code,
-  TrendingUp,
+  Sparkles,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
-  Layout: <Layout className="w-5 h-5 text-brand-primary" />,
-  Globe: <Globe className="w-5 h-5 text-brand-primary" />,
-  Cpu: <Cpu className="w-5 h-5 text-brand-primary" />,
-  Bot: <Bot className="w-5 h-5 text-brand-primary" />,
-  Shield: <Shield className="w-5 h-5 text-brand-primary" />,
-  Cloud: <Cloud className="w-5 h-5 text-brand-primary" />,
+  Code: <Code className="w-5 h-5 text-[#3186FF]" />,
+  Globe: <Globe className="w-5 h-5 text-[#00B95C]" />,
+  Layout: <Layout className="w-5 h-5 text-[#FC413D]" />,
+  Bot: <Bot className="w-5 h-5 text-[#FBBC04]" />,
+  Cpu: <Cpu className="w-5 h-5 text-[#3186FF]" />,
 };
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
-  const [resourcesOpen, setResourcesOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(true);
   const [scrolled, setScrolled] = useState(false);
-  const navRef = useRef<HTMLElement>(null);
 
-  const latestWork = clientsData[0];
+  const navRef = useRef<HTMLElement>(null);
+  const topBarRef = useRef<HTMLDivElement>(null);
+  const hamburgerBtnRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
+
+  const featuredConcept = clientsData[0];
+
+  // Close menus automatically on route change
+  useEffect(() => {
+    setMegaMenuOpen(false);
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile drawer automatically if viewport widens to >= 1024px
+  useEffect(() => {
+    const desktopMq = window.matchMedia("(min-width: 1024px)");
+    const onMqChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setMobileMenuOpen(false);
+      } else {
+        setMegaMenuOpen(false);
+      }
+    };
+    desktopMq.addEventListener("change", onMqChange);
+    return () => desktopMq.removeEventListener("change", onMqChange);
+  }, []);
+
+  // Body scroll lock + focus trap + Escape handling when mobile drawer is open
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const toggle = hamburgerBtnRef.current;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const focusTimer = window.setTimeout(() => drawerRef.current?.querySelector<HTMLElement>("button, a")?.focus(), 50);
+
+    const handleDrawerKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setMobileMenuOpen(false);
+        toggle?.focus();
+        return;
+      }
+
+      if (e.key === "Tab" && navRef.current) {
+        const focusables = Array.from(
+          navRef.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((el) => el.offsetParent !== null);
+
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleDrawerKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = prevOverflow;
+      toggle?.focus();
+      document.removeEventListener("keydown", handleDrawerKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
+  // Desktop mega-menu Escape + click-outside
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && megaMenuOpen) {
         setMegaMenuOpen(false);
-        setResourcesOpen(false);
-        setMobileMenuOpen(false);
       }
     };
     const handleClickOutside = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
         setMegaMenuOpen(false);
-        setResourcesOpen(false);
       }
     };
 
@@ -72,230 +138,170 @@ export default function Navbar() {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("mousedown", handleClickOutside);
     };
+  }, [megaMenuOpen]);
+
+  // Publish exact sticky bar height (`--nav-h`) from `topBarRef` (excluding open drawer height!)
+  useEffect(() => {
+    const barEl = topBarRef.current ?? navRef.current;
+    if (!barEl) return;
+
+    const syncNavHeightVar = () => {
+      const h = Math.round(barEl.getBoundingClientRect().height);
+      if (h > 0) {
+        document.documentElement.style.setProperty("--nav-h", `${h}px`);
+      }
+    };
+
+    syncNavHeightVar();
+    window.addEventListener("resize", syncNavHeightVar, { passive: true });
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(syncNavHeightVar);
+      ro.observe(barEl);
+    }
+
+    return () => {
+      window.removeEventListener("resize", syncNavHeightVar);
+      ro?.disconnect();
+    };
   }, []);
 
   return (
     <header
       ref={navRef}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-[#030303]/85 backdrop-blur-xl border-b border-white/[0.08] py-3.5 shadow-2xl shadow-black/80"
-          : "bg-transparent py-5"
-      }`}
+      data-site-navbar="true"
+      className="fixed top-0 left-0 right-0 z-50"
     >
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
-        <div className="flex items-center justify-between">
-          {/* Brand Wordmark matching video reference */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 group focus:outline-none"
-          >
-            <span className="font-extrabold text-base sm:text-lg tracking-wider text-white">
-              AXIOM STUDIO
-            </span>
-          </Link>
-
-          {/* Desktop Navigation: Work, Company, Services v, Resources v */}
-          <nav className="hidden md:flex items-center gap-2 lg:gap-3">
+      {/* Sticky Top Bar (Safe-area aware on notched devices; Desktop >= 1024px identical) */}
+      <div
+        ref={topBarRef}
+        style={{
+          paddingLeft: "env(safe-area-inset-left, 0px)",
+          paddingRight: "env(safe-area-inset-right, 0px)",
+        }}
+        className={`transition-all duration-300 ${
+          scrolled || mobileMenuOpen
+            ? "bg-[#FFFFFF]/92 backdrop-blur-xl border-b border-[#212226]/[0.07] py-3 lg:py-3.5 shadow-[0_4px_24px_rgba(18,19,23,0.04)]"
+            : "bg-[#FFFFFF]/75 backdrop-blur-md py-3.5 lg:py-4"
+        }`}
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="flex items-center justify-between gap-3">
+            {/* Brand Wordmark in Antigravity #202124 Charcoal + Multicolor Mark */}
             <Link
-              href="/work"
-              className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
+              href="/"
+              className="inline-flex items-center gap-2.5 min-h-[44px] lg:min-h-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] rounded-lg"
             >
-              Work
-            </Link>
-
-            <Link
-              href="/company"
-              className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
-            >
-              Company
-            </Link>
-
-            {/* Services Mega-Menu Trigger */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setMegaMenuOpen(!megaMenuOpen);
-                  setResourcesOpen(false);
+              <span
+                aria-hidden="true"
+                className="w-5 h-5 rounded-md flex items-center justify-center p-[2px] shrink-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #3186FF 0%, #FC413D 45%, #FBBC04 75%, #00B95C 100%)",
                 }}
-                onMouseEnter={() => {
-                  setMegaMenuOpen(true);
-                  setResourcesOpen(false);
-                }}
-                aria-expanded={megaMenuOpen}
-                className={`flex items-center gap-1 px-3.5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  megaMenuOpen
-                    ? "text-white bg-white/[0.08]"
-                    : "text-zinc-300 hover:text-white hover:bg-white/[0.04]"
-                }`}
               >
-                Services
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    megaMenuOpen
-                      ? "rotate-180 text-brand-primary"
-                      : "text-zinc-400"
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Resources Dropdown Trigger */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setResourcesOpen(!resourcesOpen);
-                  setMegaMenuOpen(false);
-                }}
-                onMouseEnter={() => {
-                  setResourcesOpen(true);
-                  setMegaMenuOpen(false);
-                }}
-                aria-expanded={resourcesOpen}
-                className={`flex items-center gap-1 px-3.5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  resourcesOpen
-                    ? "text-white bg-white/[0.08]"
-                    : "text-zinc-300 hover:text-white hover:bg-white/[0.04]"
-                }`}
-              >
-                Resources
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    resourcesOpen
-                      ? "rotate-180 text-brand-primary"
-                      : "text-zinc-400"
-                  }`}
-                />
-              </button>
-
-              <AnimatePresence>
-                {resourcesOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -6, scale: 0.985 }}
-                    transition={{ duration: 0.2, ease: MOTION_EASE.cinematicOut }}
-                    onMouseLeave={() => setResourcesOpen(false)}
-                    className="absolute right-0 mt-3 w-80 rounded-2xl bg-[#09090d]/95 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/90 p-3 z-50"
-                  >
-                    <div className="space-y-1">
-                      <Link
-                        href="/resources/vendor-matrix"
-                        onClick={() => setResourcesOpen(false)}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group"
-                      >
-                        <div className="p-2 rounded-lg bg-brand-primary/10 text-brand-primary mt-0.5">
-                          <Layers className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white group-hover:text-brand-primary transition-colors">
-                            AI Vendor Matrix
-                          </div>
-                          <p className="text-xs text-zinc-400 mt-0.5">
-                            Compare latency, VPC &amp; HIPAA compliance
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/open-axiom"
-                        onClick={() => setResourcesOpen(false)}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group"
-                      >
-                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5">
-                          <Code className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white group-hover:text-emerald-400 transition-colors">
-                            Open Axiom
-                          </div>
-                          <p className="text-xs text-zinc-400 mt-0.5">
-                            9 permissive open-source skills &amp; templates
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/blog"
-                        onClick={() => setResourcesOpen(false)}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group"
-                      >
-                        <div className="p-2 rounded-lg bg-brand-primary/10 text-brand-primary mt-0.5">
-                          <FileText className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white group-hover:text-brand-primary transition-colors">
-                            Engineering Blog
-                          </div>
-                          <p className="text-xs text-zinc-400 mt-0.5">
-                            Production blueprints, evals &amp; AI economics
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/demos/threat-monitor"
-                        onClick={() => setResourcesOpen(false)}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group"
-                      >
-                        <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 mt-0.5">
-                          <Activity className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white group-hover:text-amber-400 transition-colors">
-                            Interactive Labs (6 Demos)
-                          </div>
-                          <p className="text-xs text-zinc-400 mt-0.5">
-                            3D threat globe, vector search &amp; voice AI
-                          </p>
-                        </div>
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <Link
-              href="/contact"
-              className="px-3.5 py-2 rounded-full text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
-            >
-              Contact
-            </Link>
-          </nav>
-
-          {/* Primary Header CTA & Mobile Hamburger */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/contact"
-              className="hidden sm:inline-flex items-center gap-3 pl-5 pr-1.5 py-1.5 rounded-full border border-white/25 bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/40 text-white text-xs font-semibold tracking-wide transition-all duration-200"
-            >
-              <span>Start Your Project</span>
-              <span className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center">
-                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span className="w-full h-full rounded-[4px] bg-white flex items-center justify-center font-mono text-[9px] font-black text-[#121317]">
+                  A
+                </span>
+              </span>
+              <span className="font-bold text-base sm:text-lg tracking-tight text-[#202124]">
+                Axiom Studio
               </span>
             </Link>
 
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle Mobile Navigation"
-              aria-expanded={mobileMenuOpen}
-              className="md:hidden p-2 rounded-lg text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+            {/* Desktop (>= 1024px) Minimal Center Pill Navigation — Unchanged */}
+            <nav
+              aria-label="Primary Navigation"
+              className="hidden lg:flex items-center gap-1.5"
             >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setMegaMenuOpen(!megaMenuOpen)}
+                  onMouseEnter={() => setMegaMenuOpen(true)}
+                  aria-expanded={megaMenuOpen}
+                  className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-normal transition-colors ${
+                    megaMenuOpen
+                      ? "text-[#121317] bg-[#B7BFD9]/25 font-medium"
+                      : "text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20"
+                  }`}
+                >
+                  Services
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      megaMenuOpen
+                        ? "rotate-180 text-[#3186FF]"
+                        : "text-[#45474D]"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <Link
+                href="/work"
+                className="px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
+              >
+                Work
+              </Link>
+
+              <Link
+                href="/company"
+                className="px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
+              >
+                Company
+              </Link>
+
+              <Link
+                href="/blog"
+                className="px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
+              >
+                Blog
+              </Link>
+
+              <Link
+                href="/contact"
+                className="px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
+              >
+                Contact
+              </Link>
+            </nav>
+
+            {/* Right Action + < 1024px Hamburger Toggle (>= 44x44px tap target) */}
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <Link
+                href="/contact"
+                className="hidden sm:inline-flex items-center gap-2 px-5 min-h-[44px] lg:min-h-0 lg:py-2.5 rounded-full bg-[#121317] hover:bg-[#2F3034] text-white text-xs sm:text-sm font-medium tracking-normal transition-all duration-150 shadow-sm"
+              >
+                <span>Start Your Project</span>
+                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2]" />
+              </Link>
+
+              <button
+                ref={hamburgerBtnRef}
+                type="button"
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                aria-label={
+                  mobileMenuOpen
+                    ? "Close navigation menu"
+                    : "Open navigation menu"
+                }
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-nav-drawer"
+                className="lg:hidden w-11 h-11 inline-flex items-center justify-center rounded-full text-[#121317] hover:bg-[#B7BFD9]/20 active:bg-[#B7BFD9]/35 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF]"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Spring-Animated Services Mega-Menu with "OUR LATEST WORK" Spotlight Card */}
+      {/* Desktop (>= 1024px) Mega-Menu — Unchanged */}
       <AnimatePresence>
         {megaMenuOpen && (
           <motion.div
@@ -304,34 +310,34 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -6, scale: 0.99 }}
             transition={{ duration: 0.22, ease: MOTION_EASE.cinematicOut }}
             onMouseLeave={() => setMegaMenuOpen(false)}
-            className="hidden md:block absolute left-0 right-0 mt-3 px-8 sm:px-12 lg:px-16 z-50"
+            className="hidden lg:block absolute left-0 right-0 mt-3 px-8 sm:px-12 lg:px-16 z-50"
           >
-            <div className="max-w-6xl mx-auto rounded-3xl bg-[#09090e]/95 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/90 p-6 lg:p-8">
+            <div className="max-w-6xl mx-auto rounded-3xl bg-[#FFFFFF] border border-[#212226]/[0.09] shadow-[0_24px_64px_rgba(18,19,23,0.12)] p-6 lg:p-8">
               <div className="grid grid-cols-12 gap-8">
-                {/* 6 Service Pillars (8 Cols) */}
-                <div className="col-span-8 grid grid-cols-2 gap-3">
+                {/* 4 Core Services (8 Cols, clean 2x2 grid) */}
+                <div className="col-span-8 grid grid-cols-2 gap-4">
                   {servicesData.map((service, idx) => (
                     <Link
                       key={service.id}
                       href={`/services/${service.slug}`}
                       onClick={() => setMegaMenuOpen(false)}
-                      className="group p-3.5 rounded-2xl hover:bg-white/[0.04] border border-transparent hover:border-white/[0.08] transition-all flex items-start gap-3.5"
+                      className="group p-4 rounded-2xl bg-[#F8F9FC] hover:bg-[#EFF2F7] border border-[#212226]/[0.05] hover:border-[#3186FF]/30 transition-all flex items-start gap-3.5"
                     >
-                      <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 group-hover:border-brand-primary/40 group-hover:bg-brand-primary/10 transition-colors shrink-0">
+                      <div className="p-2.5 rounded-xl bg-white border border-[#212226]/[0.07] shadow-sm shrink-0">
                         {iconMap[service.iconName] || (
-                          <Cpu className="w-5 h-5 text-brand-primary" />
+                          <Cpu className="w-5 h-5 text-[#3186FF]" />
                         )}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-brand-primary font-bold">
+                          <span className="text-[10px] font-mono text-[#3186FF] font-bold">
                             {String(idx + 1).padStart(2, "0")}
                           </span>
-                          <span className="text-sm font-semibold text-white group-hover:text-brand-light transition-colors">
+                          <span className="text-sm font-semibold text-[#121317] group-hover:text-[#3186FF] transition-colors">
                             {service.title}
                           </span>
                         </div>
-                        <p className="text-xs text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
+                        <p className="text-xs text-[#45474D] line-clamp-2 mt-1 leading-relaxed">
                           {service.shortDesc}
                         </p>
                       </div>
@@ -339,52 +345,53 @@ export default function Navbar() {
                   ))}
                 </div>
 
-                {/* Featured "OUR LATEST WORK" Preview Card (4 Cols — antimatterai.agency mega-menu parity) */}
-                <div className="col-span-4 border-l border-white/[0.08] pl-7 flex flex-col justify-between">
+                {/* Featured Studio Concept Preview Card (#121317 Inverse Dark Card) */}
+                <div className="col-span-4 border-l border-[#212226]/[0.08] pl-7 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-brand-primary font-semibold block mb-3">
-                      OUR LATEST WORK
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#3186FF] font-semibold block mb-3">
+                      STUDIO CONCEPT SHOWCASE
                     </span>
                     <Link
-                      href={`/work/${latestWork.slug}`}
+                      href={`/work/${featuredConcept.slug}`}
                       onClick={() => setMegaMenuOpen(false)}
-                      className="group block rounded-2xl p-5 bg-gradient-to-br from-brand-primary/15 via-white/[0.03] to-transparent border border-brand-primary/25 hover:border-brand-primary/50 transition-all"
+                      className="group block rounded-2xl p-5 bg-[#121317] hover:bg-[#18191D] text-white transition-all shadow-md"
                     >
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-mono font-bold text-white">
-                          {latestWork.client}
+                        <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-[#749BFF]" />
+                          {featuredConcept.client}
                         </span>
-                        <ArrowUpRight className="w-4 h-4 text-brand-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        <ArrowUpRight className="w-4 h-4 text-[#749BFF] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                       </div>
                       <div className="flex items-baseline gap-2 mb-2">
                         <span className="text-3xl font-extrabold font-mono text-white tabular-nums">
-                          {latestWork.impactMetric}
+                          {featuredConcept.impactMetric}
                         </span>
-                        <TrendingUp className="w-4 h-4 text-emerald-400" />
                       </div>
-                      <p className="text-xs text-zinc-300 font-medium mb-2">
-                        {latestWork.title}
+                      <p className="text-xs text-[#F8F9FC] font-medium mb-1.5">
+                        {featuredConcept.title}
                       </p>
-                      <p className="text-[11px] text-zinc-400 line-clamp-2">
-                        {latestWork.impactLabel}
+                      <p className="text-[11px] text-[#B2BBC5] line-clamp-2">
+                        {featuredConcept.impactLabel}
                       </p>
                     </Link>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                  <div className="pt-4 mt-4 border-t border-[#212226]/[0.08] flex items-center justify-between text-xs">
                     <Link
                       href="/work"
                       onClick={() => setMegaMenuOpen(false)}
-                      className="text-zinc-300 hover:text-white font-medium transition-colors"
+                      className="text-[#45474D] hover:text-[#121317] font-mono transition-colors"
                     >
-                      Browse all 7 dossiers →
+                      All Concept Builds →
                     </Link>
                     <Link
-                      href="/demos/threat-monitor"
+                      href="/contact"
                       onClick={() => setMegaMenuOpen(false)}
-                      className="text-brand-primary hover:text-brand-light font-mono"
+                      className="inline-flex items-center gap-1 text-[#3186FF] hover:text-[#1B6EF3] font-semibold"
                     >
-                      Live Labs
+                      <span>Book Call</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
                 </div>
@@ -394,96 +401,137 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Navigation Drawer */}
+      {/* Mobile & Tablet (< 1024px) Full-Height Accessible Drawer */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.28, ease: MOTION_EASE.cinematicOut }}
-            className="md:hidden overflow-hidden bg-[#050508]/98 backdrop-blur-2xl border-b border-white/10"
+          <motion.nav
+            ref={drawerRef}
+            id="mobile-nav-drawer"
+            aria-label="Mobile Navigation"
+            data-lenis-prevent
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.22, ease: MOTION_EASE.cinematicOut }}
+            style={{
+              height: "calc(100dvh - var(--nav-h, 68px))",
+              paddingLeft: "max(16px, env(safe-area-inset-left, 0px))",
+              paddingRight: "max(16px, env(safe-area-inset-right, 0px))",
+              paddingBottom:
+                "calc(max(24px, env(safe-area-inset-bottom, 0px) + 16px))",
+            }}
+            className="lg:hidden bg-[#FFFFFF] border-b border-[#212226]/[0.08] overflow-y-auto overscroll-contain flex flex-col justify-between"
           >
-            <div className="px-4 pt-4 pb-8 space-y-6 max-h-[82vh] overflow-y-auto">
-              <div>
-                <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2 px-2">
-                  Services
-                </div>
-                <div className="grid grid-cols-1 gap-1">
-                  {servicesData.map((s, idx) => (
-                    <Link
-                      key={s.id}
-                      href={`/services/${s.slug}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm text-zinc-200 hover:bg-white/[0.05]"
+            <div className="max-w-2xl w-full mx-auto px-2 sm:px-4 pt-4 pb-6 space-y-2">
+              {/* Services Accordion (>= 44x44px toggle & item tap targets) */}
+              <div className="rounded-2xl border border-[#212226]/[0.08] bg-[#F8F9FC]/70 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setMobileServicesOpen((prev) => !prev)}
+                  aria-expanded={mobileServicesOpen}
+                  aria-controls="mobile-services-accordion"
+                  className="w-full min-h-[52px] px-4 flex items-center justify-between text-left text-base font-semibold text-[#121317] hover:bg-[#EFF2F7]/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#3186FF]"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <span>Services</span>
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white border border-[#212226]/[0.08] text-[#3186FF]">
+                      04
+                    </span>
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-[#45474D] transition-transform duration-200 ${
+                      mobileServicesOpen ? "rotate-180 text-[#3186FF]" : ""
+                    }`}
+                  />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {mobileServicesOpen && (
+                    <motion.div
+                      id="mobile-services-accordion"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="overflow-hidden"
                     >
-                      <span>
-                        <span className="font-mono text-xs text-brand-primary mr-2">
-                          0{idx + 1}
-                        </span>
-                        {s.title}
-                      </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-zinc-500" />
-                    </Link>
-                  ))}
-                </div>
+                      <div className="px-3 pb-3 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {servicesData.map((s, idx) => (
+                          <Link
+                            key={s.id}
+                            href={`/services/${s.slug}`}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center gap-3 min-h-[48px] px-3.5 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.07] text-sm text-[#121317] hover:border-[#3186FF]/40 active:scale-[0.99] transition-all"
+                          >
+                            <span className="font-mono text-xs text-[#3186FF] font-bold shrink-0">
+                              {String(idx + 1).padStart(2, "0")}
+                            </span>
+                            <span className="shrink-0">
+                              {iconMap[s.iconName]}
+                            </span>
+                            <span className="font-semibold truncate">
+                              {s.title}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <div className="border-t border-white/[0.08] pt-4 grid grid-cols-2 gap-2">
+              {/* Primary Page Links (each >= 48px height) */}
+              <div className="divide-y divide-[#212226]/[0.07] border-y border-[#212226]/[0.07]">
                 <Link
                   href="/work"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
+                  className="min-h-[52px] px-2 flex items-center justify-between text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                 >
-                  Case Studies
+                  <span>Work (Concept Builds)</span>
+                  <ArrowUpRight className="w-4 h-4 text-[#6A6A71]" />
                 </Link>
                 <Link
                   href="/company"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
+                  className="min-h-[52px] px-2 flex items-center justify-between text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                 >
-                  Company
-                </Link>
-                <Link
-                  href="/resources/vendor-matrix"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
-                >
-                  Vendor Matrix
-                </Link>
-                <Link
-                  href="/open-axiom"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
-                >
-                  Open Axiom
+                  <span>Company</span>
+                  <ArrowUpRight className="w-4 h-4 text-[#6A6A71]" />
                 </Link>
                 <Link
                   href="/blog"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-white"
+                  className="min-h-[52px] px-2 flex items-center justify-between text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                 >
-                  Engineering Blog
+                  <span>Blog</span>
+                  <ArrowUpRight className="w-4 h-4 text-[#6A6A71]" />
                 </Link>
                 <Link
-                  href="/demos/threat-monitor"
+                  href="/contact"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2.5 rounded-xl bg-white/[0.03] text-sm font-medium text-brand-light"
+                  className="min-h-[52px] px-2 flex items-center justify-between text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                 >
-                  Interactive Labs
+                  <span>Contact</span>
+                  <ArrowUpRight className="w-4 h-4 text-[#6A6A71]" />
                 </Link>
               </div>
+            </div>
 
+            {/* Bottom Reachable CTA + Studio Locations */}
+            <div className="max-w-2xl w-full mx-auto px-2 sm:px-4 pt-3 border-t border-[#212226]/[0.07]">
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-brand-primary text-white text-sm font-semibold"
+                className="w-full min-h-[50px] inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm sm:text-base font-semibold bg-[#121317] hover:bg-[#2F3034] active:scale-[0.99] text-white shadow-[0_10px_28px_rgba(18,19,23,0.18)] transition-all"
               >
                 <span>Start Your Project</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
+              <p className="mt-3 text-center text-[11px] font-mono text-[#6A6A71]">
+                Kuopio, Finland • Lahore, Pakistan
+              </p>
             </div>
-          </motion.div>
+          </motion.nav>
         )}
       </AnimatePresence>
     </header>

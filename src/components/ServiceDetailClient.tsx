@@ -16,8 +16,7 @@ import {
   Bot,
   Globe,
   Layout,
-  Cloud,
-  Shield,
+  Code,
   Sparkles,
   ChevronDown,
   Send,
@@ -28,12 +27,11 @@ import {
 } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
-  Layout: <Layout className="w-8 h-8 text-brand-primary" />,
-  Globe: <Globe className="w-8 h-8 text-brand-primary" />,
-  Cpu: <Cpu className="w-8 h-8 text-brand-primary" />,
-  Bot: <Bot className="w-8 h-8 text-brand-primary" />,
-  Shield: <Shield className="w-8 h-8 text-brand-primary" />,
-  Cloud: <Cloud className="w-8 h-8 text-brand-primary" />,
+  Code: <Code className="w-8 h-8 text-[#3186FF]" />,
+  Layout: <Layout className="w-8 h-8 text-[#FC413D]" />,
+  Globe: <Globe className="w-8 h-8 text-[#00B95C]" />,
+  Cpu: <Cpu className="w-8 h-8 text-[#3186FF]" />,
+  Bot: <Bot className="w-8 h-8 text-[#FBBC04]" />,
 };
 
 interface Props {
@@ -53,7 +51,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
     name: "",
     email: "",
     company: "",
-    budget: "$25k - $50k",
+    budget: "$2,500 - $5,000",
     message: "",
     botField: "",
   });
@@ -114,65 +112,68 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
 
       <main
         id="main-content"
-        className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#030303] text-zinc-100"
+        className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#FFFFFF] text-[#121317]"
       >
         <LightRays />
 
-        <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
           {/* Breadcrumbs */}
-          <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-500 mb-8">
-            <Link href="/" className="hover:text-white transition-colors">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-[#6A6A71] mb-8">
+            <Link
+              href="/"
+              className="min-h-[44px] lg:min-h-0 inline-flex items-center px-1.5 hover:text-[#121317] transition-colors"
+            >
               Home
             </Link>
             <span>/</span>
             <Link
               href="/#services"
-              className="hover:text-white transition-colors"
+              className="min-h-[44px] lg:min-h-0 inline-flex items-center px-1.5 hover:text-[#121317] transition-colors"
             >
               Services
             </Link>
             <span>/</span>
-            <span className="text-brand-primary font-medium">
+            <span className="text-[#3186FF] font-semibold">
               {service.title}
             </span>
           </div>
 
           {/* Centered Hero Section */}
           <div className="mb-20 max-w-4xl mx-auto text-center flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-primary/10 border border-brand-primary/30 text-brand-primary text-xs font-mono font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#3186FF]/[0.08] border border-[#3186FF]/20 text-[#3186FF] text-xs font-mono font-semibold mb-6">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{service.badge}</span>
             </div>
 
             <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-brand-primary/30 shadow-lg shadow-brand-primary/10 shrink-0">
+              <div className="p-3.5 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] shadow-sm shrink-0">
                 {iconMap[service.iconName] || (
-                  <Cpu className="w-8 h-8 text-brand-primary" />
+                  <Cpu className="w-8 h-8 text-[#3186FF]" />
                 )}
               </div>
               <SplitTextReveal
                 as="h1"
                 text={service.title}
                 triggerOnLoad
-                className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight text-center"
+                className="text-3xl sm:text-5xl font-extrabold text-[#121317] tracking-tight text-center"
               />
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-brand-primary mb-6">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-[#3186FF] mb-6">
               {service.heroHeadline}
             </h2>
 
-            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal mb-8 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg text-[#45474D] leading-relaxed font-normal mb-8 max-w-3xl mx-auto">
               {service.longDesc}
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-              <span className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-white">
-                Benchmark: {service.metrics}
+              <span className="px-3.5 py-1.5 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-[#121317] font-medium">
+                Target Benchmark: {service.metrics}
               </span>
-              <span className="text-emerald-400 flex items-center gap-1.5">
+              <span className="text-[#00B95C] font-medium flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Production SLA Ready
+                100% Ownership &amp; Production Ready
               </span>
             </div>
           </div>
@@ -180,13 +181,13 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
           {/* "What You Get" — 6 Numbered Deliverables */}
           <div className="mb-24">
             <div className="mb-10">
-              <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
-                COMPREHENSIVE SCOPE • 01 — 06
+              <span className="text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold mb-2 block">
+                INCLUDED DELIVERABLES • 01 — 06
               </span>
               <SplitTextReveal
                 as="h2"
                 text="What You Get"
-                className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+                className="text-3xl sm:text-4xl font-bold text-[#121317] tracking-tight"
               />
             </div>
 
@@ -194,19 +195,19 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
               {service.deliverables.map((item, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-2xl glass-panel glass-panel-hover flex flex-col justify-between"
+                  className="p-6 rounded-2xl bg-[#F8F9FC] hover:bg-[#FFFFFF] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 shadow-sm hover:shadow-[0_16px_40px_rgba(18,19,23,0.06)] transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <span className="font-mono text-xs font-bold text-brand-primary px-2.5 py-1 rounded bg-brand-primary/10 border border-brand-primary/25">
+                      <span className="font-mono text-xs font-bold text-[#3186FF] px-2.5 py-1 rounded bg-[#3186FF]/[0.08] border border-[#3186FF]/20">
                         {String(idx + 1).padStart(2, "0")}
                       </span>
-                      <Check className="w-4 h-4 text-emerald-400" />
+                      <Check className="w-4 h-4 text-[#00B95C]" />
                     </div>
-                    <h3 className="text-lg font-bold text-white mb-2">
+                    <h3 className="text-lg font-bold text-[#121317] mb-2">
                       {item.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-[#45474D] leading-relaxed">
                       {item.description}
                     </p>
                   </div>
@@ -215,56 +216,59 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             </div>
           </div>
 
-          {/* "How We Work" — Scroll-Scrubbed 4-Phase Timeline (Animations.md §11.2) */}
+          {/* "How We Work" — Scroll-Scrubbed 4-Phase Timeline */}
           <div className="mb-24">
             <div className="mb-12">
-              <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
-                EXECUTION ROADMAP
+              <span className="text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold mb-2 block">
+                DELIVERY WORKFLOW
               </span>
               <SplitTextReveal
                 as="h2"
                 text="How We Work"
-                className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+                className="text-3xl sm:text-4xl font-bold text-[#121317] tracking-tight"
               />
             </div>
 
             <div ref={timelineRef} className="relative pl-8 sm:pl-12">
-              {/* Background Track */}
-              <div className="absolute left-3 sm:left-4 top-2 bottom-2 w-[2px] bg-white/[0.08]" />
-              {/* Scroll-Linked Indigo Progress Beam */}
+              <div className="absolute left-3 sm:left-4 top-2 bottom-2 w-[2px] bg-[#E6EAF0]" />
               <motion.div
-                style={{ scaleY: scrollYProgress, transformOrigin: "top" }}
-                className="absolute left-3 sm:left-4 top-2 bottom-2 w-[2px] bg-gradient-to-b from-brand-light via-brand-primary to-emerald-400 shadow-[0_0_12px_rgba(133,135,227,0.8)]"
+                style={{
+                  scaleY: scrollYProgress,
+                  transformOrigin: "top",
+                  background:
+                    "linear-gradient(180deg, #3186FF 0%, #FC413D 50%, #00B95C 100%)",
+                }}
+                className="absolute left-3 sm:left-4 top-2 bottom-2 w-[2px]"
               />
 
               <div className="space-y-8">
                 {service.processPhases.map((phase) => (
                   <div
                     key={phase.number}
-                    className="relative p-6 sm:p-8 rounded-2xl glass-panel border border-white/[0.08] hover:border-brand-primary/40 transition-colors"
+                    className="relative p-6 sm:p-8 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] hover:border-[#3186FF]/35 transition-colors"
                   >
-                    <span className="absolute -left-[29px] sm:-left-[39px] top-7 w-4 h-4 rounded-full bg-[#030303] border-2 border-brand-primary shadow-[0_0_10px_rgba(133,135,227,0.8)]" />
+                    <span className="absolute -left-[29px] sm:-left-[39px] top-7 w-4 h-4 rounded-full bg-[#FFFFFF] border-2 border-[#3186FF] shadow-sm" />
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                       <div className="flex items-center gap-3">
-                        <span className="font-mono text-xs font-bold text-brand-primary">
+                        <span className="font-mono text-xs font-bold text-[#3186FF]">
                           PHASE {phase.number}
                         </span>
-                        <h3 className="text-xl font-bold text-white">
+                        <h3 className="text-xl font-bold text-[#121317]">
                           {phase.title}
                         </h3>
                       </div>
-                      <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300">
+                      <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.08] text-[#45474D]">
                         {phase.duration}
                       </span>
                     </div>
-                    <p className="text-sm text-zinc-400 leading-relaxed mb-5">
+                    <p className="text-sm text-[#45474D] leading-relaxed mb-5">
                       {phase.description}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {phase.deliverables.map((d) => (
                         <span
                           key={d}
-                          className="text-xs font-mono px-2.5 py-1 rounded-md bg-brand-primary/10 border border-brand-primary/20 text-brand-light"
+                          className="text-xs font-mono px-2.5 py-1 rounded-md bg-[#3186FF]/[0.08] border border-[#3186FF]/20 text-[#3186FF] font-medium"
                         >
                           {d}
                         </span>
@@ -277,16 +281,16 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
           </div>
 
           {/* "Built With" — Industry-Standard Stack */}
-          <div className="mb-24 p-8 rounded-2xl glass-panel border border-white/[0.08]">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-brand-primary mb-4">
+          <div className="mb-24 p-8 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08]">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold mb-4">
               <Wrench className="w-4 h-4" />
-              <span>Built With</span>
+              <span>Tools &amp; Stack We Use</span>
             </div>
             <div className="flex flex-wrap gap-2.5">
               {service.tools.map((tool) => (
                 <span
                   key={tool}
-                  className="px-3.5 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-mono text-zinc-200"
+                  className="px-3.5 py-2 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] shadow-sm"
                 >
                   {tool}
                 </span>
@@ -294,14 +298,14 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             </div>
           </div>
 
-          {/* Zero-Jank CSS Grid FAQ Accordion */}
+          {/* FAQ Accordion */}
           <div className="mb-24">
             <div className="mb-8">
-              <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
-                FREQUENTLY ASKED
+              <span className="text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold mb-2 block">
+                COMMON QUESTIONS
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                Technical &amp; Delivery FAQs
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#121317]">
+                {service.title} FAQs
               </h2>
             </div>
 
@@ -311,19 +315,19 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                 return (
                   <div
                     key={idx}
-                    className="rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden"
+                    className="rounded-2xl border border-[#212226]/[0.08] bg-[#F8F9FC] overflow-hidden"
                   >
                     <button
                       type="button"
                       aria-expanded={isOpen}
                       onClick={() => setOpenFaq(isOpen ? null : idx)}
-                      className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors"
+                      className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-[#EFF2F7] transition-colors"
                     >
-                      <span className="text-sm sm:text-base font-semibold text-white">
+                      <span className="text-sm sm:text-base font-semibold text-[#121317]">
                         {faq.question}
                       </span>
                       <ChevronDown
-                        className={`w-4 h-4 text-brand-primary shrink-0 transition-transform duration-300 ${
+                        className={`w-4 h-4 text-[#3186FF] shrink-0 transition-transform duration-300 ${
                           isOpen ? "rotate-180" : ""
                         }`}
                       />
@@ -336,7 +340,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <div className="px-5 pb-5 text-xs sm:text-sm text-zinc-300 leading-relaxed border-t border-white/[0.04] pt-3">
+                        <div className="px-5 pb-5 text-xs sm:text-sm text-[#45474D] leading-relaxed border-t border-[#212226]/[0.06] pt-3 bg-[#FFFFFF]">
                           {faq.answer}
                         </div>
                       </div>
@@ -347,36 +351,35 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             </div>
           </div>
 
-          {/* Dedicated Inline Service Scoping Form (Wired to Standalone Backend) */}
-          <div className="mb-24 p-8 sm:p-12 rounded-3xl bg-[#08080d] border border-brand-primary/30 shadow-2xl shadow-brand-primary/10">
+          {/* Dedicated Inline Service Scoping Form */}
+          <div className="mb-24 p-8 sm:p-12 rounded-3xl bg-[#F8F9FC] border border-[#212226]/[0.1] shadow-[0_20px_56px_rgba(18,19,23,0.06)]">
             <div className="max-w-2xl mb-8">
-              <span className="text-xs font-mono uppercase tracking-widest text-brand-primary font-semibold mb-2 block">
-                PROJECT SCOPING
+              <span className="text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold mb-2 block">
+                START YOUR PROJECT
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                Scope Your {service.title} Engagement
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#121317] mb-2">
+                Discuss Your {service.title} Project
               </h2>
-              <p className="text-sm text-zinc-400">
-                Share your architectural requirements. An Axiom Studio principal
-                architect will reply with a scoping brief within 24 hours.
+              <p className="text-sm text-[#45474D]">
+                Tell us what you are building and our team in Kuopio &amp;
+                Lahore will send back a clear roadmap and quote within 24 hours.
               </p>
             </div>
 
             {formSubmitted ? (
-              <div className="p-8 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center max-w-xl mx-auto">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">
-                  Scoping Inquiry Logged
+              <div className="p-8 rounded-2xl bg-[#00B95C]/[0.08] border border-[#00B95C]/25 text-center max-w-xl mx-auto">
+                <CheckCircle2 className="w-12 h-12 text-[#00B95C] mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-[#121317] mb-2">
+                  Project Inquiry Received
                 </h3>
                 {inquiryId && (
-                  <p className="text-xs font-mono text-brand-light mb-2">
+                  <p className="text-xs font-mono text-[#3186FF] mb-2">
                     Reference ID: {inquiryId}
                   </p>
                 )}
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Thank you. An Axiom Studio engineering lead specializing in{" "}
-                  {service.title} will review your parameters and follow up
-                  within one business day.
+                <p className="text-xs text-[#45474D] leading-relaxed">
+                  Thank you! Our {service.title} team will review your project
+                  details and follow up within one business day.
                 </p>
               </div>
             ) : (
@@ -398,73 +401,79 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
+                  <label className="text-xs font-mono text-[#45474D] mb-1.5 block">
                     Your Name *
                   </label>
                   <input
                     type="text"
                     required
+                    autoComplete="name"
+                    inputMode="text"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    placeholder="Marcus Vance"
-                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
+                    placeholder="Alex Lindholm"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
-                    Work Email *
+                  <label className="text-xs font-mono text-[#45474D] mb-1.5 block">
+                    Email Address *
                   </label>
                   <input
                     type="email"
                     required
+                    autoComplete="email"
+                    inputMode="email"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    placeholder="marcus@company.com"
-                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
+                    placeholder="alex@company.com"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
-                    Company / Organization
+                  <label className="text-xs font-mono text-[#45474D] mb-1.5 block">
+                    Company / Brand
                   </label>
                   <input
                     type="text"
+                    autoComplete="organization"
+                    inputMode="text"
                     value={formData.company}
                     onChange={(e) =>
                       setFormData({ ...formData, company: e.target.value })
                     }
-                    placeholder="Acme Systems Inc."
-                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
+                    placeholder="Your Brand"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
-                    Expected Budget Tier
+                  <label className="text-xs font-mono text-[#45474D] mb-1.5 block">
+                    Estimated Budget
                   </label>
                   <select
                     value={formData.budget}
                     onChange={(e) =>
                       setFormData({ ...formData, budget: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl bg-[#0d0d12] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] focus:outline-none focus:border-[#3186FF]"
                   >
-                    <option value="< $25k">&lt; $25,000</option>
-                    <option value="$25k - $50k">$25,000 – $50,000</option>
-                    <option value="$50k - $100k">$50,000 – $100,000</option>
-                    <option value="$100k+">$100,000+</option>
+                    <option value="$1,000 - $2,500">$1,000 – $2,500</option>
+                    <option value="$2,500 - $5,000">$2,500 – $5,000</option>
+                    <option value="$5,000 - $15,000">$5,000 – $15,000</option>
+                    <option value="$15,000+">$15,000+ Custom Scope</option>
                   </select>
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-mono text-zinc-400 mb-1.5 block">
-                    Project Details &amp; Objectives *
+                  <label className="text-xs font-mono text-[#45474D] mb-1.5 block">
+                    Project Details &amp; Goals *
                   </label>
                   <textarea
                     required
@@ -474,13 +483,13 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     onChange={(e) =>
                       setFormData({ ...formData, message: e.target.value })
                     }
-                    placeholder={`Tell us about your ${service.title} requirements, timeline, or current technical bottlenecks...`}
-                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-brand-primary"
+                    placeholder={`Tell us about your ${service.title} goals, desired features, and target launch timeline...`}
+                    className="w-full px-4 py-3 rounded-xl bg-[#FFFFFF] border border-[#212226]/[0.1] text-base lg:text-sm text-[#121317] placeholder:text-[#6A6A71] focus:outline-none focus:border-[#3186FF] focus:ring-2 focus:ring-[#3186FF]/15"
                   />
                 </div>
 
                 {submitError && (
-                  <div className="sm:col-span-2 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 flex items-center gap-2">
+                  <div className="sm:col-span-2 p-3.5 rounded-xl bg-[#FC413D]/[0.08] border border-[#FC413D]/25 text-xs text-[#FC413D] font-medium flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>{submitError}</span>
                   </div>
@@ -490,16 +499,16 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-brand-primary hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
+                    className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#121317] hover:bg-[#2F3034] text-white transition-colors disabled:opacity-50"
                   >
                     {submitting ? (
                       <>
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        <span>Transmitting Scoping Brief...</span>
+                        <span>Sending Inquiry...</span>
                       </>
                     ) : (
                       <>
-                        <span>Submit Scoping Inquiry</span>
+                        <span>Request Project Quote</span>
                         <Send className="w-3.5 h-3.5" />
                       </>
                     )}
@@ -509,22 +518,22 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             )}
           </div>
 
-          {/* Other Services Switcher */}
-          <div className="pt-10 border-t border-white/[0.08]">
-            <h3 className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-6">
-              Explore Complementary Capabilities
+          {/* Other Services Switcher (All remaining 3 services) */}
+          <div className="pt-10 border-t border-[#212226]/[0.08]">
+            <h3 className="text-xs font-mono uppercase tracking-widest text-[#6A6A71] mb-6">
+              Explore Our Other Services
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {otherServices.slice(0, 3).map((other) => (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {otherServices.map((other) => (
                 <Link
                   key={other.id}
                   href={`/services/${other.slug}`}
-                  className="p-5 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] hover:border-brand-primary/40 transition-all flex items-center justify-between group"
+                  className="p-5 rounded-xl border border-[#212226]/[0.08] bg-[#F8F9FC] hover:bg-[#EFF2F7] hover:border-[#3186FF]/35 transition-all flex items-center justify-between group"
                 >
-                  <span className="text-sm font-semibold text-white group-hover:text-brand-primary transition-colors">
+                  <span className="text-sm font-semibold text-[#121317] group-hover:text-[#3186FF] transition-colors">
                     {other.title}
                   </span>
-                  <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-brand-primary group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-[#6A6A71] group-hover:text-[#3186FF] group-hover:translate-x-1 transition-all" />
                 </Link>
               ))}
             </div>

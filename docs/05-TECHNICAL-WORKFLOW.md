@@ -212,3 +212,7 @@ jobs:
 1. **Preview Deployment**: Pushing any branch automatically triggers a Vercel Preview URL (`https://<branch>-axiom-studio.vercel.app`). Verify Hero `LightRays`, odometer counters, mega-menu transitions, and `/api/contact` on mobile and desktop before merging.
 2. **Production Promotion**: Merging to `main` promotes atomically to Vercel's global Edge CDN with zero downtime.
 3. **Instant Rollback**: If post-deploy Real User Monitoring shows `CLS > 0.05`, `5xx` errors on `/api/contact`, or broken client hydration, execute an immediate atomic rollback in Vercel (`Deployments -> Previous Healthy Production Build -> Instant Rollback`) in `< 10 seconds`, then reproduce locally via `npm run build && npm run start`.
+
+
+### Responsive motion implementation (2026-10-28)
+See [responsive audit](responsive-audit.md) for changed files, actual constants, validation boundaries and outstanding device QA. Frontend-only changes; backend remains independently built/deployed.

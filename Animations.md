@@ -139,6 +139,39 @@ In RGB color space, difference blending computes $C_\text{result} = |C_\text{bac
 
 ---
 
+### Particle-Morph "Our Services" Section (`src/lib/particleEngine.ts` + `src/components/ServicesGrid.tsx` + `src/components/ServicesParticleCanvas.tsx`)
+
+#### 1. Shared Particle Engine, Black & White + Antigravity Palette & Hover + Scroll Synchronization
+- **Shared Particle Engine (`src/lib/particleEngine.ts`)**: Extracted from `ParticleSphereHero.tsx` and shared across both the Hero sphere and `#services` (`DESKTOP_COUNT: 7200`, `MOBILE_COUNT: 3600`, `PerspectiveCamera(45, w/h, 0.1, 2500)` at `z = 800`, DPR capped at `2`, `generateFibonacciSphereBuffer`, smoothed pointer repulsion/swirl, `ResizeObserver`, `IntersectionObserver` + `visibilitychange` pause, and full WebGL resource disposal).
+- **Black & White + Antigravity (`antigravity.google`) Rendering**: Uses `THREE.NormalBlending` (`ANTIGRAVITY_BW_PALETTE`: Obsidian `#121317`, Electric Blue `#3186FF`, Charcoal `#202124`, Deep Sapphire `#1E3A8A`, Periwinkle `#749BFF`, plus subtle Coral `#FC413D` / Signal Yellow `#FBBC04` / Vivid Green `#00B95C` spark particles) so all 5 shapes stay razor-sharp against `#FFFFFF` and `#F8F9FC` surfaces.
+- **Single Source of Truth (`activeIndex = hoverIndex ?? scrollIndex`) & Snap-Free Lenis Scrub**:
+  - **Smooth Scroll Scrubbing (`>= 1024px`)**: `GSAP ScrollTrigger` (`pin: true, scrub: 0.5, anticipatePin: 1`, zero `snap` conflict with `Lenis`) pins `#services` for `4 × 82vh = 328vh` (`STEP_HOLD_PROGRESS`) and drives `evaluateServicesMasterTimeline`.
+  - **Hover & Keyboard Focus Override (`@media (hover: hover) and (pointer: fine)` + `focus`)**: Hovering a card (after `HOVER_INTENT_DELAY_MS = 90ms`) or focusing it via keyboard sets `hoverIndex`, snapshots live particle positions so queued morphs never pile up or snap, morphs through the dust-sphere midpoint into that card's 3D shape with a subtle hover energy boost (`+4.5%` swell, `+16%` Antigravity Electric Blue shift, `+48%` spin/sway), and expands the hovered card into `.card.dark` (`#121317` -> `#1A1B22`). Leaving clears `hoverIndex` after `HOVER_LEAVE_DELAY_MS = 240ms` and morphs smoothly back to the scroll-implied state. Scrolling to a new step while hovered clears `hoverIndex` immediately (`scroll wins`) until the pointer moves again.
+- **5 GPU Point-Cloud Targets (`src/lib/serviceParticleShapes.ts`)**:
+  - Default / Initial (`blob`): Shared Fibonacci + core-weighted stardust sphere matching `ParticleSphereHero`.
+  - Step 1 (`wireframe` $\leftrightarrow$ `UI/UX Design`): Hollow 3D UI wireframe / browser box (`~13%` wall thickness) with top bar and center divider forming two hollow inner panels.
+  - Step 2 (`brackets` $\leftrightarrow$ `Web Development`): Extruded 3D `</>` code brackets.
+  - Step 3 (`growthChart` $\leftrightarrow$ `Web Designing`): 4 ascending 3D bars + rising diagonal trend arrow.
+  - Step 4 (`dnaHelix` $\leftrightarrow$ `AI Agents`): Tilted vertical double helix with 2 intertwined strands + 11 horizontal rungs, rotating continuously around Y.
+
+#### 2. Tunable Constants (`PARTICLE_TUNING`, `SHOW_UPCOMING_PREVIEW` & `SERVICES_SECTION_TUNING`)
+
+| Constant | Default Value | Purpose |
+| :--- | :--- | :--- |
+| `SHOW_UPCOMING_PREVIEW` | `false` | Default single-card mode (`opacity: 0; visibility: hidden; pointer-events: none` on upcoming cards until scroll transition); flip to `true` for non-overlapping preview tabs |
+| `COMPACT_VIEWPORT_MAX_HEIGHT_PX` | `700` (`px`) | Enables compact layout (`height < 700px`: tighter header/card spacing, 3 whole service items, `line-clamp-3`) inside `calc(100dvh - var(--nav-h))` |
+| `HOVER_PULSE_STRENGTH` / `HOVER_PULSE_DURATION_MS` | `0.36` (`36%`) / `820ms` | Active-card hover/focus breathing pulse: loosens current shape ~36% and re-assembles with per-particle `aSeed` ripple stagger |
+| `HOVER_ROTATION_MULTIPLIER` / `HOVER_LEAVE_EASE_MS` | `1.5x` / `500ms` | Speeds up shape rotation/sway `1.5x` + raises soft Electric Blue glow behind shape while hovered, easing back over `500ms` on leave |
+| `REPEL_RADIUS_PX` / `REPEL_STRENGTH_PX` | `112px` / `78px` | Left-stage cursor repulsion radius (`90–120px` target) & impulse reusing `ParticleSphereHero`'s damped-spring physics |
+| `DESKTOP_COUNT` / `MOBILE_COUNT` | `7200` / `3600` | Shared `particleEngine.ts` `THREE.Points` count (`>= 1024px` vs `< 1024px`), DPR capped at `2` |
+| `PROGRESS_LERP` / `HOVER_MORPH_DURATION_S` | `0.12` / `0.78s` | Per-frame scroll smoothing & interruptible preview-tab morph duration |
+| `PREVIEW_HOVER_INTENT_DELAY_MS` / `LEAVE` | `100ms` / `250ms` | Preview-tab hover intent debounce & return-to-scroll delay when `SHOW_UPCOMING_PREVIEW = true` |
+| `SWAY_AMPLITUDE_Y` / `HELIX_ROTATION_SPEED` | `0.26 rad` (`~15°`) / `0.36 rad/s` | Gentle Y-sway on `wireframe`, `brackets`, `growthChart`; continuous Y-spin on `blob` & `dnaHelix` |
+| `SCROLL_VH_PER_STEP` | `82` (`vh`) | Snap-free (`scrub: 0.5`) scroll distance per service step (`328vh` total across 4 studio services), pinned at `top ${navHeight}px` |
+| `SECTION_BG` / `ACTIVE_CARD_TOP..BOTTOM` | `#FFFFFF` / `#1A1B22` $\rightarrow$ `#121317` | Existing light theme stage + near-black active card + `#3186FF` / `#749BFF` accents |
+
+---
+
 ## 1. Motion Stack & Architecture Overview
 
 Inspection of `antimatterai.agency` (including its official studio template architecture and case study engineering specifications) confirms a four-layer motion stack running on Next.js + Tailwind CSS:
@@ -1162,3 +1195,20 @@ Use this exact sequence when applying all `antimatterai.agency` animations to **
 - [x] **Step 11**: Upgrade `src/components/Navbar.tsx` with `AnimatePresence` spring mega-menus (`OUR LATEST WORK` preview card) and `src/components/Footer.tsx` with the magnetic CTA pill + 1Hz studio clock.
 - [x] **Step 12**: Add `ScrollProgressBar.tsx`, `SpotlightCard.tsx`, Talitrix-style `CaseStudyScrollShowcase.tsx` + radial SVG dial gauges on `/work/[slug]`, pulsing SFO ⇄ LDN map + Story Reel Cinema Modal on `/company`, 3D `OrbitalThreatGlobe.tsx` on `/demos/threat-monitor`, Subsea Optical Fiber GIS map on `/demos/infrastructure-atlas`, and 60fps Dual-Harmonic Oscilloscope on `/demos/voice-sentiment`.
 - [x] **Step 13**: Run `npm run typecheck`, `npm run lint`, and `npm run build` with 0 errors, 0 warnings, and full `prefers-reduced-motion` compliance.
+
+---
+
+## 14. Responsive motion (implementation notes, October 2026)
+
+- Breakpoints: phone <640px; tablet 640–1023px; desktop >=1024px. Short landscape <500px height uses two columns.
+- Services: `100svh - --nav-h` with vh fallback, native touch scrolling, transform/opacity card transitions, shared reversible shape timeline and dust midpoint. Mobile scroll travel is configured at 320% (four 80% steps); ScrollTrigger percentages use viewport height, not an independently measured svh. Soft snap targets .16/.43/.70/.95.
+- Tier module: high 7200/DPR2/AA; medium 3600/DPR1.5/AA; low 2160/DPR1/no AA. Coarse pointers or width <1024 default medium; <=4 cores or <=4GB on small/coarse devices, Save-Data/2G, and detected uncharged battery <=20% select low. Battery hint is asynchronous. Unknown hardware defaults to 8 cores/8GB.
+- Governor: 1700ms active sample window, minimum 45 samples, <45fps steps down, 12000ms cooldown, no automatic upgrades. Draw-range/DPR changes are immediate, not crossfaded. Low services tier removes idle wobble and reduces noise amplitude; it does not use a separate simplified shader.
+- Static service fallback uses 900-point 2D canvases with no WebGL contexts for reduced motion or unavailable/lost services WebGL. Hero uses static 2D for reduced motion or failed initialization; Three.js restores its context internally.
+- Fonts, image decode, routes and orientation schedule refreshes. Touch devices do not mount Lenis. Desktop retains lerp .075 / wheel multiplier .95. Mobile resize toolbar changes are ignored by ScrollTrigger.
+- Remaining limitations and test status are in `docs/responsive-audit.md`; performance targets are goals, not measured guarantees.
+
+### Screenshot follow-up: ribbon and short-screen card fit
+- Technology marquee uses two equal intrinsic-width groups, each with the same trailing gap. Track, groups and pills are nonshrinking; -50% travel is exactly one group. Duplicate content is aria-hidden; reduced motion stops travel.
+- Portrait Services reserves 328px (compact) / 344px (normal) for card content before assigning canvas height; canvas minimum is 96px. Full portrait descriptions are not line-clamped. Desktop Services is unchanged.
+- Chromium 4× CPU emulation and screenshot follow-up results/limits are recorded in `docs/responsive-audit.md`. No real-device or measured FPS guarantee is implied.

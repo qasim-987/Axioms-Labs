@@ -17,7 +17,7 @@ export default function SpotlightCard({
   className = "",
   delay = 0,
   tilt = false,
-  spotlightColor = "rgba(133, 135, 227, 0.14)",
+  spotlightColor = "rgba(49, 134, 255, 0.08)",
 }: SpotlightCardProps) {
   const prefersReduced = useReducedMotion();
   const [coords, setCoords] = useState({ x: 180, y: 120 });
@@ -26,6 +26,7 @@ export default function SpotlightCard({
   );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;

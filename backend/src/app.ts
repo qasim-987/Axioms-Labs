@@ -6,7 +6,7 @@ import { requestLogger } from "./middleware/requestLogger";
 import { healthRouter } from "./routes/health.routes";
 import { contactRouter } from "./routes/contact.routes";
 import { catalogRouter } from "./routes/catalog.routes";
-import { labsRouter } from "./routes/labs.routes";
+import { STUDIO_LOCATIONS } from "./services/catalog.service";
 
 export function createBackendApp() {
   const app = express();
@@ -35,26 +35,27 @@ export function createBackendApp() {
   app.get("/", (_req, res) => {
     res.status(200).json({
       service: "Axiom Studio Standalone API Server",
-      version: "2.4.0",
+      version: "2.5.0",
+      studios: STUDIO_LOCATIONS.map((l) => `${l.city}, ${l.country}`),
+      capabilities: [
+        "Web Development",
+        "Web Designing",
+        "UI/UX Design",
+        "AI Agents",
+      ],
       endpoints: [
         "GET  /api/health",
+        "GET  /api/services",
         "POST /api/contact",
         "GET  /api/contact/status",
-        "GET  /api/vendors",
-        "GET  /api/vendors/export.csv",
-        "POST /api/labs/emotion-analyze",
-        "POST /api/labs/vector-search",
-        "POST /api/labs/intent-outreach",
-        "GET  /api/labs/threat-telemetry",
       ],
     });
   });
 
-  // Mount versioned & canonical API routers
+  // Mount canonical API routers
   app.use("/api", healthRouter);
   app.use("/api", contactRouter);
   app.use("/api", catalogRouter);
-  app.use("/api/labs", labsRouter);
 
   // 404 JSON Handler
   app.use((req, res) => {

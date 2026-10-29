@@ -1,5 +1,5 @@
 export const MOTION_EASE = {
-  // Signature antimatterai.agency cinematic deceleration
+  // Signature Axiom Studio cinematic deceleration
   cinematicOut: [0.16, 1, 0.3, 1] as const,
   // Slot-machine / odometer vertical digit roll
   odometer: [0.22, 1, 0.36, 1] as const,

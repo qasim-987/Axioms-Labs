@@ -1,18 +1,158 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ParticleSphereHero from "./ParticleSphereHero";
 import LightBeam from "./LightBeam";
 import RollingNumber from "./RollingNumber";
-import { Sparkles } from "lucide-react";
+import { MOTION_EASE } from "@/lib/motionTokens";
+import { ArrowUpRight } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface HeroWordToken {
+  word: string;
+  className: string;
+}
+
+const HERO_LINE_1: HeroWordToken[] = [
+  { word: "Building", className: "font-normal text-[#121317]" },
+  { word: "Digital", className: "font-extrabold italic text-[#121317]" },
+];
+
+const HERO_LINE_2: HeroWordToken[] = [
+  { word: "Solutions", className: "font-extrabold italic text-[#3186FF]" },
+  { word: "That", className: "font-normal text-[#45474D]" },
+  { word: "Matter", className: "font-normal text-[#45474D]" },
+];
+
+function SplitHeroLine({
+  tokens,
+  startCharIndex,
+  prefersReduced,
+}: {
+  tokens: HeroWordToken[];
+  startCharIndex: number;
+  prefersReduced: boolean;
+}) {
+  let charCursor = startCharIndex;
+
+  return (
+    <>
+      {tokens.map((token, wIdx) => (
+        <span
+          key={token.word + wIdx}
+          className={`inline-block whitespace-nowrap ${token.className}`}
+        >
+          {Array.from(token.word).map((ch, cIdx) => {
+            const idx = charCursor++;
+            if (prefersReduced) {
+              return <span key={cIdx}>{ch}</span>;
+            }
+            return (
+              <motion.span
+                key={cIdx}
+                initial={{
+                  opacity: 0,
+                  y: "68%",
+                  rotateX: -42,
+                  filter: "blur(7px)",
+                }}
+                animate={{
+                  opacity: 1,
+                  y: "0%",
+                  rotateX: 0,
+                  filter: "blur(0px)",
+                }}
+                transition={{
+                  duration: 0.78,
+                  delay: 0.14 + idx * 0.022,
+                  ease: MOTION_EASE.cinematicOut,
+                }}
+                className="inline-block will-change-transform origin-bottom"
+              >
+                {ch}
+              </motion.span>
+            );
+          })}
+        </span>
+      ))}
+    </>
+  );
+}
 
 export default function Hero() {
+  const prefersReduced = Boolean(useReducedMotion());
+  const sectionRef = useRef<HTMLElement>(null);
+  const watermarkRef = useRef<HTMLDivElement>(null);
+  const sphereStageRef = useRef<HTMLDivElement>(null);
+  const foregroundCopyRef = useRef<HTMLDivElement>(null);
+
+  // Antimatter-style multi-plane scroll depth parallax on Hero exit
+  useEffect(() => {
+    if (prefersReduced) return;
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.65,
+        },
+      });
+
+      if (foregroundCopyRef.current) {
+        tl.to(
+          foregroundCopyRef.current,
+          {
+            y: -72,
+            scale: 0.965,
+            opacity: 0.18,
+            ease: "none",
+          },
+          0
+        );
+      }
+
+      if (sphereStageRef.current) {
+        tl.to(
+          sphereStageRef.current,
+          {
+            y: -36,
+            scale: 1.06,
+            ease: "none",
+          },
+          0
+        );
+      }
+
+      if (watermarkRef.current) {
+        tl.to(
+          watermarkRef.current,
+          {
+            y: 78,
+            ease: "none",
+          },
+          0
+        );
+      }
+    }, section);
+
+    return () => ctx.revert();
+  }, [prefersReduced]);
+
   const handleMagneticMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (prefersReduced) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.18;
-    const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.18;
+    const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.2;
+    const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.2;
     e.currentTarget.style.transform = `translate3d(${dx.toFixed(
       1
     )}px, ${dy.toFixed(1)}px, 0)`;
@@ -22,15 +162,23 @@ export default function Hero() {
     e.currentTarget.style.transform = "translate3d(0px, 0px, 0)";
   };
 
+  const line1CharCount = HERO_LINE_1.reduce(
+    (sum, t) => sum + t.word.length,
+    0
+  );
+
   return (
-    <section className="relative w-full min-h-screen bg-[#020108] overflow-hidden flex flex-col justify-between pt-28 pb-12 sm:pb-16 selection:bg-brand-primary selection:text-white">
-      {/* LAYER 1B: Centered Radial Precision Micro-Grid Backdrop */}
+    <section
+      ref={sectionRef}
+      className="hero-responsive relative w-full min-h-screen bg-[#FFFFFF] overflow-hidden flex flex-col justify-between pt-28 pb-12 sm:pb-16 selection:bg-[#3186FF] selection:text-white"
+    >
+      {/* LAYER 1B: Centered Radial Precision Micro-Grid Backdrop (#212226 specks on #FFFFFF) */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none select-none z-0 opacity-[0.045]"
+        className="absolute inset-0 pointer-events-none select-none z-0 opacity-[0.07]"
         style={{
           backgroundImage:
-            "radial-gradient(rgba(255, 255, 255, 0.65) 1px, transparent 1px)",
+            "radial-gradient(rgba(18, 19, 23, 0.75) 1px, transparent 1px)",
           backgroundSize: "32px 32px",
           backgroundPosition: "center center",
           maskImage:
@@ -40,164 +188,187 @@ export default function Hero() {
         }}
       />
 
-      {/* LAYER 2: Centered Giant Ghost Watermark (fits 100% centered inside viewport without edge clipping) */}
+      {/* LAYER 2: Centered Giant Ghost Watermark with Deep Scroll Parallax */}
       <div
+        ref={watermarkRef}
         aria-hidden="true"
-        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 px-8"
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 px-8 will-change-transform"
       >
         <span
-          className="font-extrabold uppercase tracking-[0.03em] text-white/[0.038] whitespace-nowrap leading-none scale-y-110 text-center mx-auto"
+          className="font-extrabold uppercase tracking-[0.03em] text-[#121317]/[0.032] whitespace-nowrap leading-none scale-y-110 text-center mx-auto"
           style={{ fontSize: "clamp(2.25rem, 9.2vw, 9rem)" }}
         >
           AXIOM STUDIO
         </span>
       </div>
 
-      {/* LAYER 3: Symmetrical Volumetric Violet-Blue Light Beam */}
+      {/* LAYER 3: Symmetrical Centered Antigravity Pastel Aura (Mouse-Parallax Reactive) */}
       <LightBeam />
 
-      {/* LAYER 4: Centered Hollow 3D Particle Sphere with Fibonacci Distribution & Cursor Physics */}
-      <ParticleSphereHero />
+      {/* LAYER 4: Centered Hollow 3D Multicolor Antigravity Particle Sphere */}
+      <div
+        ref={sphereStageRef}
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none will-change-transform"
+        style={{ zIndex: 1 }}
+      >
+        <ParticleSphereHero />
+      </div>
 
-      {/* LAYER 5: Centered Foreground Typography, CTA & Balanced Stats Container */}
+      {/* LAYER 5: Centered Character-Split Foreground Typography, Magnetic Pill CTAs & Odometer Stats */}
       <div className="relative z-10 w-full max-w-6xl mx-auto px-8 sm:px-14 lg:px-20 flex-1 flex flex-col items-center justify-between text-center pointer-events-none">
-        {/* Top breathing spacer below fixed navbar */}
         <div className="h-4 sm:h-8" />
 
-        {/* Centered Main Hero Stack (Headline + Subtext + CTA) */}
-        <div className="my-auto py-10 sm:py-14 flex flex-col items-center justify-center text-center max-w-4xl mx-auto pointer-events-auto">
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center justify-center text-center tracking-tight text-white text-4xl sm:text-6xl md:text-[64px] lg:text-[72px] leading-[1.08] select-none mb-7"
+        {/* Centered Main Hero Stack */}
+        <div
+          ref={foregroundCopyRef}
+          className="my-auto py-10 sm:py-14 flex flex-col items-center justify-center text-center max-w-4xl mx-auto pointer-events-auto will-change-transform"
+        >
+          {/* Subtle Antigravity Eyebrow Pill */}
+          <motion.div
+            initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.65, delay: 0.04, ease: MOTION_EASE.cinematicOut }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F8F9FC]/90 backdrop-blur-md border border-[#212226]/[0.08] text-xs font-mono text-[#45474D] mb-6 shadow-sm"
           >
-            {/* Line 1 — Centered */}
-            <span className="flex items-center justify-center flex-wrap gap-x-3 sm:gap-x-4">
-              <span className="font-light text-white">Building</span>
-              <span className="font-extrabold italic text-white">Digital</span>
+            <span className="flex items-center gap-1" aria-hidden="true">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FC413D]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FBBC04]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00B95C]" />
+            </span>
+            <span>Web Dev • Web Design • UI/UX • AI Agents</span>
+          </motion.div>
+
+          {/* Antimatter Character-by-Character 3D Kinetic Headline */}
+          <h1
+            aria-label="Building Digital Solutions That Matter"
+            className="flex flex-col items-center justify-center text-center tracking-tight text-[#121317] text-4xl sm:text-6xl md:text-[64px] lg:text-[72px] leading-[1.08] select-none mb-7 [perspective:900px]"
+          >
+            <span
+              aria-hidden="true"
+              className="flex items-center justify-center flex-wrap gap-x-3 sm:gap-x-4"
+            >
+              <SplitHeroLine
+                tokens={HERO_LINE_1}
+                startCharIndex={0}
+                prefersReduced={prefersReduced}
+              />
             </span>
 
-            {/* Line 2 — Centered */}
-            <span className="flex items-center justify-center flex-wrap gap-x-3 sm:gap-x-4 mt-2 sm:mt-3">
-              <span className="font-extrabold italic text-white">
-                Solutions
-              </span>
-              <span className="font-light text-white">That Matter</span>
+            <span
+              aria-hidden="true"
+              className="flex items-center justify-center flex-wrap gap-x-3 sm:gap-x-4 mt-2 sm:mt-3"
+            >
+              <SplitHeroLine
+                tokens={HERO_LINE_2}
+                startCharIndex={line1CharCount}
+                prefersReduced={prefersReduced}
+              />
             </span>
-          </motion.h1>
+          </h1>
 
           {/* Centered Subtitle */}
           <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.85,
-              delay: 0.14,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="max-w-xl mx-auto text-center text-sm sm:text-base md:text-lg text-white/85 leading-relaxed font-normal mb-8"
-          >
-            We empower organizations with AI that turns complex challenges into
-            real-world outcomes.
-          </motion.p>
-
-          {/* Centered Primary CTA Pill */}
-          <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            initial={{ opacity: 0, y: 18, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{
               duration: 0.8,
-              delay: 0.24,
-              ease: [0.16, 1, 0.3, 1],
+              delay: 0.62,
+              ease: MOTION_EASE.cinematicOut,
             }}
-            className="flex items-center justify-center"
+            className="max-w-xl mx-auto text-center text-sm sm:text-base md:text-lg text-[#45474D] leading-relaxed font-normal mb-8 bg-white/65 backdrop-blur-[2px] rounded-2xl px-4 py-1"
+          >
+            We craft high-converting websites, intuitive UI/UX interfaces,
+            scalable web applications, and custom AI agents for modern brands.
+          </motion.p>
+
+          {/* Centered Paired Magnetic Antigravity Pill Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              duration: 0.75,
+              delay: 0.76,
+              ease: MOTION_EASE.cinematicOut,
+            }}
+            className="flex flex-wrap items-center justify-center gap-3"
           >
             <Link
               href="/contact"
               onMouseMove={handleMagneticMove}
               onMouseLeave={handleMagneticLeave}
-              className="inline-flex items-center justify-center px-9 py-3.5 rounded-full text-sm font-semibold text-white tracking-wide transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] will-change-transform"
-              style={{
-                background: "linear-gradient(135deg, #6b5fd6 0%, #8a7ff0 100%)",
-                boxShadow:
-                  "0 0 32px rgba(107, 95, 214, 0.55), 0 4px 16px rgba(0, 0, 0, 0.35)",
-              }}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-medium bg-[#121317] hover:bg-[#2F3034] text-white tracking-wide transition-all duration-200 shadow-[0_8px_24px_rgba(18,19,23,0.16)] will-change-transform"
             >
               <span>Start Your Project</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </Link>
+
+            <Link
+              href="/work"
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-full text-sm font-medium bg-[#B7BFD9]/[0.18] hover:bg-[#F0F1F5] border border-[#212226]/[0.08] text-[#121317] tracking-wide transition-all duration-200 backdrop-blur-sm will-change-transform"
+            >
+              <span>Explore Concept Work</span>
             </Link>
           </motion.div>
         </div>
 
-        {/* Centered Bottom Metrics Strip with Symmetrical Side Breathing Space */}
+        {/* Centered Bottom Odometer Metrics Strip (`0123456789` Physical Ribbons) */}
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.85, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-3xl mx-auto pt-7 border-t border-white/[0.08] flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16 pointer-events-auto"
+          transition={{
+            duration: 0.85,
+            delay: 0.9,
+            ease: MOTION_EASE.cinematicOut,
+          }}
+          className="w-full max-w-3xl mx-auto pt-7 border-t border-[#212226]/[0.08] flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16 pointer-events-auto"
         >
-          {/* Stat 1 */}
           <div className="flex items-center gap-3 text-left">
-            <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
-              <RollingNumber value={50} duration={1700} suffix="+" />
+            <span className="text-3xl sm:text-4xl font-bold text-[#121317] tracking-tight tabular-nums">
+              <RollingNumber value={4} prefix="0" duration={1550} suffix="" />
             </span>
-            <span className="text-xs text-zinc-400 font-medium leading-snug">
-              Projects
+            <span className="text-xs text-[#45474D] font-medium leading-snug">
+              Core Studio
               <br />
-              Delivered
+              Disciplines
             </span>
           </div>
 
           <div
             aria-hidden="true"
-            className="hidden sm:block h-8 w-px bg-white/[0.1]"
+            className="hidden sm:block h-8 w-px bg-[#212226]/[0.1]"
           />
 
-          {/* Stat 2 */}
           <div className="flex items-center gap-3 text-left">
-            <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
-              <RollingNumber value={100} duration={1900} suffix="%" />
+            <span className="text-3xl sm:text-4xl font-bold text-[#121317] tracking-tight tabular-nums">
+              <RollingNumber value={99} duration={1750} suffix="+" />
             </span>
-            <span className="text-xs text-zinc-400 font-medium leading-snug">
-              Client
+            <span className="text-xs text-[#45474D] font-medium leading-snug">
+              Lighthouse
               <br />
-              Satisfaction
+              Performance
             </span>
           </div>
 
           <div
             aria-hidden="true"
-            className="hidden sm:block h-8 w-px bg-white/[0.1]"
+            className="hidden sm:block h-8 w-px bg-[#212226]/[0.1]"
           />
 
-          {/* Stat 3 */}
           <div className="flex items-center gap-3 text-left">
-            <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-mono tabular-nums">
+            <span className="text-3xl sm:text-4xl font-bold text-[#121317] tracking-tight font-mono tabular-nums">
               24/7
             </span>
-            <span className="text-xs text-zinc-400 font-medium leading-snug">
-              Support
+            <span className="text-xs text-[#45474D] font-medium leading-snug">
+              Direct Team
               <br />
-              Available
+              Support
             </span>
           </div>
         </motion.div>
-      </div>
-
-      {/* Floating Quick-Contact Badge (Bottom-Right Corner, clear of centered stats) */}
-      <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
-        <Link
-          href="/contact"
-          aria-label="Start Conversation with Axiom Studio"
-          className="group relative w-12 h-12 rounded-full bg-[#0d0c15] border border-white/20 shadow-2xl shadow-purple-600/30 flex items-center justify-center transition-all duration-300 hover:scale-105 hover:border-brand-primary/60"
-        >
-          <div className="absolute inset-0 rounded-full bg-brand-primary/20 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
-          <div className="relative w-8 h-8 rounded-full bg-gradient-to-tr from-[#6b5fd6] via-[#9488f5] to-white p-[1px] flex items-center justify-center">
-            <div className="w-full h-full bg-[#12111d] rounded-full flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-[#b9b2ff] group-hover:rotate-12 transition-transform duration-300" />
-            </div>
-          </div>
-        </Link>
       </div>
     </section>
   );

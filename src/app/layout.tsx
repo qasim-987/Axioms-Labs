@@ -12,23 +12,25 @@ import ScrollProgressBar from "@/components/ScrollProgressBar";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://axiomstudio.agency"),
-  title: "Axiom Studio — Enterprise AI Architecture & Digital Engineering",
+  title: "Axiom Studio — Web Development, Web Designing, UI/UX & AI Agents",
   description:
-    "Axiom Studio designs and engineers enterprise autonomous agent systems, high-throughput AI infrastructure, precision design systems, and digital flagship platforms.",
+    "Axiom Studio crafts custom web applications, high-converting web designs, intuitive UI/UX design systems, and practical AI agents. Operating from Kuopio, Finland and Lahore, Pakistan for clients worldwide.",
   keywords: [
     "Axiom Studio",
-    "AI Architecture",
-    "Autonomous Agents",
-    "Enterprise AI",
-    "Next.js Engineering",
-    "Digital Design Systems",
-    "Cloud Infrastructure",
+    "Web Development",
+    "Web Designing",
+    "UI/UX Design",
+    "AI Agents",
+    "Next.js Agency",
+    "Figma Design Systems",
+    "Kuopio Web Agency",
+    "Lahore Software Studio",
   ],
-  authors: [{ name: "Axiom Studio Engineering" }],
+  authors: [{ name: "Axiom Studio" }],
   openGraph: {
-    title: "Axiom Studio — Enterprise AI Architecture & Digital Engineering",
+    title: "Axiom Studio — Web Development, Web Designing, UI/UX & AI Agents",
     description:
-      "Enterprise autonomous agent systems, high-throughput AI infrastructure, precision design systems, and digital flagship platforms.",
+      "Custom Web Development, High-Converting Web Designing, Product UI/UX Design, and Practical AI Agents — Kuopio, Finland & Lahore, Pakistan.",
     url: "https://axiomstudio.agency",
     siteName: "Axiom Studio",
     locale: "en_US",
@@ -36,9 +38,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Axiom Studio — Enterprise AI Architecture & Digital Engineering",
+    title: "Axiom Studio — Web Development, Web Designing, UI/UX & AI Agents",
     description:
-      "Enterprise autonomous agent systems, high-throughput AI infrastructure, precision design systems, and digital flagship platforms.",
+      "Custom Web Development, High-Converting Web Designing, Product UI/UX Design, and Practical AI Agents.",
   },
   robots: {
     index: true,
@@ -47,10 +49,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#030303",
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
 };
 
 const organizationJsonLd = {
@@ -60,15 +63,25 @@ const organizationJsonLd = {
   url: "https://axiomstudio.agency",
   email: "contact@axiomstudio.agency",
   description:
-    "Enterprise AI architecture, autonomous agent systems, and precision digital engineering studio.",
+    "Digital design, web engineering, and AI agent studio operating in Kuopio, Finland and Lahore, Pakistan.",
   areaServed: "Worldwide",
+  location: [
+    {
+      "@type": "Place",
+      name: "Kuopio, Finland",
+    },
+    {
+      "@type": "Place",
+      name: "Lahore, Pakistan",
+    },
+  ],
   knowsAbout: [
-    "Autonomous AI Agents",
-    "Model Context Protocol (MCP)",
-    "Enterprise LLM Infrastructure",
-    "Next.js Web Engineering",
-    "UI/UX Design Systems",
-    "HIPAA Healthcare Software",
+    "Web Development",
+    "Web Designing",
+    "UI/UX Design",
+    "AI Agents",
+    "Next.js & TypeScript",
+    "Figma Design Systems",
   ],
 };
 
@@ -78,8 +91,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className="font-sans min-h-screen bg-[#020108] text-zinc-100 antialiased selection:bg-brand-primary selection:text-white overflow-x-hidden">
+    <html lang="en">
+      <body className="font-sans min-h-screen bg-[#FFFFFF] text-[#121317] antialiased selection:bg-[#3186FF] selection:text-white">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -88,7 +101,7 @@ export default function RootLayout({
         />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-primary focus:text-white focus:rounded-md focus:shadow-lg focus:outline-none"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#121317] focus:text-white focus:rounded-full focus:shadow-lg focus:outline-none"
         >
           Skip to main content
         </a>

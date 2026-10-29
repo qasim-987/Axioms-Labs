@@ -2,7 +2,7 @@ export interface BlogPost {
   slug: string;
   title: string;
   excerpt: string;
-  category: "Architecture" | "Evaluation" | "Economics" | "Strategy";
+  category: "Web Development" | "Web Designing" | "UI/UX Design" | "AI Agents";
   author: {
     name: string;
     role: string;
@@ -24,148 +24,148 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "building-ai-agents-that-survive-production",
-    title: "Building AI Agents That Survive Production",
-    excerpt: "Why 85% of autonomous agent prototypes stall before deployment, and the architectural principles required for deterministic enterprise reliability.",
-    category: "Architecture",
+    slug: "how-to-build-ai-agents-that-actually-help-customers",
+    title: "How to Build AI Agents That Actually Convert & Support Customers",
+    excerpt:
+      "Why most website chatbots frustrate visitors—and how grounded RAG retrieval, strict tool schemas, and smooth human handoff turn AI agents into reliable teammates.",
+    category: "AI Agents",
     author: {
-      name: "Marcus Vance",
-      role: "Head of AI Architecture, Axiom Studio",
-      avatar: "MV"
+      name: "Axiom Studio Team",
+      role: "AI & Web Engineering • Kuopio & Lahore",
+      avatar: "AX",
     },
-    publishedAt: "October 14, 2026",
-    readingTime: "8 min read",
+    publishedAt: "October 2026",
+    readingTime: "6 min read",
     featured: true,
     content: {
-      introduction: "The transition from an impressive demo video to a production-grade autonomous agent is where most enterprise AI initiatives stall. When agents encounter non-deterministic API failures, ambiguous tool schemas, or subtle prompt injections, simple single-loop architectures collapse. Here is how we engineer resilient agent meshes.",
+      introduction:
+        "Most businesses want AI to answer repetitive questions, qualify incoming leads, and book meetings 24/7. Yet generic prompt-only chatbots often guess answers or trap customers in loops. Here is the practical blueprint we use at Axiom Studio to ship reliable AI agents.",
       sections: [
         {
-          heading: "1. The Deceptive Simplicity of ReAct Loops",
-          body: "Standard Reasoning + Action (ReAct) loops work adequately for toy problems with three tools and clean inputs. In production, error rates compound exponentially: an agent with a 95% per-step success rate drops to just 59% reliability across a ten-step sequence. Production agents require hierarchical supervisor-worker architectures where planner agents delegate to sandboxed worker instances.",
+          heading: "1. Ground Every Answer in Verified Knowledge (RAG)",
+          body: "An AI agent should never guess your pricing, policies, or service scope. By indexing your real help docs, website pages, and service FAQs into a hybrid vector search pipeline, the agent answers strictly from verified facts.",
           takeaways: [
-            "Decompose complex goals into bounded, verifiable atomic steps.",
-            "Enforce strict JSON schemas using Pydantic or Zod for every tool invocation.",
-            "Implement idempotent execution tokens to prevent duplicate side effects."
-          ]
+            "Index real company docs, FAQs, and product pages with clear source citations.",
+            "Instruct the agent to say when a question requires a human specialist.",
+            "Keep content easy to refresh whenever your offers or pricing change.",
+          ],
         },
         {
-          heading: "2. The Model Context Protocol (MCP) Standard",
-          body: "Rather than hard-coding ad-hoc API wrappers into model prompts, production systems must decouple tools from the model provider. MCP provides an open, versioned communication layer that standardizes tool capabilities, authorization scopes, and state inspection across heterogeneous systems.",
+          heading: "2. Schema-Validated Tool Calling for Bookings & Leads",
+          body: "When an agent books a calendar call or creates a CRM lead, every input—email, service interest, time zone—must pass strict Zod schema validation before touching your backend APIs.",
           takeaways: [
-            "Use MCP servers to isolate sensitive credentials from LLM context windows.",
-            "Grant least-privilege read-only permissions by default.",
-            "Log all tool inputs and outputs to immutable audit ledgers."
-          ]
+            "Validate every tool call parameter with strict TypeScript/Zod schemas.",
+            "Restrict permissions so agents only execute approved safe actions.",
+            "Log conversations so your team has full context before every call.",
+          ],
         },
-        {
-          heading: "3. Supervisory Verification & Blast-Radius Budgets",
-          body: "Autonomous agents must never possess unconstrained operational blast radius. By implementing automated critique agents and financial/operational threshold circuit-breakers, teams can deploy autonomous execution safely while routing high-risk decisions to human operators.",
-          takeaways: [
-            "Introduce dual-agent verification for actions modifying state.",
-            "Establish strict rate and token spend limits per workflow run.",
-            "Design human-in-the-loop escalation queues with full contextual state replay."
-          ]
-        }
       ],
-      conclusion: "Production reliability in autonomous agent systems is an architectural challenge, not merely a model parameter problem. By enforcing decoupled tool protocols, deterministic schema validation, and supervisory verification, enterprises can unlock true autonomous productivity with zero compromise on safety."
-    }
+      conclusion:
+        "When AI agents combine accurate retrieval with clean UI integration and human handoff, they elevate your customer experience instead of getting in the way.",
+    },
   },
   {
-    slug: "fine-tuning-vs-rag-vs-prompting-decision-framework",
-    title: "Fine-Tuning vs RAG vs Prompting: An Enterprise Decision Framework",
-    excerpt: "A rigorous mathematical and architectural decision matrix for determining when to prompt, when to retrieve, and when to fine-tune open weights.",
-    category: "Strategy",
+    slug: "nextjs-performance-checklist-for-99-lighthouse-websites",
+    title: "Next.js 14 Performance Blueprint: Hitting 99+ Lighthouse Scores",
+    excerpt:
+      "How clean Server Components, zero-jank animations, and smart asset loading make modern business websites feel instantaneous on every device.",
+    category: "Web Development",
     author: {
-      name: "Dr. Elena Rostova",
-      role: "Principal ML Research Scientist",
-      avatar: "ER"
+      name: "Axiom Studio Team",
+      role: "Full-Stack Web Development",
+      avatar: "AX",
     },
-    publishedAt: "September 28, 2026",
-    readingTime: "11 min read",
+    publishedAt: "October 2026",
+    readingTime: "5 min read",
     featured: false,
     content: {
-      introduction: "Engineering leaders are routinely confronted with the dilemma of how to specialize generative AI for their proprietary corporate data. Choosing the wrong approach leads to wasted compute budgets, bloated latency, and stale knowledge. This framework provides an objective guide to selecting the right paradigm.",
+      introduction:
+        "Website speed directly impacts conversion rates and search rankings. A visually impressive site that takes four seconds to become interactive loses visitors before they ever read your headline.",
       sections: [
         {
-          heading: "The Three Dimensions of Enterprise Adaptation",
-          body: "Every enterprise AI workload can be characterized by three orthogonal requirements: Knowledge Dynamism (how frequently information changes), Format Specialization (how strictly outputs must conform to proprietary syntax or style), and Latency/Cost Constraints.",
+          heading: "Keep Heavy Logic on the Server & Motion on the GPU",
+          body: "By rendering static marketing and content sections with Next.js Server Components and animating only GPU-composited properties (transform and opacity), you preserve silky 60fps scrolling even on mid-range mobile devices.",
           takeaways: [
-            "Retrieval-Augmented Generation (RAG) dominates for volatile, rapidly updating datasets.",
-            "Fine-Tuning excels at teaching concise stylistic syntax, jargon, and reducing token overhead.",
-            "Few-shot In-Context Prompting serves best for rapid prototyping and exploratory validation."
-          ]
+            "Use React Server Components by default to minimize client JavaScript bundles.",
+            "Self-host variable or subset fonts to eliminate external layout shifts.",
+            "Animate transform and opacity rather than layout-triggering width or top properties.",
+          ],
         },
-        {
-          heading: "When Fine-Tuning Fails As A Knowledge Store",
-          body: "One of the most persistent misconceptions in enterprise AI is using fine-tuning as an alternative to a database. Neural network weights are lossy associative memories; attempting to fine-tune factual inventory or customer records leads inevitably to hallucinations and high retraining costs whenever data changes.",
-          takeaways: [
-            "Never use fine-tuning to memorize dynamic facts or real-time catalog items.",
-            "Use Parameter-Efficient Fine-Tuning (PEFT/LoRA) to adapt open-weights models to specialized formats.",
-            "Pair a fine-tuned lightweight model (e.g. 8B parameters) with a dense-sparse RAG pipeline for maximum accuracy and cost efficiency."
-          ]
-        }
       ],
-      conclusion: "The optimal enterprise architecture is rarely either/or. In production, the most resilient architectures pair lightweight, specialized fine-tuned models with hybrid vector retrieval pipelines to achieve sub-100ms latency at a fraction of foundation API costs."
-    }
+      conclusion:
+        "High performance isn't an afterthought plugin—it is the result of disciplined architecture from the very first component.",
+    },
   },
   {
-    slug: "what-ai-model-training-actually-costs",
-    title: "What Enterprise AI Model Training Actually Costs in 2026",
-    excerpt: "A transparent breakdown of GPU compute expenses, dataset preparation, engineering hours, and long-term inference hosting economics.",
-    category: "Economics",
+    slug: "high-converting-web-design-hierarchy-and-visual-storytelling",
+    title: "Web Designing for Trust: Visual Hierarchy That Turns Visitors Into Leads",
+    excerpt:
+      "Great web designing isn't decoration—it guides the eye, builds immediate brand credibility, and makes taking the next step effortless.",
+    category: "Web Designing",
     author: {
-      name: "Tariq Kabbani",
-      role: "VP of Engineering, Axiom Studio",
-      avatar: "TK"
+      name: "Axiom Studio Team",
+      role: "Brand & Web Design",
+      avatar: "AX",
     },
-    publishedAt: "September 12, 2026",
-    readingTime: "7 min read",
+    publishedAt: "September 2026",
+    readingTime: "5 min read",
     featured: false,
     content: {
-      introduction: "Vendor marketing often portrays open-source AI as 'free' and commercial APIs as 'cheap at scale'. In reality, enterprise total cost of ownership (TCO) is dominated by data curation, evaluation infrastructure, and high-availability serving clusters. Here is the real arithmetic.",
+      introduction:
+        "Visitors form an impression of your brand in less than a second. Clean typography, intentional spacing, and clear calls to action separate memorable digital flagships from generic templates.",
       sections: [
         {
-          heading: "The True Cost Distribution",
-          body: "Across 30+ enterprise deployments, the direct GPU training compute accounted for only 18% of the total project budget. The remaining 82% was consumed by dataset cleaning, gold-standard human evaluation labeling, inference cluster provisioning, and security compliance audits.",
+          heading: "Clarity Beats Visual Clutter Every Time",
+          body: "Every section on your homepage should answer one clear question for your buyer: What do you do? Why should I trust your craft? How do we start working together?",
           takeaways: [
-            "Data preparation and synthetic filtering consume 40-50% of the initial timeline and budget.",
-            "Inference hardware sizing must account for peak concurrent concurrency rather than average load.",
-            "Quantized serving (AWQ / FP8) reduces GPU VRAM requirements by up to 60% with negligible loss in accuracy."
-          ]
-        }
+            "Pair expressive display headlines with generous whitespace and readable body copy.",
+            "Design mobile layouts with the same care and polish as widescreen desktop views.",
+            "Use purposeful micro-interactions to highlight key actions without distracting the reader.",
+          ],
+        },
       ],
-      conclusion: "Before committing capital to training or fine-tuning, evaluate total inference lifecycle costs. In most scenarios, optimizing retrieval architecture and quantization delivers 5x greater ROI than brute-force pre-training."
-    }
+      conclusion:
+        "Thoughtful web designing turns your website into your hardest-working salesperson around the clock.",
+    },
   },
   {
-    slug: "evaluating-ai-evals-metrics-and-trust-for-the-boardroom",
-    title: "Evaluating AI: Evals, Metrics, and Trust for the Boardroom",
-    excerpt: "How to move beyond superficial accuracy benchmarks to defensible, deterministic validation suites that satisfy executive risk committees.",
-    category: "Evaluation",
+    slug: "figma-to-code-ui-ux-design-systems-that-scale",
+    title: "From Figma Tokens to Production React: Building Scalable UI/UX Systems",
+    excerpt:
+      "How structured Figma variables, reusable component kits, and interactive user flows cut development rework in half.",
+    category: "UI/UX Design",
     author: {
-      name: "Marcus Vance",
-      role: "Head of AI Architecture, Axiom Studio",
-      avatar: "MV"
+      name: "Axiom Studio Team",
+      role: "Product UI/UX Design",
+      avatar: "AX",
     },
-    publishedAt: "August 30, 2026",
-    readingTime: "9 min read",
+    publishedAt: "September 2026",
+    readingTime: "6 min read",
     featured: false,
     content: {
-      introduction: "When an AI pilot expands from an internal R&D experiment to a customer-facing product, the question changes from 'Does it look good?' to 'Can you mathematically prove it won't hallucinate or leak sensitive data?' Here is how we build deterministic evaluation suites.",
+      introduction:
+        "Nothing slows down a product launch more than inconsistent buttons, unclear user states, and guesswork between designers and developers. A clean UI/UX design system solves this from day one.",
       sections: [
         {
-          heading: "Building Deterministic Synthetic Evals",
-          body: "Unit tests are standard in software engineering, yet generative AI pipelines are frequently shipped with zero automated test harnesses. Synthetic evaluation suites run every pull request against thousands of golden question-answer pairs with automated grading across correctness, tone, latency, and safety.",
+          heading: "Design Components Once, Ship Everywhere",
+          body: "When spacing scales, color tokens, typography, and empty/loading/error states are defined systematically in Figma, translating them into Tailwind CSS and React components becomes fast and predictable.",
           takeaways: [
-            "Separate semantic correctness from syntactic formatting in metric tracking.",
-            "Implement adversarial red-teaming datasets into automated CI/CD pipelines.",
-            "Establish clear confidence thresholds below which the system gracefully falls back to human escalation."
-          ]
-        }
+            "Map user journeys and wireframes before jumping into high-fidelity visual polish.",
+            "Document hover, focus, loading, and validation states for every interactive element.",
+            "Keep accessibility (WCAG AA contrast and keyboard navigation) baked into your base tokens.",
+          ],
+        },
       ],
-      conclusion: "Trust in enterprise AI is not built on faith; it is built on verifiable, reproducible test coverage. When evaluation metrics are transparent and continuously audited, boardrooms gain the confidence to scale autonomous systems across the enterprise."
-    }
-  }
+      conclusion:
+        "A cohesive UI/UX system gives your product an unmistakable sense of quality today while letting your team ship new features twice as fast tomorrow.",
+    },
+  },
 ];
 
-export const blogCategories = ["All", "Architecture", "Strategy", "Economics", "Evaluation"] as const;
+export const blogCategories = [
+  "All",
+  "Web Development",
+  "Web Designing",
+  "UI/UX Design",
+  "AI Agents",
+] as const;
