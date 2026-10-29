@@ -4,13 +4,11 @@ import "@fontsource/plus-jakarta-sans/latin-400.css";
 import "@fontsource/plus-jakarta-sans/latin-500.css";
 import "@fontsource/plus-jakarta-sans/latin-600.css";
 import "@fontsource/plus-jakarta-sans/latin-700.css";
-import "@fontsource/plus-jakarta-sans/latin-700-italic.css";
 import "@fontsource/plus-jakarta-sans/latin-800.css";
 import "@fontsource/plus-jakarta-sans/latin-800-italic.css";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
-import TransitionProvider from "@/components/landing/TransitionProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://axiomstudio.agency"),
@@ -108,9 +106,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <ScrollProgressBar />
-        <SmoothScrollProvider>
-          <TransitionProvider>{children}</TransitionProvider>
-        </SmoothScrollProvider>
+        <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>
   );

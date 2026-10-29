@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SplitTextReveal from "./SplitTextReveal";
 import { submitContactInquiry } from "@/lib/apiClient";
+import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
+import { PricingTrustCopy } from "./LaunchPricing";
 import { MOTION_EASE } from "@/lib/motionTokens";
 import {
   Send,
@@ -22,19 +24,14 @@ const projectScopes = [
   "AI Agents",
 ];
 
-const budgetRanges = [
-  "$1,000 - $2,500",
-  "$2,500 - $5,000",
-  "$5,000 - $15,000",
-  "$15,000+",
-];
+const budgetRanges = pricing.budgetBands;
 
 export default function ContactSection() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [scope, setScope] = useState(projectScopes[0]);
-  const [budget, setBudget] = useState(budgetRanges[1]);
+  const [budget, setBudget] = useState<string>(DEFAULT_BUDGET);
   const [message, setMessage] = useState("");
   const [botField, setBotField] = useState("");
   const [formLoadedAt, setFormLoadedAt] = useState<number>(0);
@@ -318,6 +315,7 @@ export default function ContactSection() {
                           </option>
                         ))}
                       </select>
+                      <PricingTrustCopy />
                     </div>
                   </div>
 

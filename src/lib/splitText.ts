@@ -280,5 +280,3 @@ export function splitHeadline(root: HTMLElement): SplitResult | null {
 
   return result;
 }
-
-

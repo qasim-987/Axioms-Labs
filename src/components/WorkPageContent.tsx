@@ -1,5 +1,6 @@
 "use client";
 
+import ToolChipContent from "@/components/ToolChipContent";
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
@@ -293,13 +294,13 @@ export default function WorkPageContent() {
                         {study.techStack.slice(0, 3).map((t) => (
                           <span
                             key={t}
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
+                            className={`tool-chip-shell text-[10px] font-mono px-2 py-0.5 rounded-md border ${
                               isDarkPreview
                                 ? "bg-white/[0.06] border-white/10 text-[#E6EAF0]"
                                 : "bg-[#FFFFFF] border-[#212226]/[0.08] text-[#45474D]"
                             }`}
                           >
-                            {t}
+                            <ToolChipContent name={t} />
                           </span>
                         ))}
                       </div>

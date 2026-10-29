@@ -440,6 +440,7 @@ export interface SharedParticleStage {
 export function createSharedParticleStage(
   container: HTMLElement,
   options: {
+    enablePointer?: boolean;
     fov?: number;
     cameraZ?: number;
     maxDpr?: number;
@@ -634,7 +635,7 @@ export function createSharedParticleStage(
   };
 
   const onPointerMove = (e: PointerEvent) => {
-    if (e.pointerType === "touch" || !fineHoverQuery.matches) {
+    if (e.pointerType !== "mouse" || !fineHoverQuery.matches) {
       pointer.inside = false;
       return;
     }
@@ -649,11 +650,13 @@ export function createSharedParticleStage(
     pointer.inside = false;
   };
 
+  if (options.enablePointer !== false) {
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   container.addEventListener("pointerleave", onContainerPointerLeave, {
     passive: true,
   });
   document.addEventListener("mouseleave", onDocumentMouseLeave);
+  }
 
   return {
     scene,
