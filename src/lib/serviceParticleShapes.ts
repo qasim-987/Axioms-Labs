@@ -1,7 +1,4 @@
-import {
-  createSeededRandom,
-  generateFibonacciSphereBuffer,
-} from "@/lib/particleEngine";
+import { createSeededRandom } from "@/lib/particleEngine";
 
 /**
  * Data-driven 3D Point-Cloud Generators for the "Our Services" Particle-Morph Section.
@@ -10,7 +7,6 @@ import {
  */
 
 export type ServiceShapeId =
-  | "blob"
   | "wireframe"
   | "brackets"
   | "growthChart"
@@ -60,20 +56,6 @@ function sampleSegment3D(
     (rng() - 0.5) * depthZ +
     gaussianJitter(rng, depthZ * 0.22);
   return [x, y, z];
-}
-
-/**
- * 0. Default Initial Sphere & Midpoint Stardust Cloud (`blob`)
- * Reuses `generateFibonacciSphereBuffer` from `particleEngine.ts` (matching `ParticleSphereHero`)
- * blended with core-weighted volumetric dust so both the initial sphere and transition midpoints
- * read as rich 3D stardust spheres.
- */
-export function generateBlobPoints(count: number, seed = 101): Float32Array {
-  return generateFibonacciSphereBuffer(count, {
-    jitter: 0.08,
-    surfaceBias: 0.52,
-    seed,
-  });
 }
 
 /**
@@ -491,7 +473,6 @@ export function buildAllServiceShapes(
   count: number
 ): Record<ServiceShapeId, Float32Array> {
   return {
-    blob: generateBlobPoints(count, 101),
     wireframe: generateWireframePoints(count, 202),
     brackets: generateBracketsPoints(count, 303),
     growthChart: generateGrowthChartPoints(count, 404),
