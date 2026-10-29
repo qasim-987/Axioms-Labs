@@ -16,6 +16,8 @@ export interface ContactSubmissionInput {
   botField?: string;
   websiteUrl?: string;
   formLoadedAt?: number;
+  phone?: string;
+  countryCode?: string;
 }
 
 export interface ContactSubmissionResponse {

@@ -126,8 +126,30 @@ export default function SmoothScrollProvider({
 
         lenis.on("scroll", ScrollTrigger.update);
 
+        // Connect Lenis to GSAP ScrollTrigger so pinned/scrubbed sections
+        // (e.g. the services track) stay in sync with smooth scrolling.
+        ScrollTrigger.scrollerProxy(document.documentElement, {
+          scrollTop: (value?: number) => {
+            if (!lenis) return 0;
+            if (arguments.length) {
+              lenis.scrollTo(value as number);
+              return;
+            }
+            return lenis.scroll;
+          },
+          getBoundingClientRect: () => ({
+            top: 0,
+            left: 0,
+            width: window.innerWidth,
+            height: window.innerHeight,
+          }),
+          scrollHeight: () => document.documentElement.scrollHeight,
+        });
+
         tickerFn = (time: number) => {
-          lenis?.raf(time * 1000);
+          if (!lenis) return;
+          lenis.raf(time * 1000);
+          ScrollTrigger.update();
         };
         gsap.ticker.add(tickerFn);
         gsap.ticker.lagSmoothing(0);
