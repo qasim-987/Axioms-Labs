@@ -1,37 +1,34 @@
-import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { servicesData } from "@/data/services";
-import ServiceDetailClient from "@/components/ServiceDetailClient";
-
-interface ServicePageProps {
-  params: {
-    slug: string;
-  };
-}
+import { SERVICES_BY_SLUG } from "@/data/brand";
+import ServicePageClient from "@/components/landing/ServicePageClient";
 
 export function generateStaticParams() {
-  return servicesData.map((s) => ({ slug: s.slug }));
+  return Object.keys(SERVICES_BY_SLUG).map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }: ServicePageProps): Metadata {
-  const service = servicesData.find((s) => s.slug === params.slug);
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const service = SERVICES_BY_SLUG[params.slug];
   if (!service) {
-    return { title: "Service Not Found | Axiom Studio" };
+    return { title: "Service not found — [NAME]" };
   }
 
   return {
-    title: `${service.title} — ${service.heroHeadline} | Axiom Studio`,
-    description: service.shortDesc,
+    title: `${service.title} — ${service.eyebrow} | [NAME]`,
+    description: service.description,
+    openGraph: {
+      title: `${service.title} — ${service.eyebrow} | [NAME]`,
+      description: service.description,
+      type: "website",
+    },
   };
 }
 
-export default function ServicePage({ params }: ServicePageProps) {
-  const service = servicesData.find((s) => s.slug === params.slug);
+export default function ServicePage({ params }: { params: { slug: string } }) {
+  const service = SERVICES_BY_SLUG[params.slug];
   if (!service) {
     notFound();
   }
 
-  const otherServices = servicesData.filter((s) => s.slug !== params.slug);
-  return <ServiceDetailClient service={service} otherServices={otherServices} />;
+  return <ServicePageClient service={service} />;
 }

@@ -30,6 +30,8 @@ export const contactPayloadSchema = z.object({
   botField: z.string().optional().default(""),
   websiteUrl: z.string().optional().default(""), // Secondary honeypot
   formLoadedAt: z.union([z.number(), z.string()]).optional(),
+  phone: z.string().trim().max(40).optional().default(""),
+  countryCode: z.string().trim().max(10).optional().default(""),
 });
 
 export type ContactPayload = z.infer<typeof contactPayloadSchema>;
