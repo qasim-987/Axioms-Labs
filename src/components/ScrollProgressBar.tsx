@@ -1,7 +1,9 @@
 "use client";
 
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+
 import React from "react";
-import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 export default function ScrollProgressBar() {
   const prefersReduced = useReducedMotion();

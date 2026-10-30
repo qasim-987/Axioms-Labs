@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const contactPayloadSchema = z.object({
   firstName: z
-    .string({ required_error: "First name is required." })
+    .string({ error: "First name is required." })
     .trim()
     .min(1, "First name is required.")
     .max(80, "First name must be 80 characters or fewer."),
@@ -13,7 +13,7 @@ export const contactPayloadSchema = z.object({
     .optional()
     .default(""),
   email: z
-    .string({ required_error: "Work email is required." })
+    .string({ error: "Work email is required." })
     .trim()
     .toLowerCase()
     .email("Please provide a valid corporate email address.")
@@ -22,7 +22,7 @@ export const contactPayloadSchema = z.object({
   service: z.string().trim().max(100).optional().default("General Scoping"),
   budget: z.string().trim().max(60).optional().default("Unspecified"),
   message: z
-    .string({ required_error: "Project requirements message is required." })
+    .string({ error: "Project requirements message is required." })
     .trim()
     .min(10, "Please provide at least 10 characters describing your project.")
     .max(5000, "Message must be 5,000 characters or fewer."),
