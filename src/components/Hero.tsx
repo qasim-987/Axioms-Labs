@@ -224,22 +224,6 @@ export default function Hero() {
           ref={foregroundCopyRef}
           className="hero-touch-copy my-auto py-10 sm:py-14 flex flex-col items-center justify-center text-center max-w-4xl mx-auto pointer-events-auto will-change-transform"
         >
-          {/* Subtle Antigravity Eyebrow Pill */}
-          <motion.div
-            initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.65, delay: 0.04, ease: MOTION_EASE.cinematicOut }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F8F9FC]/90 backdrop-blur-md border border-[#212226]/[0.08] text-xs font-mono text-[#45474D] mb-6 shadow-sm"
-          >
-            <span className="flex items-center gap-1" aria-hidden="true">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FC413D]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FBBC04]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-[#00B95C]" />
-            </span>
-            <span>Web Dev • Web Design • UI/UX • AI Agents</span>
-          </motion.div>
-
           {/* Antimatter Character-by-Character 3D Kinetic Headline */}
           <h1
             aria-label="Building Digital Solutions That Matter"
