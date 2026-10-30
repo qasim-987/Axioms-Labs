@@ -91,3 +91,11 @@ Scope: technical hardening and dependency/browser-QA follow-up. Current design, 
 - To remove personal data, delete the inquiry according to the approved retention policy; linked jobs cascade. Service-role access must remain private. Do not roll back by dropping tables with live inquiries.
 
 Live database schema is now installed with user approval; the website/backend code remains unmerged and undeployed. No real provider delivery or live inquiry insertion was performed.
+
+## Production release — 2026-10-30
+- Frontend deployed from 014b5aa85e54c33bdeb678bfbc376e676f4684cb: dpl_2DdCWo7iPw6NQzw3EJQ2PoRDfmGC, READY/PROMOTED.
+- Backend deployed from 7537077446dffdc092a9cbc8d6a9cbe0c3628087: dpl_5qJVDKVavrqVEbDU2S9GNHjD4Rqy, READY/PROMOTED. Initial auto-detected Express deployment failed on invocation; explicit @vercel/node handler fixed live startup. Ledger path no longer depends on __dirname.
+- Backend Supabase URL and sensitive service-role environment variable configured for production only. No secrets committed or exposed to frontend.
+- Live homepage fetched successfully. Frontend /api/health proxy returns operational and database adapter configured.
+- Real contact POST/database persistence still needs end-to-end verification. Verified email sender/provider credentials and worker schedule are NOT configured; stored inquiries do not currently trigger inbox notifications. Do not claim complete production readiness.
+- Deployed from the active Arena branch; main has not been merged. Automatic Git deployments remain disabled.
