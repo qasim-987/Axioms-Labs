@@ -21,7 +21,7 @@ export interface StoredInquiry {
   deliveryChannels: string[];
 }
 
-const DATA_DIR = env.inquiryDataDir || path.resolve(__dirname, "../../data");
+const DATA_DIR = env.inquiryDataDir || path.resolve(process.cwd(), "data");
 const INQUIRIES_FILE = path.join(DATA_DIR, "inquiries.jsonl");
 
 let inquiryCountSession = 0;
