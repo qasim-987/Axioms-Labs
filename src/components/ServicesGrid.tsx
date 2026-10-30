@@ -55,8 +55,8 @@ const cardPhase = (t:number, a:number, b:number) => Math.max(0, Math.min(1, (t-a
 export const SERVICES_SECTION_TUNING = {
   SHOW_UPCOMING_PREVIEW,
   SECTION_BG: "#FFFFFF",
-  ACTIVE_CARD_TOP: "#1A1B22",
-  ACTIVE_CARD_BOTTOM: "#121317",
+  ACTIVE_CARD_TOP: "#403E7C",
+  ACTIVE_CARD_BOTTOM: "#403E7C",
   INACTIVE_CARD_BG: "#F8F9FC",
   SCROLL_VH_PER_STEP: 82, // Desktop: 328vh smooth pinned travel across 4 services (unchanged)
   MOBILE_SCROLL_SVH_PER_STEP: 80, // Mobile/Tablet (<1024px): 80svh per step (target: 70-90svh)
@@ -814,7 +814,7 @@ export default function ServicesGrid() {
             shell.style.zIndex = `${z}`;
             shell.style.pointerEvents = primary ? "auto" : "none";
             shell.style.transform = `translate3d(${x}px, ${primary && !transitioning ? -4 * liveHoverLift : 0}px, 0) scale(${scale})`;
-            shell.style.borderColor = dark > 0.5 ? "rgba(18,19,23,.92)" : "rgba(15,15,30,.06)";
+            shell.style.borderColor = dark > 0.5 ? "rgba(208,204,255,.42)" : "rgba(15,15,30,.06)";
             shell.style.boxShadow = "0 20px 48px -14px rgba(18,19,23,.16)";
             shell.setAttribute("aria-hidden", primary ? "false" : "true");
             shell.tabIndex = primary ? 0 : -1;
@@ -841,7 +841,7 @@ export default function ServicesGrid() {
               node.style.willChange = transitioning ? "transform, opacity" : "auto";
             });
             const arrow = arrowWrapRefs.current[i];
-            if (arrow) arrow.style.backgroundColor = hovered && primary ? "#3186FF" : "rgba(255,255,255,.10)";
+            if (arrow) arrow.style.backgroundColor = hovered && primary ? "rgba(255,255,255,.12)" : "transparent";
             const arrowIcon = arrowIconRefs.current[i];
             if (arrowIcon) arrowIcon.style.transform = hovered && primary ? "translate3d(2.5px,-2.5px,0)" : "none";
             (activeToolItemRefs.current[i] || []).forEach((node, k) => {
@@ -1109,7 +1109,7 @@ export default function ServicesGrid() {
                           transition:
                             "box-shadow 260ms ease, border-color 260ms ease",
                         }}
-                        className="absolute top-0 left-0 rounded-[28px] border border-[#121317] cursor-pointer select-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
+                        className="service-reference-card absolute top-0 left-0 rounded-[28px] border border-[#121317] cursor-pointer select-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
                       >
                         <div aria-hidden="true" data-card-base className="pointer-events-none absolute inset-0 rounded-[27px]" style={{background:DECK_TUNING.FROST,zIndex:0}} />
                         <div
@@ -1117,7 +1117,7 @@ export default function ServicesGrid() {
                           ref={(el) => { darkFillRefs.current[idx] = el; }}
                           aria-hidden="true"
                           className="pointer-events-none absolute inset-0 rounded-[27px]"
-                          style={{ background: `linear-gradient(152deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP}, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 65%, #0D0E12)`, zIndex: 1, clipPath: `circle(${idx === 0 ? 150 : 0}% at 0% 0%)` }}
+                          style={{ background: SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP, zIndex: 1, clipPath: `circle(${idx === 0 ? 150 : 0}% at 0% 0%)` }}
                         />
                         <div
                           aria-hidden="true"
@@ -1161,7 +1161,7 @@ export default function ServicesGrid() {
                                 }
                               : undefined
                           }
-                          className={`relative z-20 h-full min-h-0 flex flex-col ${
+                          className={`service-reference-content relative z-20 h-full min-h-0 flex flex-col ${
                             layout.isCompact
                               ? "p-4 sm:p-[18px]"
                               : "p-[clamp(18px,2.3dvh,24px)]"
@@ -1173,7 +1173,7 @@ export default function ServicesGrid() {
                                 ref={(el) => {
                                   disciplineLabelRefs.current[idx] = el;
                                 }}
-                                className="inline-block text-[10px] xl:text-[10.5px] font-mono uppercase tracking-widest text-[#749BFF] mb-1 transition-colors duration-200"
+                                className="sr-only"
                               >
                                 {indexNumber} / DISCIPLINE
                               </span>
@@ -1202,7 +1202,7 @@ export default function ServicesGrid() {
                                 e.stopPropagation();
                               }}
                               style={{
-                                backgroundColor: "rgba(255, 255, 255, 0.10)",
+                                backgroundColor: "transparent",
                                 color: "#FFFFFF",
                               }}
                               className={`shrink-0 rounded-full flex items-center justify-center transition-[background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] ${
@@ -1220,7 +1220,7 @@ export default function ServicesGrid() {
                                 strokeWidth="1.75"
                               >
                                 <path
-                                  d="M5.5 16.5L15.5 6.5M7.5 6.5h8v8"
+                                  d="M4 18L18 4M5 4h13v13"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                 />
@@ -1229,7 +1229,7 @@ export default function ServicesGrid() {
                           </div>
 
                           <div
-                            className={`shrink-0 min-h-0 ${
+                            className={`service-reference-description shrink-0 min-h-0 ${
                               layout.isCompact ? "mt-4 mb-4" : "mt-5 mb-5"
                             }`}
                           >
@@ -1251,7 +1251,7 @@ export default function ServicesGrid() {
                             ref={(el) => {
                               activeColumnsRefs.current[idx] = el;
                             }}
-                            className={`mt-auto shrink-0 grid grid-cols-[1.42fr_0.92fr] gap-3.5 items-start border-t border-white/10 ${
+                            className={`service-reference-footer mt-auto shrink-0 grid grid-cols-[1.42fr_0.92fr] gap-3.5 items-start border-t border-white/10 ${
                               layout.isCompact ? "pt-2.5" : "pt-3"
                             }`}
                           >
@@ -1277,7 +1277,7 @@ export default function ServicesGrid() {
                                 Tools
                               </div>
                               <div
-                                className={`grid text-white/95 ${
+                                className={`service-reference-tools grid text-white/95 ${
                                   layout.isCompact ? "grid-cols-6 gap-1.5" : "grid-cols-3 max-w-[120px] gap-2.5"
                                 }`}
                               >
