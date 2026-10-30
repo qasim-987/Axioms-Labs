@@ -1,187 +1,277 @@
-# Axiom Studio — Enterprise AI Architecture & Digital Engineering
+# Axiom Studio — Web Development, Web Designing, UI/UX & AI Agents
 
-> **Axiom Studio** is an enterprise-grade digital flagship and autonomous systems studio platform. Built from scratch with Next.js 14 (App Router), Tailwind CSS, TypeScript, and native WebGL/Canvas shaders.
+> **Axiom Studio** is a digital product & AI agent studio operating from **Kuopio, Finland** and **Lahore, Pakistan**. This repository holds the production front-end (Next.js 14 App Router) and a standalone back-end API service (Express + TypeScript + Zod).
 
----
-
-## Key Features & Capabilities
-
-- **Light-Ray Conic Canvas Background**: GPU-accelerated ray-casting shader with zero client latency.
-- **Dedicated Portfolio Gallery (`/work`)**: Category filter tabs (`All`, `AI Apps`, `Websites`, `Enterprise`), interactive dossier cards with verified ROI stats.
-- **7 Detailed Case Study Dossiers (`/work/[slug]`)**:
-  - *Strata Systems*: Autonomous cloud incident resolution engine (84% MTTR reduction).
-  - *Zenith Health AI*: Clinician intelligence & real-time diagnostic copilot (78% charting reduction).
-  - *Vortex Capital*: High-frequency market sentiment & execution engine (<12ms latency).
-  - *Helix Cybersecurity*: Zero-trust edge security & automated pen-test defense (99.4% containment).
-  - *Nova Commerce*: Headless omnichannel e-commerce & recommendation mesh (41% conversion lift).
-  - *Pulse Matrix*: Global logistics route optimization & predictive dispatch (28% fuel savings).
-  - *Synthetix Labs*: Generative multimodal audio & media synthesis platform (92% turnaround compression).
-- **Company Narrative Hub (`/company`)**:
-  - Three founding pillars (Design-First Innovation, Engineering Excellence, Real-World Impact).
-  - Core Beliefs (01: Code as Deterministic Proof, 02: Human Sovereignty & Privacy, 03: Velocity Through Rigor).
-  - Interactive Showcase Reel player simulation.
-  - Expandable FAQ accordion.
-- **Technical Blog & Insights (`/blog` & `/blog/[slug]`)**:
-  - Production blueprints covering multi-agent orchestration, fine-tuning vs RAG, training economics, and synthetic evals.
-  - Category filters, reading times, author avatars, and key architectural takeaway callout boxes.
-- **Open-Source Catalog (`/open-axiom`)**:
-  - 9 open-source tools across Agent Skills, Templates, Apps, and Tools.
-  - One-click copyable terminal install commands (`npx create-axiom-template ...` / `pip install ...`).
-  - Star ratings, fork counters, license badges, and direct GitHub links.
-- **Interactive AI Vendor Matrix (`/resources/vendor-matrix`)**:
-  - Comparative matrix across OpenAI, Claude, AWS Bedrock, Google Vertex AI, Azure OpenAI, Cohere, and Sovereign vLLM.
-  - Interactive column sorting (Latency, Tool Calling Accuracy, Platform Name).
-  - Dynamic filter chips (Dedicated VPC, Self-Hosted / On-Prem, HIPAA Compliant, PQC Ready).
-  - Client-side dynamic CSV export download generator.
-- **6 Upgraded Service Pages (`/services/[slug]`)**:
-  - UI/UX Design, Website Design, Web Development, AI Development, AI Agents, Healthcare Apps.
-  - 6 "What You Get" deliverables per discipline.
-  - 4-phase "How We Work" structured delivery roadmaps with durations and tangible outputs.
-  - Dedicated service-specific inline consultation forms and Accordion FAQs.
-- **Interactive Labs & Demos**:
-  - `ATOM Threat Monitor` (`/demos/threat-monitor`): Live simulated threat telemetry, MITRE ATLAS 16-technique heatmap, and auto-scrolling terminal log stream.
-  - `Buyer Intent IQ` (`/demos/intent-iq`): Interactive sensitivity threshold slider (50 - 100) and AI outreach generator.
-  - `Infrastructure Atlas` (`/demos/infrastructure-atlas`): Geospatial data center map, subsea fiber route explorer, and live round-trip ping calculations.
-  - `Voice Sentiment Analyzer` (`/demos/voice-sentiment`): Real-time acoustic frequency spectrum, micro-tremor detector, and stress probability gauge.
-  - `Atom Vector Search` (`/demos/vector-search`): Instant semantic vector search with live sub-50ms stopwatch timer.
-  - `Multimodal Emotion AI` (`/demos/emotion-ai`): Real-time emotional radar visualizer for arbitrary user-entered text.
-- **Real Backend Contact Form (`/api/contact`)**:
-  - Native Next.js App Router API Route (`POST /api/contact`).
-  - Anti-spam honeypot verification (`botField`).
-  - Timestamp velocity protection (rejects automated bot submissions < 1000ms).
-  - Strict regex email validation and payload verification.
-- **Accessibility & Motion Compliance**:
-  - Full `@media (prefers-reduced-motion: reduce)` support across all CSS transitions and animations.
-  - WCAG 2.1 AA compliant contrast ratios and keyboard-accessible navigation drawers and accordions.
+> **Document status:** this README describes the code that is actually in the repository **today** — 12 route definitions / 23 prerendered routes (26 pages in the Next.js build counter), 4 service pillars, 4 studio concept builds, and a decoupled back-end that owns the contact pipeline. It was last reconciled against the codebase on **31 October 2026** (branch `arena/c1f221f4-axioms-labs`, commit `e93cf7a`). Older architecture notes that describe removed routes (`/demos/*`, `/open-axiom`, `/resources/vendor-matrix`) are retained only as history in `docs/01`–`docs/05` and are **not** a description of the current site.
 
 ---
 
-## Tech Stack
+## 1. Platform at a glance
 
-- **Framework**: Next.js 14 (App Router, Server Components & Client Hydration)
-- **Styling**: Tailwind CSS 3.4
-- **Language**: TypeScript 5.6
-- **Icons**: Lucide React
-- **Runtime**: Node.js 18+ / 20+ / 24+
-
----
-
-## Decoupled System Architecture (Separate Front-End & Back-End)
-
-Axiom Studio enforces a **strictly separated Front-End and Back-End service architecture**:
-
-1. **Front-End Web Application (`src/`, Next.js 14 App Router on `0.0.0.0:3000`)**:
-   - Pure UI, SSR/SSG pre-rendered routes (47 static/SSG pages including `/services/[slug]`), and `antimatterai.agency`-grade motion choreography (`Lenis` smooth scroll, character/word `SplitTextReveal`, vertical `0–9` slot-machine odometer `RollingNumber`, horizon rim-light `LogoStrip`, 3D `OrbitalThreatGlobe`, and volumetric `LightRays` + dust particle `<canvas>`).
-   - Communicates exclusively via relative `/api/*` HTTP calls (`src/lib/apiClient.ts`) proxied by `next.config.mjs` to `BACKEND_INTERNAL_URL` (`http://127.0.0.1:4000`) so browser code never hardcodes `localhost`.
-2. **Standalone Back-End API Service (`backend/`, Express + TypeScript + Zod on `0.0.0.0:4000`)**:
-   - Independently installable, type-checked, and compiled Node.js REST service (`backend/package.json` & `backend/tsconfig.json`).
-   - Provides `/api/health`, `/api/contact` (dual honeypot + `<1000ms` velocity gate + sliding-window IP rate limiter + Zod schema + Slack/Resend/Supabase/JSONL dispatch), `/api/vendors` & `/api/vendors/export.csv`, and live capability lab inference endpoints (`/api/labs/emotion-analyze`, `/api/labs/vector-search`, `/api/labs/intent-outreach`, `/api/labs/threat-telemetry`).
+| | |
+| :--- | :--- |
+| **Brand** | Axiom Studio — `https://axiomstudio.agency` · `contact@axiomstudio.agency` |
+| **Studios** | Kuopio, Finland (Nordics & EU client strategy) · Lahore, Pakistan (full-stack engineering) |
+| **Core disciplines** | Web Development · Web Designing · UI/UX Design · AI Agents |
+| **Routes shipped** | **12** route definitions → **23** prerendered routes → **26** pages in the Next.js production build counter (1 home, 1 work index + 4 dossiers, 4 compatibility redirects, 1 company, 1 contact, 1 blog index + 4 articles, 4 service pages, sitemap, robots, 404) |
+| **Route definitions** | `/` · `/blog` · `/blog/[slug]` · `/case-study/[slug]` · `/company` · `/contact` · `/work` · `/work/[slug]` · `/services/[slug]` · `/robots.txt` · `/sitemap.xml` · `/_not-found` |
+| **Front-end** | Next.js 14.2 (App Router) on `0.0.0.0:3000` |
+| **Back-end** | Express 4 + TypeScript + Zod on `0.0.0.0:4000` |
+| **First Load JS (shared)** | 87.4 kB |
 
 ---
 
-## Getting Started
+## 2. What is actually implemented
 
-### 1. Start the Standalone Back-End API (`:4000`)
+### 2.1 Home (`/`)
+`src/app/page.tsx` composes, in order: `Navbar` → `Hero` → `LogoStrip` → `StatsSection` → `ConceptBuildsGate` → `ServicesGrid` → `MethodologySection` → `ContactSection` → `Footer`.
+
+- **Hero** — five-layer scene: radial micro-grid backdrop, giant `AXIOM STUDIO` ghost watermark with scroll parallax, mouse-reactive pastel light beam, centred hollow WebGL particle sphere, and character-by-character 3D kinetic typography with magnetic pill CTAs and a `0123456789` odometer strip. Multi-plane scrubbed exit.
+- **LogoStrip** — continuous technology/framework marquee (Next.js, React, TypeScript, Tailwind, Figma, Framer Motion, Three.js, AI Agents, Supabase, Vercel) with inline monoline icons, desktop hover pause, offscreen pause, and a reduced-motion single-copy wrap.
+- **StatsSection / RollingNumber** — scroll-triggered slot-machine odometer counters.
+- **ConceptBuildsGate** — desktop-only lazy mount of the `CaseStudies` showcase (`HIDE_CONCEPT_BUILDER = "mobile"`), so phones/tablets never allocate the WebGL or the showcase subtree.
+- **ServicesGrid** — the centrepiece: a scroll-scrubbed, pinned **opaque card deck** (4 services) with a shared particle canvas that morphs between service shapes, a two-level fit ladder, ink-wipe card transitions, an upcoming-card preview deck, and a separate native-swipe **mobile** composition (`MobileServices`).
+- **MethodologySection** — 4-phase delivery methodology with sticky scroll choreography.
+- **ContactSection** — the scoping form, validated in the browser and again on the back-end.
+
+### 2.2 Work & concept builds (`/work`, `/work/[slug]`)
+Four honest **Studio Concept** builds (no invented third-party clients):
+
+| Slug | Build | Discipline |
+| :--- | :--- | :--- |
+| `nexus-commerce-os` | Nexus SaaS & Headless Commerce Platform | Web Development |
+| `aura-web-experience` | Aura Interactive Brand & Motion Flagship | Web Designing |
+| `finflow-design-system` | FinFlow Multi-Theme SaaS UI/UX System | UI/UX Design |
+| `atlas-ai-agent` | Atlas Autonomous Support & Lead-Qualification Agent | AI Agents |
+
+Each dossier carries a challenge → solution narrative, architecture highlights, results and a tech stack. `/case-study/[slug]` is a compatibility route that issues a **307 redirect** to `/work/[slug]` via Next.js `redirect()`.
+
+### 2.3 Services (`/services/[slug]`)
+Four pillars — `web-development`, `web-designing`, `ui-ux-design`, `ai-agents` — each with a hero headline, 6 deliverables, a 4-phase delivery roadmap with durations and outputs, a technology ribbon, an inline consultation form and an accordion FAQ. Launch pricing is centralised in `src/config/pricing.ts` and feeds the visible copy, the `<title>`/description, and the `Service` JSON-LD.
+
+### 2.4 Company (`/company`)
+Mission statement ("Companies create products. Axiom Creates Impact."), the **two studio hubs** — Kuopio and Lahore — with their roles, the **four core beliefs** under "How We Approach Every Build" (Craft Over Complexity, Direct Maker Collaboration, Motion With Purpose, Practical Autonomous AI), and a closing call to action. Rendered as a client component with split-text reveals and scroll choreography.
+
+### 2.5 Blog (`/blog`, `/blog/[slug]`)
+Four technical articles with category filters, reading times, author attribution and key-takeaway callouts:
+
+- `how-to-build-ai-agents-that-actually-help-customers` (featured)
+- `nextjs-performance-checklist-for-99-lighthouse-websites`
+- `high-converting-web-design-hierarchy-and-visual-storytelling`
+- `figma-to-code-ui-ux-design-systems-that-scale`
+
+### 2.6 Contact (`/contact`)
+Dedicated scoping page: "Let's Connect" hero, the **two studio hubs** (Kuopio & Lahore) with their focus areas, a trust strip (100% IP ownership, NDA available on request, response time), and the full inquiry form — name, email, company, service, estimated budget (the six centralised bands), and a project brief. The form posts to `/api/contact`, which is served by the **back-end** through the Next.js rewrite — never by a Next.js route handler.
+
+---
+
+## 3. Decoupled system architecture
+
+The front-end and back-end are two independently installable, independently type-checked services. The browser never learns the back-end address.
+
+```
+Browser ── relative "/api/*" ──► Next.js 14 (0.0.0.0:3000)
+                                         │  next.config.mjs → rewrites
+                                         ▼
+                                  Express + Zod API (0.0.0.0:4000)
+```
+
+### 3.1 Front-end (`src/`)
+- Next.js `14.2` App Router, React `18.3`, TypeScript `5.6` (`strict: true`), Tailwind CSS `3.4`.
+- **Zero route handlers** in `src/app/api/*` — there is no such directory.
+- Server Components by default; `"use client"` only where browser state is genuinely required.
+- All API traffic goes through `src/lib/apiClient.ts` using **relative URLs only**, proxied by `next.config.mjs` to `BACKEND_INTERNAL_URL` (default `http://127.0.0.1:4000`).
+
+### 3.2 Back-end (`backend/`)
+Standalone Express service with its own `package.json`, `package-lock.json` and `tsconfig.json`.
+
+| Method | Path | Purpose |
+| :--- | :--- | :--- |
+| `GET` | `/` | Service status card (name, version, studios, capabilities, endpoint index) |
+| `GET` | `/api/health` | Liveness + uptime + delivery-adapter configuration metrics |
+| `GET` | `/api/services` | Canonical service catalogue + studio locations |
+| `POST` | `/api/contact` | Inquiry intake (anti-spam → Zod validation → persistence + delivery) |
+| `GET` | `/api/contact/status` | Operational flag + session inquiry metrics |
+
+**Contact pipeline, in order:**
+1. **Rate limit** — sliding-window limiter, 10 `POST /api/contact` per 10 minutes per client IP, emitting `X-RateLimit-Limit` / `-Remaining` / `-Reset` and `Retry-After`.
+2. **Anti-spam** — primary honeypot (`botField`), secondary honeypot (`websiteUrl`), and a velocity gate that traps submissions completed in under 1000 ms. Trapped submissions return a silent `200` so scrapers cannot fingerprint the trap.
+3. **Validation** — strict Zod schema (`backend/src/schemas/contact.schema.ts`): names, corporate e-mail, company, service, budget, message (10–5000 chars), optional `phone` / `countryCode`, plus the anti-spam fields.
+4. **Persistence & delivery** — every inquiry is appended to a local, git-ignored JSONL audit ledger (`backend/data/inquiries.jsonl`); optional **Resend** e-mail, **webhook** (Slack / Linear / CRM) and **Supabase** adapters activate only when their environment variables are set. Each inquiry receives an `axs_<12 hex>` id.
+
+**Middleware stack:** `securityHeaders` (nosniff, referrer policy, permissions policy, DNS prefetch), CORS (configurable allow-list, `*` permitted for previews), a 32 kB JSON body cap, and a structured JSON request logger.
+
+---
+
+## 4. Tech stack
+
+### Front-end dependencies
+`next` 14.2 · `react` / `react-dom` 18.3 · `typescript` 5.6 · `tailwindcss` 3.4 · `framer-motion` 14.6 (16 files) · `gsap` 3.15 + ScrollTrigger (19 files) · `lenis` 1.3 · `three` 0.186 (+`@types/three`) · `lucide-react` 0.453 · `@fontsource/plus-jakarta-sans` · `zod` 4 (currently imported only by the retained `src/components/landing/ContactForm.tsx`; live form validation happens on the back-end).
+
+### Back-end dependencies
+`express` 4.21 · `cors` 2.8 · `zod` 3.23 · `typescript` 5.6 · `tsx` 4.19 (dev watcher).
+
+---
+
+## 5. Getting started
+
+### 5.1 Back-end API (`:4000`)
 ```bash
 cd backend
 npm install
-npm run build
-npm run start
+npm run dev      # tsx watch
+# or
+npm run build && npm run start
 ```
 
-### 2. Start the Front-End Web Application (`:3000`)
+### 5.2 Front-end (`:3000`)
 ```bash
-# From repository root:
 npm install
 npm run dev:frontend
 ```
-Open `http://localhost:3000` (all `/api/*` requests proxy seamlessly to the standalone Back-End on port `4000`).
 
-### 3. Production Verification & Builds
+Open `http://localhost:3000`. All `/api/*` requests are proxied to the back-end on port `4000`; if the back-end is not running, the site still renders and only the contact submission degrades.
+
+### 5.3 Environment variables
+`.env.example` (front-end) and `backend/.env.example` (back-end):
+
+| Variable | Service | Purpose |
+| :--- | :--- | :--- |
+| `NEXT_PUBLIC_SITE_URL` | Front-end | Canonical public URL |
+| `BACKEND_INTERNAL_URL` | Front-end | Rewrite target for `/api/*` (default `http://127.0.0.1:4000`) |
+| `PORT` / `HOST` | Back-end | Listen port and interface (default `4000` / `0.0.0.0`) |
+| `CORS_ALLOWED_ORIGINS` | Back-end | Comma-separated allow-list, or `*` |
+| `RESEND_API_KEY` | Back-end | Enables the e-mail delivery adapter |
+| `CONTACT_NOTIFICATION_EMAIL` | Back-end | Inquiry notification recipient |
+| `CONTACT_WEBHOOK_URL` | Back-end | Enables the webhook adapter |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Back-end | Enable Supabase persistence |
+
+### 5.4 Verification gate (run before every completion)
 ```bash
-npm run typecheck
-npm run lint
+npm run typecheck   # tsc --noEmit for front-end AND back-end
+npm run lint        # next lint
+npm run build       # next build — must emit the full route table
 npm run build:backend
-npm run build:frontend
 ```
+
+Optional offline QA harnesses live in `scripts/` (`check-performance-tier.cjs`, `check-services-timeline.cjs`, `check-card-transitions.cjs`, `check-mobile-view.cjs`, `check-services-browser.cjs`, `check-responsive-extras.cjs`, `check-hero-restore.cjs`, `check-mobile-config.cjs`). They require Playwright/pngjs installed **outside** the repository and are therefore not part of `package.json`.
+
+### 5.5 Continuous integration
+`.github/workflows/ci.yml` runs on every push and pull request to `main`: legacy brand-string hygiene check → `npm ci` → front-end and back-end type-check → ESLint → production front-end build. The back-end job additionally compiles the service.
 
 ---
 
-## Project Structure
+## 6. Project structure
 
 ```
 ├── src/
 │   ├── app/
-│   │   ├── api/contact/route.ts        # Real contact backend API route (anti-spam)
-│   │   ├── blog/                       # Engineering blog index
-│   │   │   ├── page.tsx
-│   │   │   └── [slug]/page.tsx         # Dynamic article reader
-│   │   ├── company/page.tsx            # Company narrative, story, pillars & FAQ
-│   │   ├── contact/page.tsx            # Contact hub with global offices & FAQ
-│   │   ├── demos/                      # Interactive Demos & Labs
-│   │   │   ├── threat-monitor/page.tsx # ATOM Red Team Threat Monitor
-│   │   │   ├── intent-iq/page.tsx      # Buyer Intent IQ Simulator
-│   │   │   ├── infrastructure-atlas/   # Data Center & Fiber Map
-│   │   │   ├── voice-sentiment/        # Acoustic Voice & Tremor Analyzer
-│   │   │   ├── vector-search/          # Sub-50ms Vector Search
-│   │   │   └── emotion-ai/             # Multimodal Sentiment Visualizer
-│   │   ├── open-axiom/page.tsx         # Open-source catalog (skills, templates, tools)
-│   │   ├── resources/vendor-matrix/    # Enterprise AI Vendor Matrix with CSV export
-│   │   ├── services/[slug]/page.tsx    # 6 upgraded service pages (phases, deliverables, FAQs)
-│   │   ├── work/                       # Portfolio gallery with category filters
-│   │   │   ├── page.tsx
-│   │   │   └── [slug]/page.tsx         # 7 case study dossiers
-│   │   ├── globals.css                 # Shaders, glassmorphism, prefers-reduced-motion
-│   │   ├── layout.tsx                  # Global metadata, skip link, dark theme
-│   │   └── page.tsx                    # Landing page
-│   ├── components/
-│   │   ├── Navbar.tsx                  # Header with mega-menu, resources dropdown, mobile drawer
-│   │   ├── Hero.tsx                    # Light-ray hero with staggered text
-│   │   ├── LightRays.tsx               # Conic light ray shader backdrop
-│   │   ├── StatsSection.tsx            # Rolling-digit counters
-│   │   ├── RollingNumber.tsx           # Scroll-triggered counter primitive
-│   │   ├── ServicesGrid.tsx            # 6 service pillars
-│   │   ├── CaseStudies.tsx             # Featured client dossiers
-│   │   ├── LogoStrip.tsx               # Continuous marquee strip
-│   │   ├── ContactSection.tsx          # Validated contact form (connected to /api/contact)
-│   │   └── Footer.tsx                  # 5-column footer with dynamic live local clock
-│   └── data/
-│       ├── blog.ts                     # 4 technical blueprints & articles
-│       ├── caseStudies.ts              # Compatibility alias
-│       ├── clients.ts                  # 7 dummy client profiles & case studies
-│       ├── navigation.ts               # Nav links, dropdowns, footer columns
-│       ├── openSource.ts               # 9 open-source tools & templates
-│       ├── services.ts                 # 6 services with deliverables, phases & FAQs
-│       └── vendorMatrix.ts             # Comparison data for 7 AI platforms
-├── AGENTS.md                           # Auto-discovered AI coding agent instructions
-├── Animations.md                       # Exact antimatterai.agency animation & shader blueprint
-├── MASTER_PROMPT.md                    # Master prompt for generating the 5-part architecture suite
-├── PROGRESS.md                         # Detailed phase-by-phase implementation log
-├── docs/
-│   ├── 01-PRODUCTION-REQUIREMENTS-DOCUMENT.md
-│   ├── 02-DESIGN-ARCHITECTURE.md
-│   ├── 03-TECHNICAL-ARCHITECTURE.md
-│   ├── 04-AGENT-INSTRUCTIONS.md
-│   └── 05-TECHNICAL-WORKFLOW.md
-├── package.json
-├── tailwind.config.ts
-└── tsconfig.json
+│   │   ├── layout.tsx                 # Metadata, JSON-LD, skip link, Lenis + scroll-progress shell
+│   │   ├── page.tsx                   # Home composition (Navbar → … → Footer)
+│   │   ├── globals.css                # Antigravity tokens, glass panels, rays, reduced-motion rules
+│   │   ├── robots.ts · sitemap.ts     # SEO metadata routes
+│   │   ├── company/page.tsx           # Studio narrative
+│   │   ├── contact/page.tsx           # Scoping form + studio hubs
+│   │   ├── work/page.tsx              # Concept build index
+│   │   ├── work/[slug]/page.tsx       # Concept build dossier
+│   │   ├── case-study/[slug]/page.tsx # Compatibility redirect → /work/[slug]
+│   │   ├── blog/page.tsx              # Article index with category filter
+│   │   ├── blog/[slug]/page.tsx       # Article reader
+│   │   └── services/[slug]/page.tsx   # Service pillar page (SSG + JSON-LD + pricing)
+│   ├── components/                    # Live UI (see §2 for the composition)
+│   │   ├── Navbar.tsx                 # Mega-menu, mobile drawer, measured bar height
+│   │   ├── Hero.tsx · ParticleSphereHero.tsx · TouchHeroSphere.tsx
+│   │   ├── LightRays.tsx · LightBeam.tsx · LogoStrip.tsx
+│   │   ├── StatsSection.tsx · RollingNumber.tsx · SplitTextReveal.tsx
+│   │   ├── ServicesGrid.tsx · MobileServices.tsx · ServicesParticleCanvas.tsx
+│   │   ├── ServiceDetailClient.tsx · ServiceToolIcons.tsx · ToolChipContent.tsx
+│   │   ├── ConceptBuildsGate.tsx · CaseStudies.tsx · CaseStudyScrollShowcase.tsx
+│   │   ├── CaseStudyDetailClient.tsx · WorkPageContent.tsx · CompanyPageContent.tsx
+│   │   ├── MethodologySection.tsx · ContactSection.tsx · LaunchPricing.tsx
+│   │   ├── Footer.tsx · SpotlightCard.tsx · ScrollProgressBar.tsx
+│   │   ├── SmoothScrollProvider.tsx   # Lenis + ScrollTrigger scroller sync
+│   │   └── landing/                   # RETAINED, NOT WIRED — see §8
+│   ├── lib/
+│   │   ├── apiClient.ts               # Typed relative-/api client
+│   │   ├── particleEngine.ts          # Shared Three.js particle engine
+│   │   ├── serviceParticleShapes.ts   # Per-service morph shape generators
+│   │   ├── performanceTier.ts         # Device tier + FPS governor
+│   │   ├── motionTokens.ts            # Shared easing curves
+│   │   └── (landing-era modules — see §8)
+│   ├── data/  services.ts · clients.ts · blog.ts
+│   ├── config/ pricing.ts · responsive.ts
+│   └── hooks/   (landing-era — see §8)
+├── backend/src/
+│   ├── index.ts · app.ts
+│   ├── config/env.ts
+│   ├── middleware/  rateLimiter · requestLogger · securityHeaders
+│   ├── routes/      health · contact · catalog
+│   ├── schemas/     contact.schema.ts
+│   └── services/    catalog · delivery · antiSpam
+├── scripts/          # Optional offline QA harnesses (external deps)
+├── docs/             # Architecture suite + implementation reports
+├── Animations.md     # Motion blueprint & parity matrix (authoritative motion reference)
+├── AGENTS.md         # Agent operating rules
+├── MASTER_PROMPT.md  # Prompt that generated the docs/01–05 architecture suite
+├── PROGRESS.md       # Current implementation status & roadmap
+├── next.config.mjs   # Redirects, /api rewrites, security headers
+└── tailwind.config.ts
 ```
 
 ---
 
-## Architecture & Engineering Documentation Suite
+## 7. Documentation index
 
-| Document | Path | Description |
+| Document | Path | Status |
 | :--- | :--- | :--- |
-| **Production Requirements Document (PRD)** | [`docs/01-PRODUCTION-REQUIREMENTS-DOCUMENT.md`](docs/01-PRODUCTION-REQUIREMENTS-DOCUMENT.md) | Personas, conversion funnels, KPIs, and functional/non-functional specs across all 42 routes. |
-| **Design Architecture** | [`docs/02-DESIGN-ARCHITECTURE.md`](docs/02-DESIGN-ARCHITECTURE.md) | Obsidian color tokens, glassmorphism recipes, volumetric lighting, typography, and component states. |
-| **Technical Architecture** | [`docs/03-TECHNICAL-ARCHITECTURE.md`](docs/03-TECHNICAL-ARCHITECTURE.md) | Next.js 14 RSC/Client boundary map, typed domain schemas, and `POST /api/contact` anti-spam architecture. |
-| **Agent Instructions** | [`AGENTS.md`](AGENTS.md) / [`docs/04-AGENT-INSTRUCTIONS.md`](docs/04-AGENT-INSTRUCTIONS.md) | Hard guardrails, codebase file-ownership map, and verification gates for autonomous coding agents. |
-| **Technical Workflow** | [`docs/05-TECHNICAL-WORKFLOW.md`](docs/05-TECHNICAL-WORKFLOW.md) | Local dev setup, animation/content/API engineering playbooks, GitHub Actions CI, and rollback SOP. |
-| **Animations Blueprint** | [`Animations.md`](Animations.md) | Drop-in `Lenis`, `GSAP`, `Framer Motion`, odometer, split-text, and shader parity guide from `antimatterai.agency`. |
+| **Agent operating rules** | [`AGENTS.md`](AGENTS.md) | Current — file-ownership map reconciled against the codebase |
+| **Motion blueprint & parity matrix** | [`Animations.md`](Animations.md) | Current — updated 29 Oct 2026 (§14 responsive motion, §15 services deck) |
+| **Implementation status** | [`PROGRESS.md`](PROGRESS.md) | Current — reconciled 31 Oct 2026 |
+| Responsive implementation audit | [`docs/responsive-audit.md`](docs/responsive-audit.md) | Current — measured Chromium evidence, 28 Oct 2026 |
+| Mobile & tablet overhaul | [`docs/mobile-tablet-overhaul.md`](docs/mobile-tablet-overhaul.md) | Current — pricing audit + swipe/gesture spec, 29 Oct 2026 |
+| Services deck polish | [`docs/services-polish.md`](docs/services-polish.md) | Current — opaque deck geometry & constants, 29 Oct 2026 |
+| Card transition correction | [`docs/card-transition-fix.md`](docs/card-transition-fix.md) | Current — ink-wipe choreography, 30 Oct 2026 |
+| Dark-landing file tree | [`docs/FILE_TREE.md`](docs/FILE_TREE.md) | Historical — describes the retained, unwired `src/components/landing/` scope |
+| Production Requirements | [`docs/01-PRODUCTION-REQUIREMENTS-DOCUMENT.md`](docs/01-PRODUCTION-REQUIREMENTS-DOCUMENT.md) | Historical — written for the earlier 42-route site |
+| Design Architecture | [`docs/02-DESIGN-ARCHITECTURE.md`](docs/02-DESIGN-ARCHITECTURE.md) | Historical — palette principles still current |
+| Technical Architecture | [`docs/03-TECHNICAL-ARCHITECTURE.md`](docs/03-TECHNICAL-ARCHITECTURE.md) | Historical — describes removed `/api/labs/*` endpoints |
+| Agent Instructions | [`docs/04-AGENT-INSTRUCTIONS.md`](docs/04-AGENT-INSTRUCTIONS.md) | Historical — superseded by [`AGENTS.md`](AGENTS.md) |
+| Technical Workflow | [`docs/05-TECHNICAL-WORKFLOW.md`](docs/05-TECHNICAL-WORKFLOW.md) | Historical — local dev & CI guidance still largely usable |
+| Test checklist / timing table | [`docs/TEST_CHECKLIST.md`](docs/TEST_CHECKLIST.md) · [`docs/TIMING_TABLE.md`](docs/TIMING_TABLE.md) | Historical — route list outdated |
 
 ---
 
-## License
-MIT License. 100% original code, copy, and architecture created for Axiom Studio.
+## 8. Retained but unwired code — read before you build
+
+`src/components/landing/` (17 files) is a **complete, self-contained dark-theme landing experience** — hero intro timeline, WebGL particle morph, pinned services, card→service transition and its own contact form. It was merged in PR #6, then deliberately **kept unwired** when the owner chose to preserve the light Antigravity overhaul (commit `4ed1706f`, "preserve light overhaul per owner choice"). Its supporting modules are equally unwired:
+
+`src/lib/landingConfig.ts` · `src/lib/introContext.tsx` · `src/lib/particleContext.tsx` · `src/lib/splitText.ts` · `src/lib/morphTargets.ts` · `src/lib/registry.ts` · `src/lib/firstFrame.ts` · `src/data/brand.ts` · `src/hooks/useAppReady.ts` · `src/hooks/useReducedMotion.ts`
+
+Two further orphaned files remain from earlier iterations: `src/data/navigation.ts` (Navbar/Footer/LogoStrip carry their own links inline) and `src/data/caseStudies.ts` (a compatibility alias for `src/data/clients.ts`).
+
+**Rules for agents and contributors:**
+
+- Treat the light Antigravity composition in `src/app/page.tsx` as the **single source of truth** for the shipped site. Do not silently swap the home page to the landing folder.
+- `src/lib/landingConfig.ts` still contains the literal template placeholder `name: "[NAME]"`. **Never** surface it in UI copy, metadata, or JSON-LD.
+- The five `react-hooks/exhaustive-deps` lint warnings that `npm run lint` reports all originate in `src/components/landing/*`. They are pre-existing and acceptable while the folder stays unwired; do not "fix" them as if they were live code.
+- Wiring the landing experience in is a legitimate future task, but it is a **design decision with owner sign-off**, not a cleanup.
+
+---
+
+## 9. Known gaps (honest status)
+
+Carried forward from the collaborator's own audits; none of these are silently hidden.
+
+1. **Pricing is unconfirmed.** 20 `TODO(owner): confirm` markers live in `src/config/pricing.ts` — currency, locale, every starting price and typical range, all six budget bands and the launch copy. The "free 30-minute consultation" is configured but deliberately disabled (`showConsultation: false`), so no unverified offer is published.
+2. **Reduced-motion hydration errors.** React 418/423 warnings were observed on initial load with reduced motion enabled. Reproduced on a clean baseline, not yet fixed.
+3. **Services scroll performance.** Measured at 3.69 average FPS under software-WebGL with 4× CPU throttling. This is functional QA, not a GPU benchmark; **no 55–60 FPS claim is certified**.
+4. **Pointer-release settle time.** Measured 182–569 ms depending on width, with a 360 px outlier above the strict target.
+5. **No device certification.** No Lighthouse, CLS, physical iOS Safari/Android, real-GPU or heap-growth certification exists. All viewport results come from emulated Chromium.
+6. **Dead client helpers.** `src/lib/apiClient.ts` still exports four `/api/labs/*` helpers (`analyzeEmotionViaApi`, `searchVectorsViaApi`, `synthesizeOutreachViaApi`, `fetchThreatTelemetryViaApi`) whose endpoints no longer exist in the back-end and which have no call sites.
+7. **Footer contact address differs from the canonical one.** `src/components/Footer.tsx` links `hello@axiomstudio.ai`; every other surface uses `contact@axiomstudio.agency`. Needs an owner decision and alignment.
+
+---
+
+## 10. Licence
+
+MIT. All code, copy, data and architecture in this repository are original to Axiom Studio. Client names in the portfolio are explicitly labelled **Studio Concept** builds rather than real third-party engagements.
