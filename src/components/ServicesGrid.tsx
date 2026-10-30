@@ -39,16 +39,24 @@ export const DECK_TUNING = {
   SECOND_VW: 0.095, SECOND_MIN: 108, SECOND_MAX: 176,
   FIRST_SCALE: 0.96, SECOND_SCALE: 0.92,
   FIRST_GHOST: 0.35, SECOND_GHOST: 0.18,
-  EXIT_X: -40,
   FROST: "linear-gradient(135deg, rgba(230,232,239,.92), rgba(236,238,244,.90)), #fff",
   DETAIL_GHOST_MULTIPLIER: 0.5,
 } as const;
 
+/** Card-only phases; shared particle progress, pin length and morph windows stay unchanged. */
+export const CARD_TRANSITION = {
+  EXIT_START: .15, EXIT_END: .60, EXIT_WIDTH_RATIO: .35,
+  INK_START: .45, INK_END: .80, CONTENT_START: .80,
+  OUT_END: .25, CONTENT_STAGGER: .025, UI_SWAP: .50,
+  INK_RADIUS: 150, DOT_MS: 250,
+} as const;
+const cardPhase = (t:number, a:number, b:number) => Math.max(0, Math.min(1, (t-a)/(b-a)));
+
 export const SERVICES_SECTION_TUNING = {
   SHOW_UPCOMING_PREVIEW,
   SECTION_BG: "#FFFFFF",
-  ACTIVE_CARD_TOP: "#1A1B22",
-  ACTIVE_CARD_BOTTOM: "#121317",
+  ACTIVE_CARD_TOP: "#403E7C",
+  ACTIVE_CARD_BOTTOM: "#403E7C",
   INACTIVE_CARD_BG: "#F8F9FC",
   SCROLL_VH_PER_STEP: 82, // Desktop: 328vh smooth pinned travel across 4 services (unchanged)
   MOBILE_SCROLL_SVH_PER_STEP: 80, // Mobile/Tablet (<1024px): 80svh per step (target: 70-90svh)
@@ -751,15 +759,17 @@ export default function ServicesGrid() {
           const state = evaluateServicesMasterTimeline(smoothP);
           const { fromCardIndex, toCardIndex, cardTransitionT } = state;
 
-          if (state.scrollIndex !== lastReportedScrollIdx) {
-            lastReportedScrollIdx = state.scrollIndex;
-            setScrollIndex(state.scrollIndex);
+          const cardIndex = fromCardIndex === toCardIndex ? state.scrollIndex : cardTransitionT < CARD_TRANSITION.UI_SWAP ? fromCardIndex : toCardIndex;
+          if (cardIndex !== lastReportedScrollIdx) {
+            lastReportedScrollIdx = cardIndex;
+            setScrollIndex(cardIndex);
           }
 
-          const t = easeInOutCubic(cardTransitionT);
+          const t = easeInOutCubic(cardPhase(cardTransitionT, CARD_TRANSITION.EXIT_START, CARD_TRANSITION.EXIT_END));
+          sectionEl.dataset.cardTransition = `${cardTransitionT}`;
           const transitioning = fromCardIndex !== toCardIndex;
           const front = transitioning ? fromCardIndex : state.scrollIndex;
-          const active = state.scrollIndex;
+          const active = cardIndex;
           const hovered = isCardHoveredRef.current;
           liveHoverLift += ((hovered ? 1 : 0) - liveHoverLift) * 0.18;
           for (let i = 0; i < entries.length; i++) {
@@ -768,40 +778,43 @@ export default function ServicesGrid() {
             const slot = i - front;
             let x = 0, scale = 1, dark = 0, content = 0, visible = false, z = 10;
             if (slot === 0) {
-              visible = !transitioning || cardTransitionT < 0.999;
-              x = transitioning ? DECK_TUNING.EXIT_X * t : 0;
+              visible = !transitioning || cardTransitionT < CARD_TRANSITION.EXIT_END;
+              x = transitioning ? -layout.expandedW * CARD_TRANSITION.EXIT_WIDTH_RATIO * t : 0;
               dark = 1;
-              content = transitioning ? Math.max(0, 1 - cardTransitionT / 0.45) : 1;
+              content = transitioning ? 1 - cardPhase(cardTransitionT, 0, CARD_TRANSITION.OUT_END) : 1;
               z = !transitioning || cardTransitionT < 0.5 ? 40 : 20;
             } else if (slot === 1) {
               visible = SHOW_UPCOMING_PREVIEW || transitioning;
               x = firstX * (transitioning ? 1 - t : 1);
               scale = DECK_TUNING.FIRST_SCALE + (transitioning ? t * (1 - DECK_TUNING.FIRST_SCALE) : 0);
-              dark = transitioning ? easeInOutCubic(Math.max(0, (cardTransitionT - 0.4) / 0.6)) : 0;
+              dark = transitioning ? easeInOutCubic(cardPhase(cardTransitionT, CARD_TRANSITION.INK_START, CARD_TRANSITION.INK_END)) : 0;
               content = transitioning
-                ? Math.max(0, (cardTransitionT - 0.45) / 0.55)
+                ? cardPhase(cardTransitionT, CARD_TRANSITION.CONTENT_START, 1)
                 : DECK_TUNING.FIRST_GHOST;
               z = transitioning && cardTransitionT >= 0.5 ? 40 : 30;
             } else if (slot === 2 && SHOW_UPCOMING_PREVIEW) {
               visible = true;
               x = secondX + (transitioning ? (firstX - secondX) * t : 0);
               scale = DECK_TUNING.SECOND_SCALE + (transitioning ? (DECK_TUNING.FIRST_SCALE - DECK_TUNING.SECOND_SCALE) * t : 0);
-              content = DECK_TUNING.SECOND_GHOST + (transitioning ? (DECK_TUNING.FIRST_GHOST - DECK_TUNING.SECOND_GHOST) * t : 0);
+              content = transitioning ? 0 : DECK_TUNING.SECOND_GHOST;
               z = 15;
             } else if (slot === 3 && transitioning && SHOW_UPCOMING_PREVIEW) {
               visible = t > 0.02;
               x = secondX;
               scale = DECK_TUNING.SECOND_SCALE;
-              content = DECK_TUNING.SECOND_GHOST * t;
+              content = 0;
               z = 10;
             }
             const primary = i === active;
             shell.style.visibility = visible ? "visible" : "hidden";
-            shell.style.opacity = "1"; // Backgrounds NEVER fade through another card.
+            // Opaque shells throughout. Crop the departing shell as well as the
+            // column edge so its remaining right portion cannot peek under the deck.
+            shell.style.clipPath = transitioning && slot === 0 ? `inset(0 ${t * 100}% 0 0 round 28px)` : "none";
+            shell.style.willChange = transitioning && visible ? "transform, clip-path" : "auto";
             shell.style.zIndex = `${z}`;
             shell.style.pointerEvents = primary ? "auto" : "none";
             shell.style.transform = `translate3d(${x}px, ${primary && !transitioning ? -4 * liveHoverLift : 0}px, 0) scale(${scale})`;
-            shell.style.borderColor = dark > 0.5 ? "rgba(18,19,23,.92)" : "rgba(15,15,30,.06)";
+            shell.style.borderColor = dark > 0.5 ? "rgba(208,204,255,.42)" : "rgba(15,15,30,.06)";
             shell.style.boxShadow = "0 20px 48px -14px rgba(18,19,23,.16)";
             shell.setAttribute("aria-hidden", primary ? "false" : "true");
             shell.tabIndex = primary ? 0 : -1;
@@ -809,17 +822,26 @@ export default function ServicesGrid() {
             if (link) link.tabIndex = primary ? 0 : -1;
             shell.dataset.preview = dark < 0.5 ? "true" : "false";
             const fill = darkFillRefs.current[i];
-            if (fill) fill.style.opacity = `${dark}`;
+            if (fill) {
+              fill.style.clipPath = `circle(${dark * CARD_TRANSITION.INK_RADIUS}% at 0% 0%)`;
+              fill.style.willChange = transitioning && slot === 1 ? "clip-path" : "auto";
+            }
             const wrap = activeContentWrapRefs.current[i];
             if (wrap) wrap.style.opacity = `${content}`;
-            [activeTitleRefs.current[i], activeDescRefs.current[i], activeColumnsRefs.current[i]].forEach((node, order) => {
+            // Fade staggered content only, never the pale base or dark ink.
+            const layers = [disciplineLabelRefs.current[i], activeTitleRefs.current[i], arrowWrapRefs.current[i], activeDescRefs.current[i], activeColumnsRefs.current[i]];
+            layers.forEach((node, order) => {
               if (!node) return;
-              const reveal = transitioning && slot === 1 ? Math.max(0, Math.min(1, (cardTransitionT - 0.45 - order * 0.035) / (0.55 - order * 0.035))) : 1;
-              node.style.opacity = `${reveal * (dark < 0.5 && order > 0 ? DECK_TUNING.DETAIL_GHOST_MULTIPLIER : 1)}`;
-              node.style.transform = `translate3d(0, ${(1 - reveal) * 8}px, 0)`;
+              const delay = order * CARD_TRANSITION.CONTENT_STAGGER;
+              const incoming = cardPhase(cardTransitionT, CARD_TRANSITION.CONTENT_START + delay, 1);
+              const outgoing = 1 - cardPhase(cardTransitionT, delay, CARD_TRANSITION.OUT_END);
+              const reveal = !transitioning ? 1 : slot === 0 ? outgoing : slot === 1 ? incoming : 1;
+              node.style.opacity = `${reveal * (!transitioning && dark < .5 && order > 2 ? DECK_TUNING.DETAIL_GHOST_MULTIPLIER : 1)}`;
+              node.style.transform = `translate3d(0, ${transitioning && slot === 0 ? -(1-reveal)*8 : (1-reveal)*8}px, 0)`;
+              node.style.willChange = transitioning ? "transform, opacity" : "auto";
             });
             const arrow = arrowWrapRefs.current[i];
-            if (arrow) arrow.style.backgroundColor = hovered && primary ? "#3186FF" : "rgba(255,255,255,.10)";
+            if (arrow) arrow.style.backgroundColor = hovered && primary ? "rgba(255,255,255,.12)" : "transparent";
             const arrowIcon = arrowIconRefs.current[i];
             if (arrowIcon) arrowIcon.style.transform = hovered && primary ? "translate3d(2.5px,-2.5px,0)" : "none";
             (activeToolItemRefs.current[i] || []).forEach((node, k) => {
@@ -1010,7 +1032,7 @@ export default function ServicesGrid() {
                 />
                 <div className="flex items-center gap-2 text-[11px] font-mono" aria-label={`Service ${scrollIndex + 1} of 4`}>
                   <span className="text-[#3186FF]">0{scrollIndex + 1} / 04</span>
-                  {entries.map((_, index) => <span key={index} aria-hidden="true" className={`h-1 rounded-full ${index === scrollIndex ? "w-5 bg-[#121317]" : "w-1 bg-[#C8CED8]"}`} />)}
+                  {entries.map((_, index) => <span key={index} aria-hidden="true" style={{transition:`width ${CARD_TRANSITION.DOT_MS}ms ease-out`}} className={`h-1 rounded-full ${index === scrollIndex ? "w-5 bg-[#121317]" : "w-1 bg-[#C8CED8]"}`} />)}
                 </div>
                 </div>
               </div>
@@ -1030,7 +1052,7 @@ export default function ServicesGrid() {
             {/* 2. Card Stage Area */}
             <div
               ref={cardsViewportRef}
-              style={{ height: `${layout.cardH}px` }}
+              style={{ height: `${layout.cardH}px`, clipPath: "inset(-48px -48px -48px 0)", isolation: "isolate" }}
               className="relative shrink-0 w-full overflow-visible"
             >
                 <div
@@ -1087,17 +1109,19 @@ export default function ServicesGrid() {
                           transition:
                             "box-shadow 260ms ease, border-color 260ms ease",
                         }}
-                        className="absolute top-0 left-0 rounded-[28px] border border-[#121317] cursor-pointer select-text will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
+                        className="service-reference-card absolute top-0 left-0 rounded-[28px] border border-[#121317] cursor-pointer select-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
                       >
+                        <div aria-hidden="true" data-card-base className="pointer-events-none absolute inset-0 rounded-[27px]" style={{background:DECK_TUNING.FROST,zIndex:0}} />
                         <div
+                          data-card-ink
                           ref={(el) => { darkFillRefs.current[idx] = el; }}
                           aria-hidden="true"
                           className="pointer-events-none absolute inset-0 rounded-[27px]"
-                          style={{ background: `linear-gradient(152deg, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP}, ${SERVICES_SECTION_TUNING.ACTIVE_CARD_BOTTOM} 65%, #0D0E12)`, opacity: idx === 0 ? 1 : 0 }}
+                          style={{ background: SERVICES_SECTION_TUNING.ACTIVE_CARD_TOP, zIndex: 1, clipPath: `circle(${idx === 0 ? 150 : 0}% at 0% 0%)` }}
                         />
                         <div
                           aria-hidden="true"
-                          className="pointer-events-none absolute inset-0 rounded-[23px] overflow-hidden"
+                          className="pointer-events-none absolute inset-0 z-10 rounded-[23px] overflow-hidden"
                         >
                           <div
                             className="pointer-events-none absolute -bottom-20 -right-16 w-52 h-52 rounded-full blur-3xl transition-opacity duration-300"
@@ -1122,6 +1146,7 @@ export default function ServicesGrid() {
                         </div>
 
                         <div
+                          data-card-content
                           ref={(el) => {
                             cardInnerMeasureRefs.current[idx] = el;
                             activeContentWrapRefs.current[idx] = el;
@@ -1136,7 +1161,7 @@ export default function ServicesGrid() {
                                 }
                               : undefined
                           }
-                          className={`relative z-20 h-full min-h-0 flex flex-col ${
+                          className={`service-reference-content relative z-20 h-full min-h-0 flex flex-col ${
                             layout.isCompact
                               ? "p-4 sm:p-[18px]"
                               : "p-[clamp(18px,2.3dvh,24px)]"
@@ -1148,7 +1173,7 @@ export default function ServicesGrid() {
                                 ref={(el) => {
                                   disciplineLabelRefs.current[idx] = el;
                                 }}
-                                className="inline-block text-[10px] xl:text-[10.5px] font-mono uppercase tracking-widest text-[#749BFF] mb-1 transition-colors duration-200"
+                                className="sr-only"
                               >
                                 {indexNumber} / DISCIPLINE
                               </span>
@@ -1156,7 +1181,7 @@ export default function ServicesGrid() {
                                 ref={(el) => {
                                   activeTitleRefs.current[idx] = el;
                                 }}
-                                className={`font-bold tracking-tight text-white leading-[1.18] will-change-transform ${
+                                className={`font-bold tracking-tight text-white leading-[1.18] ${
                                   layout.isCompact
                                     ? "text-[20px]"
                                     : "text-[clamp(22px,2.7dvh,26px)]"
@@ -1177,7 +1202,7 @@ export default function ServicesGrid() {
                                 e.stopPropagation();
                               }}
                               style={{
-                                backgroundColor: "rgba(255, 255, 255, 0.10)",
+                                backgroundColor: "transparent",
                                 color: "#FFFFFF",
                               }}
                               className={`shrink-0 rounded-full flex items-center justify-center transition-[background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] ${
@@ -1195,7 +1220,7 @@ export default function ServicesGrid() {
                                 strokeWidth="1.75"
                               >
                                 <path
-                                  d="M5.5 16.5L15.5 6.5M7.5 6.5h8v8"
+                                  d="M4 18L18 4M5 4h13v13"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                 />
@@ -1204,7 +1229,7 @@ export default function ServicesGrid() {
                           </div>
 
                           <div
-                            className={`shrink-0 min-h-0 ${
+                            className={`service-reference-description shrink-0 min-h-0 ${
                               layout.isCompact ? "mt-4 mb-4" : "mt-5 mb-5"
                             }`}
                           >
@@ -1212,7 +1237,7 @@ export default function ServicesGrid() {
                               ref={(el) => {
                                 activeDescRefs.current[idx] = el;
                               }}
-                              className={`text-[#B2BBC5] font-normal will-change-transform ${
+                              className={`text-[#B2BBC5] font-normal ${
                                 layout.isCompact
                                   ? "text-[13px] leading-[1.48] line-clamp-3"
                                   : "text-[15px] leading-[1.56] line-clamp-4"
@@ -1226,7 +1251,7 @@ export default function ServicesGrid() {
                             ref={(el) => {
                               activeColumnsRefs.current[idx] = el;
                             }}
-                            className={`mt-auto shrink-0 grid grid-cols-[1.42fr_0.92fr] gap-3.5 items-start border-t border-white/10 will-change-transform ${
+                            className={`service-reference-footer mt-auto shrink-0 grid grid-cols-[1.42fr_0.92fr] gap-3.5 items-start border-t border-white/10 ${
                               layout.isCompact ? "pt-2.5" : "pt-3"
                             }`}
                           >
@@ -1252,7 +1277,7 @@ export default function ServicesGrid() {
                                 Tools
                               </div>
                               <div
-                                className={`grid text-white/95 ${
+                                className={`service-reference-tools grid text-white/95 ${
                                   layout.isCompact ? "grid-cols-6 gap-1.5" : "grid-cols-3 max-w-[120px] gap-2.5"
                                 }`}
                               >
