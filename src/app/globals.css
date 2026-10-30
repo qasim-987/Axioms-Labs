@@ -615,3 +615,13 @@ body {
   .service-reference-card .service-reference-tools {gap: 10px 8px;}
   .service-reference-card .service-reference-tools > div {width: 26px;height: 26px;}
 }
+
+/* Phones: services cards use the space previously reserved for particles. */
+@media (max-width: 767px) {
+  .mobile-services-stage .mobile-services-row {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0;
+  }
+  .mobile-services-shape { display: none; }
+}
