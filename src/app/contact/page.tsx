@@ -3,7 +3,6 @@
 import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
 import { PricingTrustCopy } from "@/components/LaunchPricing";
 import React, { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
 import SplitTextReveal from "@/components/SplitTextReveal";
@@ -110,7 +109,6 @@ export default function DedicatedContactPage() {
 
   return (
     <>
-      <Navbar />
 
       <main
         id="main-content"
@@ -120,7 +118,7 @@ export default function DedicatedContactPage() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
           {/* Centered Character-Split Hero */}
-          <div className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
+          <div data-page-header className="max-w-3xl mx-auto text-center mb-16 flex flex-col items-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-[#3186FF] text-xs font-mono font-semibold mb-6">
               <span>START YOUR PROJECT • &lt;24H RESPONSE</span>
             </div>

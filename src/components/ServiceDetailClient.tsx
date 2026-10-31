@@ -6,7 +6,6 @@ import ToolChipContent from "@/components/ToolChipContent";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll } from "framer-motion";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
 import SplitTextReveal from "@/components/SplitTextReveal";
@@ -111,7 +110,6 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
 
   return (
     <>
-      <Navbar />
 
       <main
         id="main-content"
@@ -142,7 +140,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
           </div>
 
           {/* Centered Hero Section */}
-          <div className="mb-20 max-w-4xl mx-auto text-center flex flex-col items-center">
+          <div data-page-header className="mb-20 max-w-4xl mx-auto text-center flex flex-col items-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#3186FF]/[0.08] border border-[#3186FF]/20 text-[#3186FF] text-xs font-mono font-semibold mb-6">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{service.badge}</span>

@@ -1,5 +1,4 @@
 import React from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CompanyPageContent from "@/components/CompanyPageContent";
 
@@ -12,7 +11,6 @@ export const metadata = {
 export default function CompanyPage() {
   return (
     <main className="min-h-screen bg-[#FFFFFF] text-[#121317]">
-      <Navbar />
       <CompanyPageContent />
       <Footer />
     </main>

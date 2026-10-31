@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { usePageTransition } from "@/components/transitions/context";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -31,6 +32,8 @@ const iconMap: Record<string, React.ReactNode> = {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { destination } = usePageTransition();
+  const activePath = destination?.split(/[?#]/)[0] || pathname;
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(true);
@@ -42,6 +45,12 @@ export default function Navbar() {
   const drawerRef = useRef<HTMLElement>(null);
 
   const featuredConcept = clientsData[0];
+
+  useEffect(() => {
+    const close = () => { setMegaMenuOpen(false); setMobileMenuOpen(false); };
+    window.addEventListener("page-transition:start", close);
+    return () => window.removeEventListener("page-transition:start", close);
+  }, []);
 
   // Close menus automatically on route change
   useEffect(() => {
@@ -222,7 +231,7 @@ export default function Navbar() {
                   onMouseEnter={() => setMegaMenuOpen(true)}
                   aria-expanded={megaMenuOpen}
                   className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-normal transition-colors ${
-                    megaMenuOpen
+                    (megaMenuOpen || activePath.startsWith("/services/"))
                       ? "text-[#121317] bg-[#B7BFD9]/25 font-medium"
                       : "text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20"
                   }`}
@@ -240,29 +249,37 @@ export default function Navbar() {
 
               <Link
                 href="/work"
-                className="px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
+                aria-current={activePath === "/work" ? "page" : undefined}
+                className="relative isolate px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
               >
+                {activePath === "/work" && <motion.span layoutId="primary-nav-active" className="absolute inset-0 -z-10 rounded-full bg-[var(--theme-nav-hover)]" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
                 Work
               </Link>
 
               <Link
                 href="/company"
-                className="px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
+                aria-current={activePath === "/company" ? "page" : undefined}
+                className="relative isolate px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
               >
+                {activePath === "/company" && <motion.span layoutId="primary-nav-active" className="absolute inset-0 -z-10 rounded-full bg-[var(--theme-nav-hover)]" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
                 Company
               </Link>
 
               <Link
                 href="/blog"
-                className="px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
+                aria-current={activePath === "/blog" ? "page" : undefined}
+                className="relative isolate px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
               >
+                {activePath === "/blog" && <motion.span layoutId="primary-nav-active" className="absolute inset-0 -z-10 rounded-full bg-[var(--theme-nav-hover)]" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
                 Blog
               </Link>
 
               <Link
                 href="/contact"
-                className="px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
+                aria-current={activePath === "/contact" ? "page" : undefined}
+                className="relative isolate px-4 py-2 rounded-full text-sm font-normal text-[#45474D] hover:text-[#121317] hover:bg-[#B7BFD9]/20 transition-colors"
               >
+                {activePath === "/contact" && <motion.span layoutId="primary-nav-active" className="absolute inset-0 -z-10 rounded-full bg-[var(--theme-nav-hover)]" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
                 Contact
               </Link>
             </nav>
@@ -271,6 +288,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2.5 sm:gap-3">
               <Link
                 href="/contact"
+                aria-current={activePath === "/contact" ? "page" : undefined}
                 className="hidden sm:inline-flex items-center gap-2 px-5 min-h-[44px] lg:min-h-0 lg:py-2.5 rounded-full bg-[#121317] hover:bg-[#2F3034] text-white text-xs sm:text-sm font-medium tracking-normal transition-all duration-150 shadow-sm"
               >
                 <span>Start Your Project</span>
@@ -380,6 +398,7 @@ export default function Navbar() {
                   <div className="pt-4 mt-4 border-t border-[#212226]/[0.08] flex items-center justify-between text-xs">
                     <Link
                       href="/work"
+                aria-current={activePath === "/work" ? "page" : undefined}
                       onClick={() => setMegaMenuOpen(false)}
                       className="text-[#45474D] hover:text-[#121317] font-mono transition-colors"
                     >
@@ -387,6 +406,7 @@ export default function Navbar() {
                     </Link>
                     <Link
                       href="/contact"
+                aria-current={activePath === "/contact" ? "page" : undefined}
                       onClick={() => setMegaMenuOpen(false)}
                       className="inline-flex items-center gap-1 text-[#3186FF] hover:text-[#1B6EF3] font-semibold"
                     >
@@ -484,6 +504,7 @@ export default function Navbar() {
               <div className="divide-y divide-[#212226]/[0.07] border-y border-[#212226]/[0.07]">
                 <Link
                   href="/work"
+                aria-current={activePath === "/work" ? "page" : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                   className="min-h-[52px] px-2 flex items-center justify-between text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                 >
@@ -492,6 +513,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   href="/company"
+                aria-current={activePath === "/company" ? "page" : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                   className="min-h-[52px] px-2 flex items-center justify-between text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                 >
@@ -500,6 +522,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   href="/blog"
+                aria-current={activePath === "/blog" ? "page" : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                   className="min-h-[52px] px-2 flex items-center justify-between text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                 >
@@ -508,6 +531,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   href="/contact"
+                aria-current={activePath === "/contact" ? "page" : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                   className="min-h-[52px] px-2 flex items-center justify-between text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                 >
@@ -521,6 +545,7 @@ export default function Navbar() {
             <div className="max-w-2xl w-full mx-auto px-2 sm:px-4 pt-3 border-t border-[#212226]/[0.07]">
               <Link
                 href="/contact"
+                aria-current={activePath === "/contact" ? "page" : undefined}
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full min-h-[50px] inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm sm:text-base font-semibold bg-[#121317] hover:bg-[#2F3034] active:scale-[0.99] text-white shadow-[0_10px_28px_rgba(18,19,23,0.18)] transition-all"
               >

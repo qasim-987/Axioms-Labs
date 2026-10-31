@@ -83,7 +83,7 @@ export default function CompanyPageContent() {
     <section className="pt-36 pb-24 sm:pt-44 sm:pb-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Antimatter-inspired Split Headline */}
-        <div className="max-w-4xl mb-16">
+        <div data-page-header className="max-w-4xl mb-16">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

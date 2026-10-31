@@ -40,7 +40,7 @@ export default function WorkPageContent() {
     <section className="pt-36 pb-24 sm:pt-44 sm:pb-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Antimatter-inspired Character-Split `W O R K` Hero Header */}
-        <div className="max-w-4xl mb-14">
+        <div data-page-header className="max-w-4xl mb-14">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -52,7 +52,7 @@ export default function WorkPageContent() {
           </motion.div>
 
           <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2 mb-6">
-            <h1
+            <h1 data-reveal="lines"
               aria-label="WORK"
               className="text-6xl sm:text-8xl font-extrabold tracking-[-0.04em] text-[#121317] leading-none"
               style={{ perspective: "900px" }}
@@ -172,6 +172,7 @@ export default function WorkPageContent() {
 
               return (
                 <motion.div
+                  data-reveal={idx < 2 ? "fade-up" : undefined}
                   layout
                   key={study.slug}
                   initial={
