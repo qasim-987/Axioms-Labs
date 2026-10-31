@@ -23,6 +23,8 @@ import ServicesParticleCanvas, {
   evaluateServicesMasterTimeline,
 } from "./ServicesParticleCanvas";
 import MobileServices from "./MobileServices";
+import { CARD_TRANSITION, cardPhase, SERVICE_CARD_COLOR } from "@/lib/serviceCardMotion";
+export { CARD_TRANSITION } from "@/lib/serviceCardMotion";
 import SplitTextReveal from "./SplitTextReveal";
 import { renderServiceToolIcon } from "./ServiceToolIcons";
 
@@ -43,20 +45,11 @@ export const DECK_TUNING = {
   DETAIL_GHOST_MULTIPLIER: 0.5,
 } as const;
 
-/** Card-only phases; shared particle progress, pin length and morph windows stay unchanged. */
-export const CARD_TRANSITION = {
-  EXIT_START: .15, EXIT_END: .60, EXIT_WIDTH_RATIO: .35,
-  INK_START: .45, INK_END: .80, CONTENT_START: .80,
-  OUT_END: .25, CONTENT_STAGGER: .025, UI_SWAP: .50,
-  INK_RADIUS: 150, DOT_MS: 250,
-} as const;
-const cardPhase = (t:number, a:number, b:number) => Math.max(0, Math.min(1, (t-a)/(b-a)));
-
 export const SERVICES_SECTION_TUNING = {
   SHOW_UPCOMING_PREVIEW,
   SECTION_BG: "#FFFFFF",
-  ACTIVE_CARD_TOP: "#403E7C",
-  ACTIVE_CARD_BOTTOM: "#403E7C",
+  ACTIVE_CARD_TOP: SERVICE_CARD_COLOR,
+  ACTIVE_CARD_BOTTOM: SERVICE_CARD_COLOR,
   INACTIVE_CARD_BG: "#F8F9FC",
   SCROLL_VH_PER_STEP: 82, // Desktop: 328vh smooth pinned travel across 4 services (unchanged)
   MOBILE_SCROLL_SVH_PER_STEP: 80, // Mobile/Tablet (<1024px): 80svh per step (target: 70-90svh)

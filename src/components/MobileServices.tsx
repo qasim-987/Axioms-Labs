@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState, type MutableRefObject } from "react";
 import Link from "next/link";
+import { useMobileCardTransition } from "@/hooks/useMobileCardTransition";
+import { SERVICE_CARD_COLOR } from "@/lib/serviceCardMotion";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { ServiceItem } from "@/data/services";
 import ServicesParticleCanvas, { evaluateServicesMasterTimeline, STEP_HOLD_PROGRESS, type ServicesHoverBridge } from "./ServicesParticleCanvas";
@@ -29,6 +31,15 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
   const section=useRef<HTMLElement>(null), header=useRef<HTMLDivElement>(null), track=useRef<HTMLDivElement>(null);
   const contents=useRef<(HTMLDivElement|null)[]>([]), trigger=useRef<ScrollTrigger|null>(null);
   const [index,setIndex]=useState(0), active=useRef(0);
+  const transitionHost=useRef<HTMLDivElement>(null);
+  const [showParticles,setShowParticles]=useState(false);
+  useMobileCardTransition(section,transitionHost,index);
+  useEffect(()=>{
+    const media=matchMedia("(min-width: 768px)");
+    const update=()=>setShowParticles(media.matches);
+    update();media.addEventListener("change",update);
+    return()=>media.removeEventListener("change",update);
+  },[]);
   const [stacked,setStacked]=useState(false), [nav,setNav]=useState(68);
   const [scales,setScales]=useState([1,1,1,1]);
   const width=useRef(1), locked=useRef<"page"|"track"|"control"|null>(null);
@@ -153,12 +164,13 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
   </div>;
   return <section ref={section} id="services" data-active-step={index} className={`mobile-services-stage ${stacked?"is-stacked":"is-side"}`} style={{"--mobile-nav":`${nav}px`} as React.CSSProperties} aria-labelledby="mobile-services-heading">
     <header ref={header} className="mobile-services-heading"><div><span className="mobile-services-badge">04 CORE CAPABILITIES</span><h2 id="mobile-services-heading">Our <span>Services</span></h2></div><div className="mobile-service-steps"><span>0{index+1} / 04</span><div>{entries.map((e,i)=><button key={e.service.id} type="button" onClick={()=>seek(i)} aria-label={`Show ${e.service.title}`} aria-pressed={i===index}><span /></button>)}</div></div></header>
-    <div className="mobile-services-row"><div className="mobile-services-shape"><ServicesParticleCanvas scrollProgressRef={progress} hoverBridgeRef={bridge} layoutMode="mobile" onWebGLUnavailable={onWebGLUnavailable} className="w-full h-full" /></div>
+    <div className="mobile-services-row">{showParticles && <div className="mobile-services-shape"><ServicesParticleCanvas scrollProgressRef={progress} hoverBridgeRef={bridge} layoutMode="mobile" onWebGLUnavailable={onWebGLUnavailable} className="w-full h-full" /></div>}
       <div className="mobile-card-area">
         {[2,1].map(slot=>index+slot<entries.length?<div key={slot} aria-hidden="true" className={`mobile-deck-preview depth-${slot}`} style={{transform:`translateX(${slot*SWIPE.DECK_STEP_PX}px) scale(${slot===1?.97:.94})`}}>{card(entries[index+slot],index+slot,true)}</div>:null)}
         <div ref={track} className="mobile-services-track" role="region" aria-roledescription="carousel" aria-label="Our services" tabIndex={0} onKeyDown={e=>{if(e.key==="ArrowRight" || e.key==="ArrowLeft"){e.preventDefault();seek(index+(e.key==="ArrowRight"?1:-1));}}}>
-          {entries.map((entry,i)=><article key={entry.service.id} className="mobile-service-card" role="group" aria-roledescription="slide" aria-label={`${i+1} of ${entries.length}: ${entry.service.title}`} aria-hidden={i!==index}>{card(entry,i)}</article>)}
+          {entries.map((entry,i)=><article key={entry.service.id} className="mobile-service-card" style={{background:SERVICE_CARD_COLOR}} role="group" aria-roledescription="slide" aria-label={`${i+1} of ${entries.length}: ${entry.service.title}`} aria-hidden={i!==index}>{card(entry,i)}</article>)}
         </div>
+        <div ref={transitionHost} className="mobile-card-transition" aria-hidden="true" />
       </div></div>
     <div className="mobile-service-controls"><button type="button" onClick={()=>seek(index-1)} disabled={index===0} aria-label="Previous service">←</button><p aria-live="polite" aria-atomic="true">{index+1} of 4 · {entries[index].service.title}</p><button type="button" onClick={()=>seek(index+1)} disabled={index===3} aria-label="Next service">→</button></div>
   </section>;
