@@ -141,6 +141,12 @@ export default function SmoothScrollProvider({
       }
     };
 
+    const pause = () => lenis?.stop();
+    const resume = () => lenis?.start();
+    const reset = () => lenis?.scrollTo(0, { immediate: true, force: true });
+    window.addEventListener("page-transition:pause", pause);
+    window.addEventListener("page-transition:resume", resume);
+    window.addEventListener("page-transition:reset-scroll", reset);
     mountOrUnmountLenis();
     fineDesktopQuery.addEventListener("change", mountOrUnmountLenis);
 
@@ -192,6 +198,9 @@ export default function SmoothScrollProvider({
     document.addEventListener("click", handleAnchorClick);
 
     return () => {
+      window.removeEventListener("page-transition:pause", pause);
+      window.removeEventListener("page-transition:resume", resume);
+      window.removeEventListener("page-transition:reset-scroll", reset);
       fineDesktopQuery.removeEventListener("change", mountOrUnmountLenis);
       document.removeEventListener("click", handleAnchorClick);
       if (tickerFn) {

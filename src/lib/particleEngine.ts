@@ -685,6 +685,8 @@ export function createSharedParticleStage(
       );
       observer.disconnect();
       renderer.dispose();
+      // Route transitions must release the GPU context, not just its resources.
+      renderer.forceContextLoss();
       if (renderer.domElement.parentElement) {
         renderer.domElement.parentElement.removeChild(renderer.domElement);
       }

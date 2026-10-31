@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
 import SplitTextReveal from "@/components/SplitTextReveal";
@@ -34,7 +33,6 @@ export default function BlogIndexPage() {
 
   return (
     <div className="relative min-h-screen bg-[#FFFFFF] text-[#121317] flex flex-col justify-between">
-      <Navbar />
 
       <main
         id="main-content"
@@ -43,7 +41,7 @@ export default function BlogIndexPage() {
         <LightRays />
 
         {/* Centered Header Block */}
-        <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 flex flex-col items-center">
+        <div data-page-header className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

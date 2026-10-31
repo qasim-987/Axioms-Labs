@@ -42,14 +42,14 @@ export default function SplitTextReveal({
   }, []);
 
   if (prefersReduced) {
-    return <Tag className={className}>{text}</Tag>;
+    return <Tag data-reveal={Tag === "h1" ? "lines" : undefined} className={className}>{text}</Tag>;
   }
 
   const words = text.split(" ");
   let globalCharIndex = 0;
 
   return (
-    <Tag aria-label={text} className={`${className} [perspective:800px]`}>
+    <Tag data-reveal={Tag === "h1" ? "lines" : undefined} aria-label={text} className={`${className} [perspective:800px]`}>
       <motion.span
         aria-hidden="true"
         initial="hidden"

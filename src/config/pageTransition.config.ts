@@ -1,0 +1,23 @@
+/** Seconds unless the name ends in MS. Colors reference existing semantic tokens. */
+export const PAGE_TRANSITION = {
+  COLOR_CURTAIN: "var(--palette-grey-1200)",
+  COLOR_BAND: "var(--ag-blue)",
+  COLOR_PROGRESS: "var(--ag-periwinkle)",
+  COLOR_TEXT: "var(--theme-on-primary)",
+  BAND_HEIGHT_VH: 8,
+  MOBILE_BAND_HEIGHT_VH: 4.5,
+  DURATION_COVER: .65,
+  DURATION_REVEAL: .7,
+  MIN_HOLD: .15,
+  EASE_COVER: "power3.inOut",
+  EASE_TEXT: "expo.out",
+  NAV_ABOVE_CURTAIN: true,
+  PLAY_ON_FIRST_LOAD: false,
+  SHOW_PAGE_LABEL: false,
+  MOBILE_DURATION_FACTOR: .85,
+  TEXT_DURATION: .65,
+  LINE_STAGGER: .09,
+  READY_TIMEOUT_MS: 800,
+  SAFETY_TIMEOUT_MS: 4000,
+  PROGRESS_DELAY_MS: 600,
+} as const;

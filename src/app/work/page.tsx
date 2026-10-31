@@ -1,5 +1,4 @@
 import React from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactSection from "@/components/ContactSection";
 import WorkPageContent from "@/components/WorkPageContent";
@@ -13,7 +12,6 @@ export const metadata = {
 export default function WorkPage() {
   return (
     <main className="min-h-screen bg-[#FFFFFF] text-[#121317]">
-      <Navbar />
       <WorkPageContent />
       <ContactSection />
       <Footer />

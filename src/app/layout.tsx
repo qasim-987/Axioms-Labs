@@ -7,6 +7,8 @@ import "@fontsource/plus-jakarta-sans/latin-700.css";
 import "@fontsource/plus-jakarta-sans/latin-800.css";
 import "@fontsource/plus-jakarta-sans/latin-800-italic.css";
 import "./globals.css";
+import TransitionErrorBoundary from "@/components/transitions/TransitionErrorBoundary";
+import PageTransitionProvider from "@/components/transitions/PageTransitionProvider";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 
@@ -106,7 +108,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <ScrollProgressBar />
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <SmoothScrollProvider><TransitionErrorBoundary fallback={children}><PageTransitionProvider>{children}</PageTransitionProvider></TransitionErrorBoundary></SmoothScrollProvider>
       </body>
     </html>
   );

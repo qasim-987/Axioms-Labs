@@ -223,10 +223,11 @@ export default function Hero() {
         {/* Centered Main Hero Stack */}
         <div
           ref={foregroundCopyRef}
+          data-page-header
           className="hero-touch-copy my-auto py-10 sm:py-14 flex flex-col items-center justify-center text-center max-w-4xl mx-auto pointer-events-auto will-change-transform"
         >
           {/* Antimatter Character-by-Character 3D Kinetic Headline */}
-          <h1
+          <h1 data-reveal="lines"
             aria-label="Building Digital Solutions That Matter"
             className="flex flex-col items-center justify-center text-center tracking-tight text-[#121317] text-4xl sm:text-6xl md:text-[64px] lg:text-[72px] leading-[1.08] select-none mb-7 [perspective:900px]"
           >
@@ -269,7 +270,7 @@ export default function Hero() {
           </motion.p>
 
           {/* Centered Paired Magnetic Antigravity Pill Buttons */}
-          <motion.div
+          <motion.div data-reveal="fade-up"
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{

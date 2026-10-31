@@ -2,7 +2,6 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
 import { blogPosts } from "@/data/blog";
@@ -57,7 +56,6 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
 
   return (
     <div className="relative min-h-screen bg-[#FFFFFF] text-[#121317] flex flex-col justify-between">
-      <Navbar />
 
       <main
         id="main-content"
@@ -75,7 +73,7 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
         </Link>
 
         {/* Centered Article Header */}
-        <header className="mb-12 pb-10 border-b border-[#212226]/[0.08] text-center flex flex-col items-center">
+        <header data-page-header className="mb-12 pb-10 border-b border-[#212226]/[0.08] text-center flex flex-col items-center">
           <div className="flex flex-wrap items-center justify-center gap-3 mb-5">
             <span className="text-xs font-mono uppercase px-3 py-1 rounded-full bg-[#3186FF]/[0.08] text-[#3186FF] border border-[#3186FF]/20 font-semibold">
               {post.category}
@@ -91,11 +89,11 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#121317] leading-tight mb-6 max-w-3xl mx-auto">
+          <h1 data-reveal="lines" className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#121317] leading-tight mb-6 max-w-3xl mx-auto">
             {post.title}
           </h1>
 
-          <p className="text-lg text-[#45474D] leading-relaxed mb-8 max-w-2xl mx-auto">
+          <p data-reveal="lines" className="text-lg text-[#45474D] leading-relaxed mb-8 max-w-2xl mx-auto">
             {post.excerpt}
           </p>
 

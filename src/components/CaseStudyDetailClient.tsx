@@ -4,7 +4,6 @@ import ToolChipContent from "@/components/ToolChipContent";
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
 import SplitTextReveal from "@/components/SplitTextReveal";
@@ -34,7 +33,6 @@ export default function CaseStudyDetailClient({
 
   return (
     <>
-      <Navbar />
 
       <main
         id="main-content"
@@ -65,7 +63,7 @@ export default function CaseStudyDetailClient({
           </div>
 
           {/* Centered Header Block */}
-          <div className="mb-14 text-center flex flex-col items-center">
+          <div data-page-header className="mb-14 text-center flex flex-col items-center">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
