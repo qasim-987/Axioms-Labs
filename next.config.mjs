@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  /**
+   * Suppress Next.js's own `X-Powered-By: Next.js`. The acceptance criteria for this change
+   * are "no X-Powered-By"; the backend banner was already removed in securityHeaders.ts, but
+   * the frontend was still advertising its framework on every response.
+   */
+  poweredByHeader: false,
   async redirects() {
     return [
       // Redirect removed competitor-cloned demo/resource routes cleanly
@@ -154,6 +160,43 @@ const nextConfig = {
     ];
   },
   async headers() {
+    /**
+     * Enforced policy, deliberately limited to frame-ancestors. The rest of the policy ships
+     * as Report-Only below and must be reviewed against real violation reports before it is
+     * enforced, because promoting it early is the kind of change that silently breaks the site.
+     *
+     * Note: X-Frame-Options SAMEORIGIN + frame-ancestors 'self' block this site from being
+     * rendered in a cross-origin iframe — including the Vercel dashboard preview and embedded
+     * IDE/platform previews (docs/03-TECHNICAL-ARCHITECTURE.md:238 flags this).
+     */
+    const enforcedCsp = "frame-ancestors 'self'";
+
+    /**
+     * Report-Only policy derived from the actual production build, not from assumptions:
+     *   - every <script src> is a relative /_next/static/chunks/* file (0 external origins)
+     *   - 6-8 inline <script> tags per page, including Next's self.__next_f RSC flight data
+     *     and the JSON-LD blocks, so script-src needs 'unsafe-inline'
+     *   - 0 inline <style> tags but 47-301 inline style="" attributes per page, plus GSAP and
+     *     framer-motion writing styles via CSSOM, so style-src needs 'unsafe-inline'
+     *   - 0 occurrences of eval( or new Function( across all 32 shipped chunks, so
+     *     'unsafe-eval' is NOT required and is intentionally omitted
+     *   - no next/font, no Google Fonts, no analytics, no next/script, and no absolute
+     *     client-side fetch(), so font-src and connect-src need only 'self'
+     */
+    const reportOnlyCsp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data:",
+      "font-src 'self'",
+      "connect-src 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'self'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
     return [
       {
         source: "/(.*)",
@@ -167,6 +210,11 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          // One year, no preload: preload-list membership is effectively irreversible.
+          { key: "Strict-Transport-Security", value: "max-age=31536000" },
+          { key: "Content-Security-Policy", value: enforcedCsp },
+          { key: "Content-Security-Policy-Report-Only", value: reportOnlyCsp },
         ],
       },
     ];

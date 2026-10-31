@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { getInquiryMetrics } from "../services/delivery.service";
 
 export const healthRouter = Router();
 
@@ -12,6 +11,10 @@ healthRouter.get("/health", (_req, res) => {
     version: "2.4.0",
     uptimeSeconds: Math.floor((Date.now() - bootTime) / 1000),
     timestamp: new Date().toISOString(),
-    metrics: getInquiryMetrics(),
+    /**
+     * No `metrics` block. It disclosed which delivery adapters hold live credentials
+     * (configuredAdapters) plus submitted-inquiry volume, to any unauthenticated caller.
+     * The frontend only ever reads status/service/version/uptimeSeconds/timestamp.
+     */
   });
 });

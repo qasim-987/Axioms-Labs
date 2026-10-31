@@ -34,6 +34,7 @@ export default function ContactSection() {
   const [budget, setBudget] = useState<string>(DEFAULT_BUDGET);
   const [message, setMessage] = useState("");
   const [botField, setBotField] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
   const [formLoadedAt, setFormLoadedAt] = useState<number>(0);
 
   const [status, setStatus] = useState<
@@ -66,6 +67,7 @@ export default function ContactSection() {
         message,
         source: "home_contact_section",
         botField,
+        websiteUrl,
         formLoadedAt,
       });
 
@@ -227,6 +229,14 @@ export default function ContactSection() {
                       autoComplete="off"
                       value={botField}
                       onChange={(e) => setBotField(e.target.value)}
+                    />
+                    <input
+                      type="url"
+                      name="websiteUrl"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={websiteUrl}
+                      onChange={(e) => setWebsiteUrl(e.target.value)}
                     />
                   </div>
 
