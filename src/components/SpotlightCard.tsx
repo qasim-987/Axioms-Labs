@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { MOTION_EASE } from "@/lib/motionTokens";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface SpotlightCardProps {
   children: React.ReactNode;
@@ -59,8 +60,12 @@ export default function SpotlightCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{
-        duration: 0.65,
-        delay,
+        // `prefersReduced` resolves after mount (see useReducedMotion), so the
+        // `initial={false}` shortcut above cannot apply on the first render.
+        // Zero the transition instead so reduced-motion users still get the
+        // instant, zero-motion reveal required by Animations.md §12.3.
+        duration: prefersReduced ? 0 : 0.65,
+        delay: prefersReduced ? 0 : delay,
         ease: MOTION_EASE.cinematicOut,
       }}
       style={

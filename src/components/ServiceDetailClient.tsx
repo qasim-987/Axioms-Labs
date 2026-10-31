@@ -56,6 +56,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
     budget: DEFAULT_BUDGET,
     message: "",
     botField: "",
+    websiteUrl: "",
   });
 
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -88,6 +89,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
         message: formData.message,
         source: `service_pillar:${service.slug}`,
         botField: formData.botField,
+        websiteUrl: formData.websiteUrl,
         formLoadedAt,
       });
 
@@ -398,6 +400,16 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                     value={formData.botField}
                     onChange={(e) =>
                       setFormData({ ...formData, botField: e.target.value })
+                    }
+                  />
+                  <input
+                    type="url"
+                    name="websiteUrl"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={formData.websiteUrl}
+                    onChange={(e) =>
+                      setFormData({ ...formData, websiteUrl: e.target.value })
                     }
                   />
                 </div>

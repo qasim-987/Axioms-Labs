@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { MOTION_EASE, STAGGER } from "@/lib/motionTokens";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface SplitTextRevealProps {
   text: string;

@@ -4,7 +4,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { env } from "../config/env";
 import { ContactPayload } from "../schemas/contact.schema";
-import { sanitizePlainText } from "./antiSpam.service";
+import { sanitizePlainText, sanitizeSingleLine } from "./antiSpam.service";
 
 export interface StoredInquiry {
   id: string;
@@ -54,12 +54,16 @@ export async function processAndDeliverInquiry(
   }
   const id = `axs_${crypto.randomUUID().slice(0, 12)}`;
   const receivedAt = new Date().toISOString();
-  const cleanFirst = sanitizePlainText(payload.firstName);
-  const cleanLast = sanitizePlainText(payload.lastName || "");
+  // Single-line fields are interpolated into the email subject and into one-line
+  // ledger/webhook/CRM fields, so they lose every line break. `message` keeps its
+  // paragraphs: sanitizePlainText normalises CRLF to LF but preserves real line breaks.
+  const cleanFirst = sanitizeSingleLine(payload.firstName);
+  const cleanLast = sanitizeSingleLine(payload.lastName || "");
   const clientName = `${cleanFirst} ${cleanLast}`.trim();
-  const cleanCompany = sanitizePlainText(payload.company || "");
-  const cleanService = sanitizePlainText(payload.service || "General Scoping");
-  const cleanBudget = sanitizePlainText(payload.budget || "Unspecified");
+  const cleanCompany = sanitizeSingleLine(payload.company || "");
+  const cleanService = sanitizeSingleLine(payload.service || "General Scoping");
+  const cleanBudget = sanitizeSingleLine(payload.budget || "Unspecified");
+  const cleanSource = sanitizeSingleLine(payload.source || "website");
   const cleanMessage = sanitizePlainText(payload.message);
 
   const deliveryChannels: string[] = [];
@@ -85,7 +89,7 @@ export async function processAndDeliverInquiry(
             `Company: ${cleanCompany || "N/A"}`,
             `Service Pillar: ${cleanService}`,
             `Budget Tier: ${cleanBudget}`,
-            `Source: ${payload.source}`,
+            `Source: ${cleanSource}`,
             "",
             "Requirements:",
             cleanMessage,
@@ -136,7 +140,7 @@ export async function processAndDeliverInquiry(
     company: cleanCompany,
     service: cleanService,
     budget: cleanBudget,
-    source: payload.source || "website",
+    source: cleanSource,
     messageLength: cleanMessage.length,
     messagePreview: cleanMessage.slice(0, 140),
     downstreamDelivered,

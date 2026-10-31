@@ -28,8 +28,16 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local env files
+#
+# `.env.*` is a catch-all so a new per-environment file (e.g. .env.staging, .env.live) can
+# never be committed by accident. The negations below MUST stay after it, otherwise the
+# committed templates get ignored too.
 .env*.local
 .env
+.env.production
+.env.*
+!.env.example
+!backend/.env.example
 backend/.env
 
 # Vercel

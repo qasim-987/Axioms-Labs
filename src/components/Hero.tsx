@@ -2,13 +2,14 @@
 
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ParticleSphereHero from "./ParticleSphereHero";
 import LightBeam from "./LightBeam";
 import RollingNumber from "./RollingNumber";
 import { MOTION_EASE } from "@/lib/motionTokens";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { ArrowUpRight } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
