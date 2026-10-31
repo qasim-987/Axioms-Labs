@@ -157,7 +157,12 @@ npm run build:backend
 Optional offline QA harnesses live in `scripts/` (`check-performance-tier.cjs`, `check-services-timeline.cjs`, `check-card-transitions.cjs`, `check-mobile-view.cjs`, `check-services-browser.cjs`, `check-responsive-extras.cjs`, `check-hero-restore.cjs`, `check-mobile-config.cjs`). They require Playwright/pngjs installed **outside** the repository and are therefore not part of `package.json`.
 
 ### 5.5 Continuous integration
-`.github/workflows/ci.yml` runs on every push and pull request to `main`: legacy brand-string hygiene check → `npm ci` → front-end and back-end type-check → ESLint → production front-end build. The back-end job additionally compiles the service.
+`.github/workflows/ci.yml` runs on every push and pull request to `main`, as two independent jobs that each install and check **only their own workspace**:
+
+- **`frontend-verify`** — legacy brand-string hygiene check → `npm ci` (root) → `npm run typecheck:frontend` → `npm run lint` → `npm run build`.
+- **`backend-verify`** — `npm ci` (in `backend/`) → `npm run typecheck` → `npm run build`, all under `working-directory: ./backend`.
+
+The type-check is split per workspace on purpose. The two trees declare different majors of the same packages (`zod` 4.x at the root vs 3.x in `backend/`), so running the back-end check from a job that never installed `backend/node_modules` makes `tsc` resolve the wrong versions and fail. Locally, `npm run typecheck` still checks **both** workspaces — that aggregate is the `AGENTS.md` §4 Definition of Done; CI uses the scoped `typecheck:frontend` / `typecheck:backend` variants. See `PROGRESS.md` §5.2.
 
 ---
 

@@ -126,6 +126,8 @@ A change that touches `backend/` **must** additionally pass:
 npm run build:backend
 ```
 
+`npm run typecheck` is the aggregate and checks **both** workspaces — correct on a machine that has run `npm ci` in the root *and* in `backend/`. CI checks each workspace separately (`npm run typecheck:frontend` in `frontend-verify`, `npm run typecheck` under `working-directory: ./backend` in `backend-verify`) because each job installs only one dependency tree, and the two trees carry different majors of the same packages (`zod` 4.x root vs 3.x back-end). **Do not** point a single-workspace CI job at the aggregate script; that reintroduces the failure documented in `PROGRESS.md` §5.2.
+
 Reference route table produced by a healthy `npm run build` — **12** route definitions, **23** prerendered routes, **26** pages in the build counter:
 
 ```

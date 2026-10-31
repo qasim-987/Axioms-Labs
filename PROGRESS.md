@@ -160,6 +160,47 @@ Two caveats recorded honestly:
 - The `no-preference` "elements still invisible after a synthetic scroll" count is **not** a stable metric — five repeat runs on one unchanged build returned `[75, 5, 41, 31, 41]`, because GSAP ScrollTrigger scrub timelines are sampled mid-animation. Under `reduce` the same measurement was `[0, 0, 0, 0, 0]`.
 - `MethodologySection`'s PHASE cards and `/work`'s hand-rolled `WORK` heading never consult `prefers-reduced-motion` at all (§6.2 item 9). Pre-existing, unrelated to hydration, and left untouched.
 
+### 5.2 CI workspace split — front-end job no longer type-checks the back-end
+
+**Symptom.** `.github/workflows/ci.yml`'s `frontend-verify` job failed at step 6, "Strict TypeScript Check (Front-End)". It failed identically on `main` at `e93cf7a`, so it predates any work on this branch. Steps 1–5 passed, 7–8 were skipped, and the `backend-verify` job passed.
+
+**Root cause.** The root `typecheck` script chained both workspaces:
+
+```json
+"typecheck": "tsc --noEmit && npm --prefix backend run typecheck"
+```
+
+The front-end job runs `npm ci` at the repository root only — it never installs `backend/node_modules`. So the second half of that script ran the back-end's `tsc` with the back-end's dependencies missing, and module resolution walked up into the root tree. The two workspaces declare **different majors of the same packages**:
+
+| Package | root `node_modules` | `backend/node_modules` |
+| :--- | :--- | :--- |
+| `zod` | **4.6.7** | **3.25.76** |
+| `express` | absent | 4.22.3 |
+| `cors` | absent | 2.8.6 |
+
+That produced **23 errors**: 8 × `TS2307` (cannot find `express`/`cors`), 12 × `TS7006` (knock-on implicit `any` once those types vanished), and 3 × `TS2769` in `backend/src/schemas/contact.schema.ts` where `zod` resolved to v4 and `required_error` no longer exists in `$ZodStringParams`. Locally the gate passed because a developer machine has both dependency trees installed, which is why this was invisible outside CI.
+
+**Fix.** Split the script so each workspace is checked with its own dependencies, mirroring the convention the repo already uses for `build` / `build:frontend` / `build:backend`:
+
+```json
+"typecheck":          "npm run typecheck:frontend && npm run typecheck:backend",
+"typecheck:frontend": "tsc --noEmit",
+"typecheck:backend":  "npm --prefix backend run typecheck"
+```
+
+`ci.yml`'s front-end job now calls `npm run typecheck:frontend`. The back-end job is unchanged — it already runs `npm run typecheck` under `working-directory: ./backend`, i.e. the back-end's own script. The aggregate `npm run typecheck` is deliberately kept so the `AGENTS.md` §4 Definition of Done still type-checks **both** workspaces on a machine that has both installed; only CI, where each job installs one tree, uses the scoped variants.
+
+**Verification.** Each CI job was reproduced independently in a clean checkout of the working tree with only that job's dependencies present:
+
+| CI job | Dependencies present | Steps run | Result |
+| :--- | :--- | :--- | :--- |
+| `frontend-verify` | root only, `backend/node_modules` **absent** | brand grep → `typecheck:frontend` → `lint` → `build` | **all pass** — typecheck exit 0; lint exit 0 (5 pre-existing `landing/*` warnings, 0 errors); build exit 0, `Generating static pages (26/26)` |
+| `backend-verify` | `backend/` only, root `node_modules` **absent** | `typecheck` → `build` | **all pass** — both exit 0, `dist/` emitted |
+
+Control, same front-end environment, old command: `npm run typecheck` → **exit 2 with the 23 errors above**. Same environment, new command: `npm run typecheck:frontend` → **exit 0**. In the real tree with both dependency sets installed, all three of `typecheck:frontend`, `typecheck:backend` and the aggregate `typecheck` exit 0 with 0 errors.
+
+**Still open (not changed here).** The front-end job's brand-hygiene grep still lists a `public/` directory that does not exist (§6.2 item 7); `grep` exits 2 on the missing path, which the surrounding `if` treats as "no match", so the step passes. Cosmetic noise only.
+
 ---
 
 ## 6. Open items

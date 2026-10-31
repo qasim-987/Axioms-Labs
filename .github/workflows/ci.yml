@@ -58,7 +58,13 @@ jobs:
         run: npm ci
 
       - name: Strict TypeScript Check (Front-End)
-        run: npm run typecheck
+        # Scoped to the front-end workspace on purpose. The aggregate
+        # `npm run typecheck` also runs the back-end check, and this job never
+        # installs `backend/node_modules` — so the back-end `tsc` would resolve
+        # `zod` from the root tree (v4) instead of the back-end's own (v3) and
+        # fail on `required_error`. Use `typecheck:frontend` here and let the
+        # back-end job type-check the back-end.
+        run: npm run typecheck:frontend
 
       - name: ESLint Verification
         run: npm run lint
