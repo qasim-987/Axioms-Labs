@@ -137,6 +137,29 @@ Route-by-route status, all verified HTTP 200 in the current build:
 | `/api/health` · `/api/services` · `/api/contact/status` | ✅ 200 |
 | `POST /api/contact` | ✅ Live — rate limit, anti-spam and Zod validation confirmed in code |
 
+### 5.1 Reduced-motion hydration fix — reproduction and verification
+
+Browser evidence captured with Playwright 1.64.1 driving a bundled Chromium 153 against the production build (`npm run build && npm start`), at 1440×900 and 390×844, with `reducedMotion` set per context.
+
+**Root cause.** `framer-motion`'s `useReducedMotion()` calls `initPrefersReducedMotion()`, which reads `window.matchMedia("(prefers-reduced-motion)")` *synchronously during render* (`motion-dom/dist/…/reduced-motion`). On the server that yields `false`; on the client's first render it yields the real value. Four components branch their **markup** on it, so with Reduce Motion enabled the server HTML and the client's first render disagreed → React #418, then #423 when the root fell back to a full client re-render.
+
+Fixed by importing the existing SSR-safe `@/hooks/useReducedMotion` (`useState(false)` + `useEffect`) in `Hero.tsx`, `ScrollProgressBar.tsx`, `SplitTextReveal.tsx` and `SpotlightCard.tsx`. `SplitTextReveal`'s `if (prefersReduced) return <Tag>{text}</Tag>` branch is what made this a *structural* mismatch (plain text vs. a per-character `span` tree).
+
+| Check | Before | After |
+| :--- | :--- | :--- |
+| Hydration signals, 23 routes × 2 modes (46 loads) | **23 failures** — every route under `reduce` threw #418/#423; `no-preference` clean | **0 failures** — clean in both modes |
+| Server-rendered HTML, 11 routes | — | **byte-identical** to pre-fix (script/RSC-payload chunks normalised) |
+| Behavioural assertions (branch selection, a11y names, layout, mobile overflow) | — | **38 / 38 pass** |
+| Content invisible after a full scroll, `reduce` | 0 | **0**, stable across 5 repeat runs |
+| `SpotlightCard` reveal, `reduce` | instant (via the crash-driven client re-render) | **41 ms — instant**, no framer reveal animation |
+| `SpotlightCard` reveal, `no-preference` | 650 ms | **650 ms — unchanged** (two WAAPI animations at 650 ms) |
+
+`SpotlightCard` needed one extra line: `initial` is read only at mount, so the `initial={prefersReduced ? false : …}` shortcut can no longer apply on the first render. `transition.duration`/`delay` are now zeroed when `prefersReduced` is true, preserving the instant reveal `Animations.md` §12.3 requires without touching the normal 0.65 s animation.
+
+Two caveats recorded honestly:
+- The `no-preference` "elements still invisible after a synthetic scroll" count is **not** a stable metric — five repeat runs on one unchanged build returned `[75, 5, 41, 31, 41]`, because GSAP ScrollTrigger scrub timelines are sampled mid-animation. Under `reduce` the same measurement was `[0, 0, 0, 0, 0]`.
+- `MethodologySection`'s PHASE cards and `/work`'s hand-rolled `WORK` heading never consult `prefers-reduced-motion` at all (§6.2 item 9). Pre-existing, unrelated to hydration, and left untouched.
+
 ---
 
 ## 6. Open items
@@ -147,11 +170,15 @@ Route-by-route status, all verified HTTP 200 in the current build:
 3. **Dark landing scope.** Decide whether `src/components/landing/` is promoted to the live home page or formally retired.
 
 ### 6.2 Engineering work available
-4. **Reduced-motion hydration errors** (React 418/423 on initial load). Reproduced on a clean baseline; not yet fixed.
+4. ~~**Reduced-motion hydration errors** (React 418/423 on initial load).~~ **DONE.** Fixed by switching the four branching components from `framer-motion`'s render-time `useReducedMotion()` to the SSR-safe `@/hooks/useReducedMotion`. Evidence in §5.1.
 5. **Dead `/api/labs/*` helpers** in `src/lib/apiClient.ts` — four exported functions with no back-end endpoint and no call sites.
 6. **Orphaned modules** — `src/data/navigation.ts`, `src/data/caseStudies.ts` and the landing folder can be deleted if the owner chooses to retire them (documentation in `README.md` §8 would need one line of adjustment).
 7. **CI brand-hygiene grep** references a `public/` directory that does not exist in this repository; the check still passes, but the path is noise.
 8. **Footer contact address is inconsistent with the rest of the site.** `src/components/Footer.tsx` links `hello@axiomstudio.ai`, while the canonical address everywhere else — metadata, JSON-LD, contact page, back-end notification default — is `contact@axiomstudio.agency`. Confirm which address is correct and align the footer.
+9. **Two components never consult `prefers-reduced-motion`** (pre-existing; found while verifying the hydration fix, and *not* hydration bugs — they render identically on server and client):
+   - `src/components/MethodologySection.tsx` — the four PHASE cards use `initial={{opacity:0,y:28,filter:"blur(6px)"}}` + `whileInView` with a hard-coded `duration: 0.68`, so they fade and slide in even for reduced-motion users.
+   - `src/components/WorkPageContent.tsx` — the hand-rolled `<h1 aria-label="WORK">` splits `"WORK"` into `motion.span` characters driven by `initial`/`animate` and gated only on `useBlurFilter`, never on reduced motion.
+   `Animations.md` §12.3 asks for "instant, zero-motion states with 100% content visibility". Content *is* fully visible in both cases; only the motion is not suppressed. Fixing either changes animation behaviour, so both were left alone under the "smallest possible fix" constraint.
 
 ### 6.3 Verification still owed
 8. Real-device iOS Safari and Android QA.
@@ -185,7 +212,7 @@ Ordered by risk-to-benefit, assuming owner decisions from §6.1 land first:
 
 1. **Documentation truth** — completed in this pass (README, PROGRESS, AGENTS reconciled).
 2. **Pricing confirmation** — resolve the 20 `TODO(owner)` markers; values propagate automatically to every form, service page, `<title>`, description and JSON-LD.
-3. **Reduced-motion hydration fix** — a scoped, well-reproduced bug.
+3. ~~**Reduced-motion hydration fix**~~ — **completed** (evidence in §5.1). Follow-on: the two reduced-motion *compliance* gaps found while verifying it, listed in §6.2 item 9.
 4. **Dead-code sweep** — remove the four `/api/labs/*` client helpers and the two orphaned data modules; keep the landing folder until the owner decides.
 5. **Landing decision** — promote or retire, with a documented migration plan if promoted.
 6. **Device and performance certification** — the outstanding evidence gaps in §6.3.

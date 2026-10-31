@@ -263,12 +263,14 @@ Two further orphaned files remain from earlier iterations: `src/data/navigation.
 Carried forward from the collaborator's own audits; none of these are silently hidden.
 
 1. **Pricing is unconfirmed.** 20 `TODO(owner): confirm` markers live in `src/config/pricing.ts` — currency, locale, every starting price and typical range, all six budget bands and the launch copy. The "free 30-minute consultation" is configured but deliberately disabled (`showConsultation: false`), so no unverified offer is published.
-2. **Reduced-motion hydration errors.** React 418/423 warnings were observed on initial load with reduced motion enabled. Reproduced on a clean baseline, not yet fixed.
+2. ~~**Reduced-motion hydration errors.**~~ **FIXED.** React 418/423 were thrown on every route when `prefers-reduced-motion: reduce` was active. Root cause: `framer-motion`'s `useReducedMotion()` resolves the media query *synchronously during render*, so the server rendered `false` while the client's first render produced `true`, and the four components that branch on it emitted different markup. They now import the SSR-safe `@/hooks/useReducedMotion` instead. Verified: 23 routes × 2 motion modes = 46 page loads, zero hydration signals.
+   A separate, still-open reduced-motion gap is listed at item 8.
 3. **Services scroll performance.** Measured at 3.69 average FPS under software-WebGL with 4× CPU throttling. This is functional QA, not a GPU benchmark; **no 55–60 FPS claim is certified**.
 4. **Pointer-release settle time.** Measured 182–569 ms depending on width, with a 360 px outlier above the strict target.
 5. **No device certification.** No Lighthouse, CLS, physical iOS Safari/Android, real-GPU or heap-growth certification exists. All viewport results come from emulated Chromium.
 6. **Dead client helpers.** `src/lib/apiClient.ts` still exports four `/api/labs/*` helpers (`analyzeEmotionViaApi`, `searchVectorsViaApi`, `synthesizeOutreachViaApi`, `fetchThreatTelemetryViaApi`) whose endpoints no longer exist in the back-end and which have no call sites.
 7. **Footer contact address differs from the canonical one.** `src/components/Footer.tsx` links `hello@axiomstudio.ai`; every other surface uses `contact@axiomstudio.agency`. Needs an owner decision and alignment.
+8. **Two components never consult `prefers-reduced-motion`.** Pre-existing, and *not* hydration bugs — they render identically on server and client. `MethodologySection.tsx` fades/slides its four PHASE cards in with a hard-coded `duration: 0.68`, and `WorkPageContent.tsx`'s hand-rolled `<h1 aria-label="WORK">` splits into `motion.span` characters gated only on `useBlurFilter`. Content is fully visible either way; only the motion is not suppressed. Fixing them changes animation behaviour, so they were deliberately left alone.
 
 ---
 
