@@ -1,10 +1,8 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
+import { isAllowedOrigin, originFromUrl } from "../config/env";
 import { contactPayloadSchema } from "../schemas/contact.schema";
 import { evaluateAntiSpam } from "../services/antiSpam.service";
-import {
-  getInquiryMetrics,
-  processAndDeliverInquiry,
-} from "../services/delivery.service";
+import { processAndDeliverInquiry } from "../services/delivery.service";
 import { createRateLimiter } from "../middleware/rateLimiter";
 
 export const contactRouter = Router();
@@ -15,7 +13,53 @@ const contactRateLimiter = createRateLimiter({
   keyPrefix: "contact_post",
 });
 
-contactRouter.post("/contact", contactRateLimiter, async (req, res) => {
+function headerValue(value: string | string[] | undefined): string {
+  return (Array.isArray(value) ? value[0] : value) || "";
+}
+
+/**
+ * Origin/Referer allowlist for the only state-changing endpoint.
+ *
+ * Fails open when neither header is present, which is what keeps the live form working:
+ * the frontend POSTs to a *relative* /api/contact that Next.js rewrites server-side, so the
+ * request that reaches Express comes from the Next process and may carry no Origin at all.
+ * That is safe here because a browser always attaches an Origin to a cross-site POST, so the
+ * absence of one means a non-browser client rather than a CSRF attempt.
+ */
+function requestOriginAllowed(req: Request): boolean {
+  const origin = headerValue(req.headers.origin);
+  if (origin) {
+    // `Origin` is already an origin, but normalise it anyway so a malformed value is
+    // rejected rather than compared loosely.
+    return isAllowedOrigin(originFromUrl(origin) || origin);
+  }
+
+  const referer = headerValue(req.headers.referer);
+  if (referer) {
+    const refererOrigin = originFromUrl(referer);
+    // An unparseable Referer is not evidence of a hostile origin; fall through to allow.
+    return refererOrigin ? isAllowedOrigin(refererOrigin) : true;
+  }
+
+  return true;
+}
+
+function originGuard(req: Request, res: Response, next: () => void): void {
+  if (requestOriginAllowed(req)) {
+    next();
+    return;
+  }
+  console.warn(
+    JSON.stringify({
+      event: "ORIGIN_REJECTED",
+      origin: headerValue(req.headers.origin) || headerValue(req.headers.referer),
+      timestamp: new Date().toISOString(),
+    })
+  );
+  res.status(403).json({ error: "Request origin not permitted." });
+}
+
+contactRouter.post("/contact", originGuard, contactRateLimiter, async (req, res) => {
   try {
     const rawBody = req.body || {};
 
@@ -80,7 +124,11 @@ contactRouter.post("/contact", contactRateLimiter, async (req, res) => {
 
 contactRouter.get("/contact/status", (_req, res) => {
   res.status(200).json({
+    /**
+     * Minimal liveness flag only. The previous spread of getInquiryMetrics() published which
+     * delivery adapters hold live credentials and how many inquiries had been submitted, to
+     * any unauthenticated caller. No file in src/ read those fields.
+     */
     operational: true,
-    ...getInquiryMetrics(),
   });
 });
