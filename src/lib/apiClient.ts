@@ -62,30 +62,14 @@ export async function checkBackendHealth(): Promise<BackendHealthStatus> {
 export async function submitContactInquiry(
   payload: ContactSubmissionInput
 ): Promise<{ ok: boolean; status: number; data: ContactSubmissionResponse }> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25_000);
-  try {
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
-    // Reverse proxies can return HTML errors; never show those to visitors.
-    const raw: unknown = await res.json().catch(() => null);
-    const body = typeof raw === "object" && raw !== null ? raw : {};
-    const success = res.ok && "success" in body && body.success === true;
-    const data: ContactSubmissionResponse = {
-      success,
-      message: "message" in body && typeof body.message === "string" ? body.message : "",
-      receivedAt: "receivedAt" in body && typeof body.receivedAt === "string" ? body.receivedAt : "",
-      inquiryId: "inquiryId" in body && typeof body.inquiryId === "string" ? body.inquiryId : undefined,
-      error: "error" in body && typeof body.error === "string" ? body.error : success ? undefined : "Unable to submit your inquiry. Please try again or email contact@axiomstudio.agency.",
-    };
-    return { ok: success, status: res.status, data };
-  } finally {
-    clearTimeout(timeout);
-  }
+  const res = await fetch("/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = (await res.json()) as ContactSubmissionResponse;
+  return { ok: res.ok, status: res.status, data };
 }
 
 export interface EmotionApiResponse {

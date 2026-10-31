@@ -4,7 +4,9 @@ import { clientsData } from "@/data/clients";
 import CaseStudyDetailClient from "@/components/CaseStudyDetailClient";
 
 interface CaseStudyPageProps {
-  params: Promise<{ slug: string }>;
+  params: {
+    slug: string;
+  };
 }
 
 export function generateStaticParams() {
@@ -13,9 +15,8 @@ export function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: CaseStudyPageProps) {
-  const { slug } = await params;
-  const study = clientsData.find((s) => s.slug === slug);
+export function generateMetadata({ params }: CaseStudyPageProps) {
+  const study = clientsData.find((s) => s.slug === params.slug);
   if (!study) return { title: "Case Study Not Found | Axiom Studio" };
 
   return {
@@ -24,9 +25,8 @@ export async function generateMetadata({ params }: CaseStudyPageProps) {
   };
 }
 
-export default async function CaseStudyDetail({ params }: CaseStudyPageProps) {
-  const { slug } = await params;
-  const currentIndex = clientsData.findIndex((s) => s.slug === slug);
+export default function CaseStudyDetail({ params }: CaseStudyPageProps) {
+  const currentIndex = clientsData.findIndex((s) => s.slug === params.slug);
 
   if (currentIndex === -1) {
     notFound();

@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 import { clientsData } from "@/data/clients";
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: {
+    slug: string;
+  };
 }
 
 export function generateStaticParams() {
@@ -11,7 +13,6 @@ export function generateStaticParams() {
   }));
 }
 
-export default async function CaseStudyRedirect({ params }: PageProps) {
-  const { slug } = await params;
-  redirect(`/work/${slug}`);
+export default function CaseStudyRedirect({ params }: PageProps) {
+  redirect(`/work/${params.slug}`);
 }

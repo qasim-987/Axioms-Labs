@@ -14,7 +14,9 @@ import {
 } from "lucide-react";
 
 interface ArticlePageProps {
-  params: Promise<{ slug: string }>;
+  params: {
+    slug: string;
+  };
 }
 
 export function generateStaticParams() {
@@ -23,9 +25,8 @@ export function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+export function generateMetadata({ params }: ArticlePageProps): Metadata {
+  const post = blogPosts.find((p) => p.slug === params.slug);
   if (!post) {
     return { title: "Article Not Found | Axiom Studio" };
   }
@@ -42,9 +43,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   };
 }
 
-export default async function BlogArticlePage({ params }: ArticlePageProps) {
-  const { slug } = await params;
-  const postIndex = blogPosts.findIndex((p) => p.slug === slug);
+export default function BlogArticlePage({ params }: ArticlePageProps) {
+  const postIndex = blogPosts.findIndex((p) => p.slug === params.slug);
   if (postIndex === -1) {
     notFound();
   }

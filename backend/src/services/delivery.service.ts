@@ -1,4 +1,3 @@
-import { enqueueInquiry } from "./outbox.service";
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -21,7 +20,7 @@ export interface StoredInquiry {
   deliveryChannels: string[];
 }
 
-const DATA_DIR = env.inquiryDataDir || path.resolve(process.cwd(), "data");
+const DATA_DIR = path.resolve(__dirname, "../../data");
 const INQUIRIES_FILE = path.join(DATA_DIR, "inquiries.jsonl");
 
 let inquiryCountSession = 0;
@@ -43,15 +42,6 @@ async function fetchWithTimeout(
 export async function processAndDeliverInquiry(
   payload: ContactPayload
 ): Promise<StoredInquiry> {
-  if (env.supabaseUrl && env.supabaseServiceRoleKey) {
-    const saved = await enqueueInquiry(payload);
-    return {
-      ...saved, clientName: `${payload.firstName} ${payload.lastName}`.trim(), email: payload.email,
-      company: payload.company, service: payload.service, budget: payload.budget, source: payload.source,
-      messageLength: payload.message.length, messagePreview: "", downstreamDelivered: false,
-      deliveryChannels: ["supabase_outbox"],
-    };
-  }
   const id = `axs_${crypto.randomUUID().slice(0, 12)}`;
   const receivedAt = new Date().toISOString();
   // Single-line fields are interpolated into the email subject and into one-line
@@ -66,11 +56,11 @@ export async function processAndDeliverInquiry(
   const cleanSource = sanitizeSingleLine(payload.source || "website");
   const cleanMessage = sanitizePlainText(payload.message);
 
-  const deliveryChannels: string[] = [];
+  const deliveryChannels: string[] = ["local_audit_ledger"];
   let downstreamDelivered = false;
 
   // 1. Optional Resend Transactional Email Adapter
-  if (env.resendApiKey && env.contactFromEmail) {
+  if (env.resendApiKey) {
     try {
       const res = await fetchWithTimeout("https://api.resend.com/emails", {
         method: "POST",
@@ -79,7 +69,7 @@ export async function processAndDeliverInquiry(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: env.contactFromEmail,
+          from: "Axiom Studio Engine <onboarding@resend.dev>",
           to: [env.contactNotificationEmail],
           reply_to: payload.email,
           subject: `[Axiom Studio Scoping] ${cleanService} — ${clientName}`,
@@ -132,6 +122,40 @@ export async function processAndDeliverInquiry(
     }
   }
 
+  // 3. Optional Supabase REST Persistence Adapter
+  if (env.supabaseUrl && env.supabaseServiceRoleKey) {
+    try {
+      const res = await fetchWithTimeout(
+        `${env.supabaseUrl.replace(/\/$/, "")}/rest/v1/contact_inquiries`,
+        {
+          method: "POST",
+          headers: {
+            apikey: env.supabaseServiceRoleKey,
+            Authorization: `Bearer ${env.supabaseServiceRoleKey}`,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify({
+            inquiry_id: id,
+            client_name: clientName,
+            email: payload.email,
+            company: cleanCompany,
+            service: cleanService,
+            budget: cleanBudget,
+            message: cleanMessage,
+            received_at: receivedAt,
+          }),
+        }
+      );
+      if (res.ok) {
+        downstreamDelivered = true;
+        deliveryChannels.push("supabase_postgres");
+      }
+    } catch (err) {
+      console.error("[DELIVERY] Supabase adapter error:", err);
+    }
+  }
+
   const record: StoredInquiry = {
     id,
     receivedAt,
@@ -153,16 +177,10 @@ export async function processAndDeliverInquiry(
     fs.appendFileSync(
       INQUIRIES_FILE,
       JSON.stringify({ ...record, message: cleanMessage }) + "\n",
-      { encoding: "utf8", mode: 0o600 }
+      "utf8"
     );
-    deliveryChannels.push("local_audit_ledger");
   } catch (err) {
     console.warn("[AUDIT LEDGER] Non-fatal write warning:", err);
-  }
-
-  // Local storage alone is not durable on ephemeral production hosts.
-  if (!downstreamDelivered && (env.nodeEnv === "production" || !deliveryChannels.includes("local_audit_ledger"))) {
-    throw new Error("No external inquiry channel accepted the submission");
   }
 
   inquiryCountSession += 1;

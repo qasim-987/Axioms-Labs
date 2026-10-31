@@ -31,7 +31,6 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
   const [index,setIndex]=useState(0), active=useRef(0);
   const [stacked,setStacked]=useState(false), [nav,setNav]=useState(68);
   const [scales,setScales]=useState([1,1,1,1]);
-  const [showParticles,setShowParticles]=useState(false);
   const width=useRef(1), locked=useRef<"page"|"track"|"control"|null>(null);
   const lockTimer=useRef<ReturnType<typeof setTimeout>>(), settleTimer=useRef<ReturnType<typeof setTimeout>>();
   const gesture=useRef<{pointer:number; startX:number;startY:number;time:number;origin:number;left:number;direction:"pending"|"x"|"y";finger:boolean;lastX:number}|null>(null);
@@ -58,7 +57,6 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
         }
         const navEl=document.querySelector<HTMLElement>('[data-site-navbar] > div:first-child');
         const navH=Math.ceil(navEl?.getBoundingClientRect().height || 68);setNav(navH);
-        setShowParticles(window.innerWidth >= 768);
         const narrow=window.innerWidth<MOBILE_STACKED_BELOW;
         setStacked(MOBILE_SERVICES_LAYOUT==="stacked" || narrow);
         if(narrow && process.env.NODE_ENV!=="production" && el.dataset.narrow!=="true") console.info("[Services] stacked fallback: viewport below 340px");
@@ -155,7 +153,7 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
   </div>;
   return <section ref={section} id="services" data-active-step={index} className={`mobile-services-stage ${stacked?"is-stacked":"is-side"}`} style={{"--mobile-nav":`${nav}px`} as React.CSSProperties} aria-labelledby="mobile-services-heading">
     <header ref={header} className="mobile-services-heading"><div><span className="mobile-services-badge">04 CORE CAPABILITIES</span><h2 id="mobile-services-heading">Our <span>Services</span></h2></div><div className="mobile-service-steps"><span>0{index+1} / 04</span><div>{entries.map((e,i)=><button key={e.service.id} type="button" onClick={()=>seek(i)} aria-label={`Show ${e.service.title}`} aria-pressed={i===index}><span /></button>)}</div></div></header>
-    <div className="mobile-services-row">{showParticles && <div className="mobile-services-shape"><ServicesParticleCanvas scrollProgressRef={progress} hoverBridgeRef={bridge} layoutMode="mobile" onWebGLUnavailable={onWebGLUnavailable} className="w-full h-full" /></div>}
+    <div className="mobile-services-row"><div className="mobile-services-shape"><ServicesParticleCanvas scrollProgressRef={progress} hoverBridgeRef={bridge} layoutMode="mobile" onWebGLUnavailable={onWebGLUnavailable} className="w-full h-full" /></div>
       <div className="mobile-card-area">
         {[2,1].map(slot=>index+slot<entries.length?<div key={slot} aria-hidden="true" className={`mobile-deck-preview depth-${slot}`} style={{transform:`translateX(${slot*SWIPE.DECK_STEP_PX}px) scale(${slot===1?.97:.94})`}}>{card(entries[index+slot],index+slot,true)}</div>:null)}
         <div ref={track} className="mobile-services-track" role="region" aria-roledescription="carousel" aria-label="Our services" tabIndex={0} onKeyDown={e=>{if(e.key==="ArrowRight" || e.key==="ArrowLeft"){e.preventDefault();seek(index+(e.key==="ArrowRight"?1:-1));}}}>
