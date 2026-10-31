@@ -1,4 +1,4 @@
-import express from "express";
+import express, { ErrorRequestHandler } from "express";
 import cors from "cors";
 import { env } from "./config/env";
 import { securityHeaders } from "./middleware/securityHeaders";
@@ -12,7 +12,8 @@ export function createBackendApp() {
   const app = express();
 
   app.disable("x-powered-by");
-  app.set("trust proxy", 1);
+  // Trust only explicitly configured proxy IPs/CIDRs, never arbitrary headers.
+  app.set("trust proxy", env.trustProxy ? env.trustProxy.split(",").map((s) => s.trim()) : false);
 
   // Security & CORS Middleware
   app.use(securityHeaders);
@@ -20,7 +21,7 @@ export function createBackendApp() {
     cors({
       origin:
         env.corsAllowedOrigins === "*"
-          ? true
+          ? env.nodeEnv !== "production"
           : env.corsAllowedOrigins.split(",").map((s) => s.trim()),
       methods: ["GET", "POST", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
@@ -63,6 +64,15 @@ export function createBackendApp() {
       error: `Route ${req.method} ${req.originalUrl} not found on Axiom Studio Backend.`,
     });
   });
+
+  const handleError: ErrorRequestHandler = (error: unknown, _req, res, _next) => {
+    const status = typeof error === "object" && error !== null && "status" in error ? Number(error.status) : 500;
+    res.status(status === 413 ? 413 : status === 400 ? 400 : 500).json({
+      success: false,
+      error: status === 413 ? "Request body is too large." : status === 400 ? "Invalid JSON request." : "Internal server error.",
+    });
+  };
+  app.use(handleError);
 
   return app;
 }

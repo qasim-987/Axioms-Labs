@@ -629,3 +629,12 @@ body {
 .page-transition-shade { position:absolute;inset:0;background:var(--transition-curtain);opacity:0; }
 [data-site-navbar] nav[aria-label="Primary Navigation"] a[aria-current="page"] { background:transparent; }
 html { scrollbar-gutter: stable; }
+/* Phones: services cards use the space previously reserved for particles. */
+@media (max-width: 767px) {
+  .mobile-services-stage .mobile-services-row {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0;
+  }
+  .mobile-services-shape { display: none; }
+}

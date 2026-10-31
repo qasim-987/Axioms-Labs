@@ -24,11 +24,7 @@ setInterval(() => {
 }, 60_000).unref();
 
 export function extractClientIp(req: Request): string {
-  const forwarded = req.headers["x-forwarded-for"];
-  if (typeof forwarded === "string" && forwarded.length > 0) {
-    return forwarded.split(",")[0].trim();
-  }
-  return req.socket.remoteAddress || "unknown";
+  return req.ip || req.socket.remoteAddress || "unknown";
 }
 
 export function createRateLimiter(options: RateLimitOptions) {
