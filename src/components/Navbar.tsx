@@ -210,7 +210,7 @@ export default function Navbar() {
                     "linear-gradient(135deg, #3186FF 0%, #FC413D 45%, #FBBC04 75%, #00B95C 100%)",
                 }}
               >
-                <span className="w-full h-full rounded-[4px] bg-white flex items-center justify-center font-mono text-[9px] font-black text-[#121317]">
+                <span className="w-full h-full rounded-[4px] bg-white flex items-center justify-center font-mono text-[9px] font-black text-[#3186FF]">
                   A
                 </span>
               </span>
