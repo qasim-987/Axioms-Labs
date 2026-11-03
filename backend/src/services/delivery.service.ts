@@ -20,7 +20,15 @@ export interface StoredInquiry {
   deliveryChannels: string[];
 }
 
-const DATA_DIR = path.resolve(__dirname, "../../data");
+/**
+ * Vercel's filesystem is read-only outside `/tmp`, so under serverless the
+ * audit ledger lives there and is ephemeral by design (Supabase remains the
+ * durable record of inquiries). Long-lived hosts keep the repo-local,
+ * gitignored `data/` directory.
+ */
+const DATA_DIR = process.env.VERCEL
+  ? path.join("/tmp", "axiom-studio-data")
+  : path.resolve(__dirname, "../../data");
 const INQUIRIES_FILE = path.join(DATA_DIR, "inquiries.jsonl");
 
 let inquiryCountSession = 0;

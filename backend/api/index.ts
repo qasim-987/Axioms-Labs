@@ -1,3 +1,4 @@
+import type { Express, Request, Response } from "express";
 import { createBackendApp } from "../src/app";
 
 /**
@@ -19,4 +20,21 @@ import { createBackendApp } from "../src/app";
  * `src/app` rather than `src/index`, so the serverless bundle carries no
  * `listen()` call at all and does not depend on that guard.
  */
-export default createBackendApp();
+let handler: Express;
+try {
+  handler = createBackendApp();
+} catch (err) {
+  /**
+   * A throw during boot would otherwise surface as Vercel's opaque
+   * FUNCTION_INVOCATION_FAILED page with no body and no log line we control.
+   * Log the real error and answer with a readable JSON 500 so any future boot
+   * failure is diagnosable over plain HTTP.
+   */
+  console.error("[BOOT] createBackendApp failed:", err);
+  const fallback = (_req: Request, res: Response): void => {
+    res.status(500).json({ error: "Backend boot failed", detail: String(err) });
+  };
+  handler = fallback as unknown as Express;
+}
+
+export default handler;
