@@ -5,6 +5,14 @@ import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
 import { blogPosts } from "@/data/blog";
+import { SITE_URL } from "@/config/site";
+import JsonLd from "@/components/JsonLd";
+import {
+  blogPostingJsonLd,
+  breadcrumbList,
+  isoMonthYear,
+  SERVICE_SLUG_BY_CATEGORY,
+} from "@/lib/seo";
 import {
   ArrowLeft,
   Clock,
@@ -37,9 +45,10 @@ export function generateMetadata({ params }: ArticlePageProps): Metadata {
       title: post.title,
       description: post.excerpt,
       type: "article",
-      publishedTime: post.publishedAt,
+      publishedTime: isoMonthYear(post.publishedAt),
       authors: [post.author.name],
     },
+    alternates: { canonical: `${SITE_URL}/blog/${post.slug}` },
   };
 }
 
@@ -62,6 +71,23 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
         className="relative pt-32 pb-24 px-4 sm:px-8 lg:px-16 max-w-4xl mx-auto w-full flex-1"
       >
         <LightRays />
+        <JsonLd
+          data={blogPostingJsonLd({
+            title: post.title,
+            excerpt: post.excerpt,
+            publishedLabel: post.publishedAt,
+            readingTime: post.readingTime,
+            category: post.category,
+            canonicalUrl: `${SITE_URL}/blog/${post.slug}`,
+          })}
+        />
+        <JsonLd
+          data={breadcrumbList([
+            { name: "Home", url: SITE_URL },
+            { name: "Insights", url: `${SITE_URL}/blog` },
+            { name: post.title, url: `${SITE_URL}/blog/${post.slug}` },
+          ])}
+        />
 
         {/* Back Link */}
         <Link
@@ -161,6 +187,13 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
               Speak directly with our designers and engineers in Kuopio &amp;
               Lahore to scope your build.
             </p>
+            <Link
+              href={`/services/${SERVICE_SLUG_BY_CATEGORY[post.category]}`}
+              className="mt-3 inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#3186FF] hover:text-[#1E3A8A] transition-colors"
+            >
+              Explore our {post.category} services
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
           <Link
             href="/contact"

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 import { clientsData } from "@/data/clients";
 
 interface PageProps {
@@ -14,5 +14,7 @@ export function generateStaticParams() {
 }
 
 export default function CaseStudyRedirect({ params }: PageProps) {
-  redirect(`/work/${params.slug}`);
+  // Permanent (308, method-preserving): these URLs moved for good, so link
+  // equity and crawlers settle on /work/[slug] instead of a temporary hop.
+  permanentRedirect(`/work/${params.slug}`);
 }
