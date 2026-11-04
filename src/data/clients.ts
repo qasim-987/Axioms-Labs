@@ -34,14 +34,14 @@ export const clientsData: ClientCaseStudy[] = [
     id: "nexus-commerce-os",
     slug: "nexus-commerce-os",
     title: "Nexus SaaS & Headless Commerce Platform",
-    client: "Studio Concept • 01",
+    client: "Lab Concept • 01",
     tagline:
       "Internal full-stack Next.js 14 & Supabase reference platform demonstrating sub-second storefront rendering and real-time analytics.",
     category: "Web Development",
     impactMetric: "99/100",
     impactLabel: "Lighthouse Performance & Core Web Vitals Benchmark",
     year: "2026",
-    duration: "Studio Prototype",
+    duration: "Lab Prototype",
     summary:
       "An internal Axioms Lab engineering build showcasing how we architect modern full-stack web applications—combining Next.js App Router, typed Express APIs, real-time inventory state, and instant edge page loads.",
     challenge:
@@ -84,14 +84,14 @@ export const clientsData: ClientCaseStudy[] = [
     id: "aura-web-experience",
     slug: "aura-web-experience",
     title: "Aura Interactive Brand & Motion Flagship",
-    client: "Studio Concept • 02",
+    client: "Lab Concept • 02",
     tagline:
       "Concept brand website pairing editorial typography, 60fps Framer Motion & GSAP choreography, and conversion-first storytelling.",
     category: "Web Designing",
     impactMetric: "<1.1s",
     impactLabel: "First Contentful Paint with Full 60fps Motion Suite",
     year: "2026",
-    duration: "Studio Prototype",
+    duration: "Lab Prototype",
     summary:
       "Created by our design and motion team to demonstrate how high-impact visual storytelling, WebGL depth, and smooth scroll choreography can coexist with fast load speeds and clear conversion hierarchy.",
     challenge:
@@ -133,14 +133,14 @@ export const clientsData: ClientCaseStudy[] = [
     id: "finflow-design-system",
     slug: "finflow-design-system",
     title: "FinFlow Multi-Theme SaaS UI/UX System",
-    client: "Studio Concept • 03",
+    client: "Lab Concept • 03",
     tagline:
       "Comprehensive Figma-to-React product UI/UX concept featuring 120+ tokenized components, user flows, and dark/light parity.",
     category: "UI/UX Design",
     impactMetric: "120+",
     impactLabel: "Tokenized Figma & React UI Components",
     year: "2026",
-    duration: "Studio Prototype",
+    duration: "Lab Prototype",
     summary:
       "An internal UI/UX design system and SaaS workspace prototype demonstrating how Axioms Lab turns complex product workflows into clean, accessible, developer-ready interfaces.",
     challenge:
@@ -182,14 +182,14 @@ export const clientsData: ClientCaseStudy[] = [
     id: "atlas-ai-agent",
     slug: "atlas-ai-agent",
     title: "Atlas Autonomous Support & Lead-Qualification Agent",
-    client: "Studio Concept • 04",
+    client: "Lab Concept • 04",
     tagline:
       "Custom RAG & tool-calling AI agent prototype that answers product queries from verified docs, qualifies leads, and books calls 24/7.",
     category: "AI Agents",
     impactMetric: "<1.4s",
     impactLabel: "Median Grounded Response & Tool Execution",
     year: "2026",
-    duration: "Studio Prototype",
+    duration: "Lab Prototype",
     summary:
       "An internal AI Agent build showcasing how we connect LLMs to real business workflows—combining document-grounded RAG answers, structured CRM lead capture, and human handoff guardrails.",
     challenge:

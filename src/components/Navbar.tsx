@@ -367,7 +367,7 @@ export default function Navbar() {
                 <div className="col-span-4 border-l border-[#212226]/[0.08] pl-7 flex flex-col justify-between">
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-widest text-[#3186FF] font-semibold block mb-3">
-                      STUDIO CONCEPT SHOWCASE
+                      LAB CONCEPT SHOWCASE
                     </span>
                     <Link
                       href={`/work/${featuredConcept.slug}`}
