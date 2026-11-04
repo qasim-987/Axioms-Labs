@@ -48,7 +48,7 @@ export default function WorkPageContent() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-6"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#3186FF]" />
-            <span>STUDIO CONCEPT SHOWCASE</span>
+            <span>LAB CONCEPT SHOWCASE</span>
           </motion.div>
 
           <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2 mb-6">
@@ -124,7 +124,7 @@ export default function WorkPageContent() {
             }}
             className="text-lg text-[#45474D] leading-relaxed max-w-2xl"
           >
-            Explore our internally engineered Studio Concept Builds—crafted to
+            Explore our internally engineered Lab Concept Builds—crafted to
             demonstrate how Axioms Lab approaches Web Development, Web
             Designing, UI/UX Design Systems, and Autonomous AI Agents.
           </motion.p>

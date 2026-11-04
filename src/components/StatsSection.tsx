@@ -21,7 +21,7 @@ const stats = [
   },
   {
     value: "02",
-    label: "Global Studio Hubs",
+    label: "Global Lab Hubs",
     detail: "Kuopio, Finland & Lahore, Pakistan",
     accent: "#FBBC04",
   },
@@ -120,7 +120,7 @@ export default function StatsSection() {
         <div className="text-center max-w-2xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-            <span>STUDIO BENCHMARKS</span>
+            <span>LAB BENCHMARKS</span>
           </div>
           <SplitTextReveal
             as="h2"

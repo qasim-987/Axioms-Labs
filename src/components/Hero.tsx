@@ -317,7 +317,7 @@ export default function Hero() {
               <RollingNumber value={4} prefix="0" duration={1550} suffix="" />
             </span>
             <span className="text-xs text-[#45474D] font-medium leading-snug">
-              Core Studio
+              Core Lab
               <br />
               Disciplines
             </span>

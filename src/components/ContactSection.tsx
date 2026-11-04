@@ -153,7 +153,7 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <div className="text-xs font-mono uppercase tracking-wider text-[#6A6A71]">
-                    Studio Hubs
+                    Lab Hubs
                   </div>
                   <div className="text-base font-semibold text-[#121317]">
                     Kuopio, Finland • Lahore, Pakistan

@@ -183,7 +183,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-[#45474D] max-w-sm leading-relaxed mb-6">
-              Boutique digital product &amp; AI studio crafting fast web
+              Boutique digital product &amp; AI lab crafting fast web
               platforms, expressive web design, scalable UI/UX systems, and
               autonomous AI agents.
             </p>
@@ -250,7 +250,7 @@ export default function Footer() {
           {/* Studio */}
           <div className="lg:col-span-2">
             <h4 className="text-xs font-mono uppercase tracking-wider text-[#121317] font-semibold mb-4">
-              Studio
+              Lab
             </h4>
             <ul className="space-y-2.5 text-sm text-[#45474D]">
               <li>
@@ -266,7 +266,7 @@ export default function Footer() {
                   href="/company"
                   className="hover:text-[#121317] transition-colors"
                 >
-                  About Studio
+                  About Lab
                 </Link>
               </li>
               <li>
@@ -316,7 +316,7 @@ export default function Footer() {
               href="/company"
               className="hover:text-[#121317] transition-colors"
             >
-              Studio Ethos
+              Lab Ethos
             </Link>
             <Link
               href="/contact"
