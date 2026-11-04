@@ -6,7 +6,18 @@ import { useMobileCardTransition } from "@/hooks/useMobileCardTransition";
 import { SERVICE_CARD_COLOR } from "@/lib/serviceCardMotion";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { ServiceItem } from "@/data/services";
-import ServicesParticleCanvas, { evaluateServicesMasterTimeline, STEP_HOLD_PROGRESS, type ServicesHoverBridge } from "./ServicesParticleCanvas";
+import dynamic from "next/dynamic";
+import {
+  evaluateServicesMasterTimeline,
+  STEP_HOLD_PROGRESS,
+  type ServicesHoverBridge,
+} from "@/lib/servicesParticleShared";
+
+// Code-split: keeps `three` out of the home route's critical bundle.
+const ServicesParticleCanvas = dynamic(
+  () => import("./ServicesParticleCanvas").then((m) => m.default),
+  { ssr: false, loading: () => null }
+);
 import { renderServiceToolIcon, hasServiceToolIcon } from "./ServiceToolIcons";
 
 export const MOBILE_SERVICES_LAYOUT: "side" | "stacked" = "side";

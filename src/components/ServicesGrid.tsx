@@ -12,16 +12,24 @@ import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ServiceItem, servicesData } from "@/data/services";
-import { easeInOutCubic } from "@/lib/particleEngine";
+import { easeInOutCubic } from "@/lib/particleMath";
 import {
   SERVICE_STAGE_ORDER,
   ServiceShapeId,
 } from "@/lib/serviceParticleShapes";
-import ServicesParticleCanvas, {
+import dynamic from "next/dynamic";
+import {
   PARTICLE_TUNING,
-  ServicesHoverBridge,
   evaluateServicesMasterTimeline,
-} from "./ServicesParticleCanvas";
+  type ServicesHoverBridge,
+} from "@/lib/servicesParticleShared";
+
+// Code-split: keeps `three` out of the home route's critical bundle. The
+// canvas self-gates on intersection, so mounting early is cheap.
+const ServicesParticleCanvas = dynamic(
+  () => import("./ServicesParticleCanvas").then((m) => m.default),
+  { ssr: false, loading: () => null }
+);
 import MobileServices from "./MobileServices";
 import { CARD_TRANSITION, cardPhase, SERVICE_CARD_COLOR } from "@/lib/serviceCardMotion";
 export { CARD_TRANSITION } from "@/lib/serviceCardMotion";

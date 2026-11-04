@@ -327,12 +327,12 @@ export default function CompanyPageContent() {
                 key={belief.num}
                 initial={
                   useBlurFilter
-                    ? { opacity: 0, y: 26, filter: "blur(6px)" }
+                    ? { opacity: 0, y: 26}
                     : { opacity: 0, y: 22 }
                 }
                 whileInView={
                   useBlurFilter
-                    ? { opacity: 1, y: 0, filter: "blur(0px)" }
+                    ? { opacity: 1, y: 0}
                     : { opacity: 1, y: 0 }
                 }
                 viewport={{ once: true, amount: 0.25 }}

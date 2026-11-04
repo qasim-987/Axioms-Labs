@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, type RefObject } from "react";
 import gsap from "gsap";
 import { CARD_TRANSITION as C, cardPhase, SERVICE_CARD_COLOR } from "@/lib/serviceCardMotion";
-import { easeInOutCubic } from "@/lib/particleEngine";
+import { easeInOutCubic } from "@/lib/particleMath";
 
 /** Inert presentation copies leave native swipe, links and React-owned cards intact. */
 export function useMobileCardTransition(section: RefObject<HTMLElement>, host: RefObject<HTMLDivElement>, index: number) {

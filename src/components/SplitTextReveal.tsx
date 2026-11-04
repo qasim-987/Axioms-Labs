@@ -83,7 +83,6 @@ export default function SplitTextReveal({
                             opacity: 0,
                             y: "62%",
                             rotateX: -38,
-                            filter: "blur(6px)",
                           }
                         : {
                             opacity: 0,
@@ -95,7 +94,6 @@ export default function SplitTextReveal({
                             opacity: 1,
                             y: "0%",
                             rotateX: 0,
-                            filter: "blur(0px)",
                             transition: {
                               duration: 0.72,
                               delay: charDelay,

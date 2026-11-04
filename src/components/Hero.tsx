@@ -5,7 +5,16 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import ParticleSphereHero from "./ParticleSphereHero";
+import dynamic from "next/dynamic";
+
+// Code-split the WebGL sphere (and `three`) out of the first-load bundle.
+// A CSS glow holds the space; the canvas fades in when its chunk arrives.
+const ParticleSphereHero = dynamic(() => import("./ParticleSphereHero"), {
+  ssr: false,
+  loading: () => (
+    <div aria-hidden="true" className="absolute inset-0 sphere-glow-placeholder" />
+  ),
+});
 import LightBeam from "./LightBeam";
 import RollingNumber from "./RollingNumber";
 import { MOTION_EASE } from "@/lib/motionTokens";
@@ -60,17 +69,15 @@ function SplitHeroLine({
                   opacity: 0,
                   y: "68%",
                   rotateX: -42,
-                  filter: "blur(7px)",
                 }}
                 animate={{
                   opacity: 1,
                   y: "0%",
                   rotateX: 0,
-                  filter: "blur(0px)",
                 }}
                 transition={{
-                  duration: 0.78,
-                  delay: 0.14 + idx * 0.022,
+                  duration: 0.62,
+                  delay: 0.06 + idx * 0.016,
                   ease: MOTION_EASE.cinematicOut,
                 }}
                 className="inline-block will-change-transform origin-bottom"
@@ -213,7 +220,7 @@ export default function Hero() {
         className="absolute inset-0 pointer-events-none will-change-transform"
         style={{ zIndex: 1 }}
       >
-        <ParticleSphereHero />
+        <ParticleSphereHero className="sphere-fade-in" />
       </div>
 
       {/* LAYER 5: Centered Character-Split Foreground Typography, Magnetic Pill CTAs & Odometer Stats */}
@@ -256,8 +263,8 @@ export default function Hero() {
 
           {/* Centered Subtitle */}
           <motion.p
-            initial={{ opacity: 0, y: 18, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 18}}
+            animate={{ opacity: 1, y: 0}}
             transition={{
               duration: 0.8,
               delay: 0.62,
