@@ -1,10 +1,10 @@
-# Axiom Studio — AI Coding Agent Instructions (`AGENTS.md`)
+# Axioms Lab — AI Coding Agent Instructions (`AGENTS.md`)
 
 > Canonical operating rules for autonomous coding agents working in this repository. Part of the architecture suite under `/docs/` and `/Animations.md`.
 >
 > **Document currency (reconciled 31 October 2026, commit `e93cf7a`):** the shipped site is **12 route definitions / 23 prerendered routes** (26 pages in the Next.js build counter) with **4 service pillars** and **4 studio concept builds**. `/docs/01`–`docs/05` were written for an earlier 42-route site and are **historical design rationale only** — they describe routes (`/demos/*`, `/open-axiom`, `/resources/vendor-matrix`) that no longer exist. The authoritative motion reference is `/Animations.md`; the authoritative status reference is `/PROGRESS.md`; the authoritative file-ownership map is **§2 below**, which has been reconciled against the codebase.
 
-- **Brand Identity**: **Axiom Studio** (`AXIOM STUDIO` / `AX` monogram / `https://axiomstudio.agency`)
+- **Brand Identity**: **Axioms Lab** (`AXIOMS LAB` / `A` monogram / `https://www.axiomslab.com`)
 - **Decoupled Service Architecture**:
   - **Front-End (`src/`)**: Next.js `14.2` (App Router on `0.0.0.0:3000`), React `18.3`, TypeScript `5.6` (`strict: true`), Tailwind CSS `3.4`, `lucide-react` — zero API route handlers in `src/app/api/*`; communicates exclusively via relative `/api/*` HTTP calls (`src/lib/apiClient.ts`) proxied to `BACKEND_INTERNAL_URL`.
   - **Back-End (`backend/`)**: Standalone Express + TypeScript + Zod REST service (`0.0.0.0:4000`) owning `GET /api/health`, `GET /api/services`, `POST /api/contact` and `GET /api/contact/status`. There is **no** `/api/vendors/*` and **no** `/api/labs/*` — those belonged to the removed demo routes and must not be reintroduced without the corresponding back-end implementation.
@@ -15,8 +15,8 @@
 
 ## 1. Non-Negotiable Invariants ("ALWAYS / NEVER" Rules)
 
-1. **STRICT BRANDING — "Axiom Studio" ONLY**:
-   - **ALWAYS** use `"Axiom Studio"` (or `"AXIOM STUDIO"` in uppercase lockups, `contact@axiomstudio.agency`, `https://axiomstudio.agency`). **KNOWN EXCEPTION pending owner confirmation:** `src/components/Footer.tsx` currently links `hello@axiomstudio.ai`; do not silently change it — flag it and let the owner decide which address is canonical.
+1. **STRICT BRANDING — "Axioms Lab" ONLY**:
+   - **ALWAYS** use `"Axioms Lab"` (or `"AXIOMS LAB"` in uppercase lockups, `info@axiomslab.com`, `https://www.axiomslab.com`). **KNOWN EXCEPTION pending owner confirmation:** `src/components/Footer.tsx` currently links `info@axiomslab.com`; do not silently change it — flag it and let the owner decide which address is canonical.
    - **NEVER** re-introduce legacy strings `"Axiom Labs"`, `"axiomlabs"`, `"Anti Quanta"`, `"anti-quanta"`, or third-party `"Antimatter"` / `"Antimatter AI"` in any UI copy, `<title>`, OpenGraph tag, JSON response, or package manifest. (Exceptions, all verified present in the tree: the `/open-antimatter -> /work` and `/open-axiom -> /work` compatibility redirects in `next.config.mjs`, and "Antimatter-inspired" attribution inside **code comments only** in `src/components/`. The former "Synthetix Labs" client no longer exists.)
 2. **SERVER-FIRST (RSC) ARCHITECTURE**:
    - **ALWAYS** keep pages and static layout wrappers as React Server Components unless interactive browser state/hooks (`useState`, `useEffect`, `IntersectionObserver`, `requestAnimationFrame`, event handlers) are strictly required.

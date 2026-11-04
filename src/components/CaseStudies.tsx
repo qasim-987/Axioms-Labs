@@ -168,7 +168,7 @@ function ProjectShowcaseVisual({
 
         {/* Bottom Studio Footer Strip */}
         <div className="relative z-10 flex items-center justify-between pt-3 border-t border-white/10 text-[11px] font-mono text-[#B2BBC5]">
-          <span>Axiom Studio • Concept Showcase</span>
+          <span>Axioms Lab • Concept Showcase</span>
           <span className="text-[#749BFF] flex items-center gap-1">
             Interactive Build <ArrowUpRight className="w-3.5 h-3.5" />
           </span>
@@ -274,7 +274,7 @@ function ProjectShowcaseVisual({
 
       {/* Bottom Caption */}
       <div className="relative z-10 flex items-center justify-between pt-2 text-[11px] font-mono text-[#45474D]">
-        <span>Axiom Studio • Design Showcase</span>
+        <span>Axioms Lab • Design Showcase</span>
         <span className="font-semibold text-[#121317] flex items-center gap-1">
           Explore Concept <ArrowUpRight className="w-3.5 h-3.5" />
         </span>
@@ -335,7 +335,7 @@ export default function CaseStudies() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-              <span>STUDIO CONCEPT BUILDS</span>
+              <span>LAB CONCEPT BUILDS</span>
             </div>
             <SplitTextReveal
               as="h2"
@@ -346,13 +346,13 @@ export default function CaseStudies() {
             />
           </div>
           <p className="text-[#45474D] max-w-md text-sm sm:text-base leading-relaxed">
-            Proven engineering standards, measurable craft—explore the Studio
+            Proven engineering standards, measurable craft—explore the Lab
             Concept Builds we&apos;ve architected across Web, UI/UX, and AI.
           </p>
         </div>
 
         {/* =====================================================================
-            FEATURED 50/50 STUDIO SHOWCASE (01 & 02)
+            FEATURED 50/50 LAB SHOWCASE (01 & 02)
             - Image fills 100% of each card's width (`w-full` edge-to-edge)
             - `ViewWorkCursor` is mounted INSIDE the `overflow-hidden` image container
               so the "View Work" cursor NEVER works or appears outside the image!

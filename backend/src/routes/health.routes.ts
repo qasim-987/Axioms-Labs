@@ -7,7 +7,7 @@ const bootTime = Date.now();
 healthRouter.get("/health", (_req, res) => {
   res.status(200).json({
     status: "operational",
-    service: "Axiom Studio Backend Engine",
+    service: "Axioms Lab Backend Engine",
     version: "2.4.0",
     uptimeSeconds: Math.floor((Date.now() - bootTime) / 1000),
     timestamp: new Date().toISOString(),

@@ -215,7 +215,7 @@ export default function Navbar() {
                 </span>
               </span>
               <span className="font-bold text-base sm:text-lg tracking-tight text-[#202124]">
-                Axiom Studio
+                Axioms Lab
               </span>
             </Link>
 

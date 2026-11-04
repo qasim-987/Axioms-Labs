@@ -110,7 +110,7 @@ contactRouter.post("/contact", originGuard, contactRateLimiter, async (req, res)
       success: true,
       inquiryId: stored.id,
       message:
-        "Your inquiry has been logged. An Axiom Studio architect will respond within 24 hours.",
+        "Your inquiry has been logged. An Axioms Lab architect will respond within 24 hours.",
       receivedAt: stored.receivedAt,
       deliveryChannels: stored.deliveryChannels,
     });

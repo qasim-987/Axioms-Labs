@@ -1,4 +1,4 @@
-# Master Prompt — Axiom Studio Architecture & Production Documentation Suite
+# Master Prompt — Axioms Lab Architecture & Production Documentation Suite
 
 > Copy and paste the prompt inside the block below into any frontier AI Coding Agent or LLM Architect (e.g., Arena Agent Mode, Claude Code, Cursor, ChatGPT, or Windsurf) with repository/web access enabled.
 
@@ -9,7 +9,7 @@
 
 You are an elite Principal Systems Architect, Design Systems Director, and Staff Product Manager specializing in high-craft dark-mode enterprise AI studio platforms, Next.js 14 (App Router) engineering, and GPU-accelerated web motion systems.
 
-Your mission is to analyze two primary sources—alongside our repository's `Animations.md` specification—and produce **five (5) exhaustive, production-ready engineering and product documents** for **Axiom Studio**:
+Your mission is to analyze two primary sources—alongside our repository's `Animations.md` specification—and produce **five (5) exhaustive, production-ready engineering and product documents** for **Axioms Lab**:
 
 1. **Production Requirements Document (PRD)** (`docs/01-PRODUCTION-REQUIREMENTS-DOCUMENT.md`)
 2. **Design Architecture** (`docs/02-DESIGN-ARCHITECTURE.md`)
@@ -32,8 +32,8 @@ Your mission is to analyze two primary sources—alongside our repository's `Ani
 
 # NON-NEGOTIABLE BRANDING & QUALITY CONSTRAINTS
 
-1. **Strict Brand Identity — "Axiom Studio"**:
-   - The platform name is strictly **Axiom Studio** (`AXIOM STUDIO`, monogram `AX`, primary domain `https://axiomstudio.agency`, contact `contact@axiomstudio.agency`).
+1. **Strict Brand Identity — "Axioms Lab"**:
+   - The platform name is strictly **Axioms Lab** (`AXIOMS LAB`, monogram `A`, primary domain `https://www.axiomslab.com`, contact `info@axiomslab.com`).
    - **NEVER** use the legacy names `"Axiom Labs"`, `"Anti Quanta"`, or third-party `"Antimatter"` / `"Antimatter AI"` in any user-facing copy, metadata, component names, or brand guidelines (except when explicitly citing `antimatterai.agency` as a design/motion benchmark or documenting the backward-compatible `/open-antimatter -> /open-axiom` redirect).
 2. **Zero Generic Boilerplate**:
    - Every section, route table, data interface, CSS token, Mermaid diagram, and CLI command must reference the **real files, routes, and components** in the repository (`src/app/...`, `src/components/...`, `src/data/...`). Do not output vague placeholders or truncated `[TODO]` sections.
@@ -52,7 +52,7 @@ Generate all five documents in full detail using clean Markdown, structured tabl
 
 Must include:
 1. **Executive Summary & Product Vision**:
-   - Positioning **Axiom Studio** as an enterprise AI architecture, autonomous agent systems, and precision digital engineering studio inspired by the craft benchmark of `antimatterai.agency`.
+   - Positioning **Axioms Lab** as an enterprise AI architecture, autonomous agent systems, and precision digital engineering studio inspired by the craft benchmark of `antimatterai.agency`.
 2. **Target Personas & ICPs**:
    - Enterprise CTOs / VPs of Engineering, AI Platform & Security Leads, Healthcare / FinTech Compliance Executives, and Funded Startup Founders.
 3. **Business Objectives, Conversion Funnels & Success Metrics (KPIs)**:
@@ -74,7 +74,7 @@ Must include:
 
 Must include:
 1. **Design Philosophy & Aesthetic Direction**:
-   - Synthesizing `antimatterai.agency`'s cinematic dark-vault atmosphere (`#030303`), volumetric top-down god-rays, precision editorial typography, and tactile glassmorphism into **Axiom Studio**'s sovereign systems identity.
+   - Synthesizing `antimatterai.agency`'s cinematic dark-vault atmosphere (`#030303`), volumetric top-down god-rays, precision editorial typography, and tactile glassmorphism into **Axioms Lab**'s sovereign systems identity.
 2. **Design Token System (Exact CSS Variables & Tailwind Mappings)**:
    - **Color Architecture**: Canvas (`#030303`, `#020203`), Surface elevation tiers (`surface.50` `#18181b` through `surface.400` `#050506`), Brand Indigo/Violet spectrum (`brand.light` `#c3c4f7`, `brand.primary` `#8587e3`, `brand.hover` `#9b9de9`, `brand.muted` `#696aac`, `brand.dark` `#3d3e75`), Semantic status colors (Emerald telemetry LEDs, Amber warnings, Rose critical vectors), and Hairline alpha borders (`rgba(255,255,255,0.06)`–`0.12`).
    - **Surface & Glassmorphism Recipes**: `.glass-panel`, `.glass-panel-hover`, backdrop blur depths, inner specular highlights, and cursor-tracked radial border spotlights.
@@ -112,9 +112,9 @@ Must include:
 
 Write a battle-tested, Concise-yet-Complete **Agent Operating Manual** designed to be placed at the root of the repository (`AGENTS.md` / `CLAUDE.md`) for autonomous AI coding agents:
 1. **Project Identity & Core Stack Summary**:
-   - **Axiom Studio** (`Next.js 14.2`, `React 18.3`, `TypeScript 5.6`, `Tailwind CSS 3.4`, `Lucide React`, `Framer Motion`, `GSAP`, `Lenis`).
+   - **Axioms Lab** (`Next.js 14.2`, `React 18.3`, `TypeScript 5.6`, `Tailwind CSS 3.4`, `Lucide React`, `Framer Motion`, `GSAP`, `Lenis`).
 2. **Hard Guardrails & Invariants ("NEVER / ALWAYS" Rules)**:
-   - Brand invariant (**Axiom Studio** only; zero `"Axiom Labs"` or `"Antimatter"` strings).
+   - Brand invariant (**Axioms Lab** only; zero `"Axiom Labs"` or `"Antimatter"` strings).
    - Server-first component rule; strict TypeScript (`no explicit any`, typed props & data exports).
    - GPU-compositor-only animation rule (`transform`, `opacity`) + mandatory `prefers-reduced-motion` support per `Animations.md`.
    - Zero localhost hardcoding in browser-facing client code (use relative `/api/...` paths).
@@ -150,5 +150,5 @@ Must include (with Mermaid sequence/pipeline diagrams):
 
 - Produce each of the 5 documents systematically, completely, and cleanly.
 - Use Mermaid diagrams (`flowchart`, `sequenceDiagram`, `C4Context`) wherever architecture or workflows are described.
-- Ground every route, component name, CSS class, and data model in the actual **Axiom Studio** repository (`https://github.com/qasim-987/Axioms-Labs.git`) and the motion/design benchmark of `https://antimatterai.agency` + `Animations.md`.
+- Ground every route, component name, CSS class, and data model in the actual **Axioms Lab** repository (`https://github.com/qasim-987/Axioms-Labs.git`) and the motion/design benchmark of `https://antimatterai.agency` + `Animations.md`.
 ```

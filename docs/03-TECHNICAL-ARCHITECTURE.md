@@ -1,7 +1,7 @@
-# Axiom Studio — Technical Architecture
+# Axioms Lab — Technical Architecture
 
 - **Document ID**: `AXS-TECH-003`
-- **Platform**: **Axiom Studio** (`axiom-studio@1.0.0`)
+- **Platform**: **Axioms Lab** (`axioms-lab@1.0.0`)
 - **Framework**: Next.js `14.2.x` (App Router), React `18.3.1`, TypeScript `5.6.3`, Tailwind CSS `3.4.14`
 - **Motion Companion Spec**: `/Animations.md`
 
@@ -9,7 +9,7 @@
 
 ## 1. High-Level System Architecture (Decoupled Front-End & Back-End Services)
 
-Axiom Studio enforces a **strictly separated Front-End and Back-End Dual-Service Architecture**:
+Axioms Lab enforces a **strictly separated Front-End and Back-End Dual-Service Architecture**:
 1. **Front-End Web Service (`src/`, Next.js 14 App Router on `0.0.0.0:3000`)**: Compiles all marketing flagships, service pages (`/services/[slug]`), engineering blueprints, client dossiers, and legacy shims ahead-of-time into static HTML + RSC payloads (`SSG`), while hydrating interactive capability islands (`"use client"`) and `antimatterai.agency` motion primitives (`Lenis`, `Framer Motion`, `GSAP`, `<canvas>` shaders). Zero API route handlers live inside `src/app/api`.
 2. **Standalone Back-End API Service (`backend/`, Express + TypeScript + Zod on `0.0.0.0:4000`)**: Independently packaged REST service handling `/api/health`, `/api/contact` (dual honeypot + `<1000ms` velocity gate + IP sliding-window rate limiter + Zod validation + webhook/CRM/JSONL persistence), `/api/vendors/export.csv`, and live `/api/labs/*` telemetry & inference endpoints. Next.js `rewrites()` proxy `/api/:path*` cleanly to `BACKEND_INTERNAL_URL` so browser code uses strictly relative URLs.
 
@@ -50,7 +50,7 @@ flowchart TB
 
 ### 2.1 Server Components (RSC) vs. Client Hydration Boundaries
 
-To keep the shared First-Load JS bundle lightweight (`87.3 kB` baseline), Axiom Studio enforces strict **RSC-by-default** discipline:
+To keep the shared First-Load JS bundle lightweight (`87.3 kB` baseline), Axioms Lab enforces strict **RSC-by-default** discipline:
 
 | Component / Route | Boundary | Justification for Boundary Choice |
 | :--- | :--- | :--- |
@@ -70,7 +70,7 @@ To keep the shared First-Load JS bundle lightweight (`87.3 kB` baseline), Axiom 
 ## 3. Complete Codebase Module & Directory Topology
 
 ```text
-Axioms-Labs/                              # Repository Root (Brand: Axiom Studio)
+Axioms-Labs/                              # Repository Root (Brand: Axioms Lab)
 ├── AGENTS.md                             # Auto-discovered AI Coding Agent Instructions
 ├── Animations.md                         # Exact antimatterai.agency Motion & Shader Blueprint
 ├── MASTER_PROMPT.md                      # Master Architecture Generation Prompt
@@ -83,7 +83,7 @@ Axioms-Labs/                              # Repository Root (Brand: Axiom Studio
 │   ├── 04-AGENT-INSTRUCTIONS.md
 │   └── 05-TECHNICAL-WORKFLOW.md
 ├── next.config.mjs                       # Next.js configuration (reactStrictMode: true)
-├── package.json                          # Manifest (name: "axiom-studio")
+├── package.json                          # Manifest (name: "axioms-lab")
 ├── postcss.config.mjs                    # Tailwind + Autoprefixer pipeline
 ├── tailwind.config.ts                    # Custom surface/brand tokens & CSS keyframes
 ├── tsconfig.json                         # Strict TypeScript configuration (@/* -> ./src/*)
@@ -227,7 +227,7 @@ sequenceDiagram
         API-->>Browser: 400 Bad Request { error: "Descriptive validation message" }
     else Valid Human Submission
         API->>Sink: Structured Inquiry Dispatch (Sanitized Metadata)
-        API-->>Browser: 200 OK { success: true, message: "...Axiom Studio architect...", receivedAt }
+        API-->>Browser: 200 OK { success: true, message: "...Axioms Lab architect...", receivedAt }
     end
 ```
 
@@ -248,11 +248,11 @@ For hardened production deployments on Vercel or custom reverse proxies, configu
 
 ```bash
 # Public Canonical Site URL
-NEXT_PUBLIC_SITE_URL="https://axiomstudio.agency"
+NEXT_PUBLIC_SITE_URL="https://www.axiomslab.com"
 
 # Optional Downstream Contact Delivery (Server-Only — NEVER prefix with NEXT_PUBLIC_)
 RESEND_API_KEY=""
-CONTACT_NOTIFICATION_EMAIL="contact@axiomstudio.agency"
+CONTACT_NOTIFICATION_EMAIL="info@axiomslab.com"
 CONTACT_WEBHOOK_URL=""
 
 # Optional Supabase Persistence (Server-Only Service Key for /api/contact)

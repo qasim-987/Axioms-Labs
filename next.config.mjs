@@ -65,7 +65,7 @@ const nextConfig = {
         destination: "/services/ai-agents",
         permanent: true,
       },
-      // Redirect legacy service slugs to the 4 core Axiom Studio services
+      // Redirect legacy service slugs to the 4 core Axioms Lab services
       {
         source: "/services/product-design",
         destination: "/services/ui-ux-design",

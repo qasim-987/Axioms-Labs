@@ -9,6 +9,7 @@ import SplitTextReveal from "@/components/SplitTextReveal";
 import SpotlightCard from "@/components/SpotlightCard";
 import { servicesData } from "@/data/services";
 import { submitContactInquiry } from "@/lib/apiClient";
+import { SITE_EMAIL } from "@/config/site";
 import {
   Send,
   CheckCircle2,
@@ -30,7 +31,7 @@ const studioHubs = [
   },
   {
     city: "Lahore, Pakistan",
-    region: "Engineering & Design Studio",
+    region: "Engineering & Design Lab",
     timezone: "PKT / UTC+5",
     focus: "Full-Stack Web Development, Web Designing & AI Agent Engineering",
     dotColor: "text-[#00B95C]",
@@ -100,7 +101,7 @@ export default function DedicatedContactPage() {
       }
     } catch {
       setErrorMsg(
-        "Could not connect to Axiom Studio API server. Please retry shortly."
+        "Could not connect to Axioms Lab API server. Please retry shortly."
       );
     } finally {
       setIsSubmitting(false);
@@ -180,7 +181,7 @@ export default function DedicatedContactPage() {
                 <div className="flex items-center gap-2.5">
                   <Mail className="w-4 h-4 text-[#3186FF] shrink-0" />
                   <span className="text-[#121317]">
-                    contact@axiomstudio.agency
+                    {SITE_EMAIL}
                   </span>
                 </div>
               </div>
@@ -202,7 +203,7 @@ export default function DedicatedContactPage() {
                     </div>
                   )}
                   <p className="text-sm text-[#45474D] max-w-md mx-auto mb-8">
-                    Thank you for reaching out to Axiom Studio! Our team will
+                    Thank you for reaching out to Axioms Lab! Our team will
                     review your project requirements and reply within 24 hours.
                   </p>
                   <button

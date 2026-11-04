@@ -1,4 +1,4 @@
-# Axiom Studio — Implementation Status
+# Axioms Lab — Implementation Status
 
 > **Reconciled 31 October 2026** against branch `arena/c1f221f4-axioms-labs` (commit `e93cf7a`, identical to `origin/main`).
 > This file was rewritten to describe the site that actually exists. The previous version documented a 42-route site with seven fictional clients, six services, an open-source hub, a vendor matrix and six interactive demo labs — **none of those routes or assets exist in the current codebase**. That history is preserved in §3.
@@ -9,7 +9,7 @@
 
 | | |
 | :--- | :--- |
-| **Brand** | Axiom Studio · `https://axiomstudio.agency` |
+| **Brand** | Axioms Lab · `https://www.axiomslab.com` |
 | **Studios** | Kuopio, Finland · Lahore, Pakistan |
 | **Core disciplines** | 4 — Web Development · Web Designing · UI/UX Design · AI Agents |
 | **Portfolio** | 4 *Studio Concept* builds (explicitly not real third-party clients) |
@@ -73,7 +73,7 @@ Probed live during reconciliation: `GET /api/health` → `{"status":"operational
 
 | PR | Scope | Outcome |
 | :--- | :--- | :--- |
-| #1 | Rebrand to Axiom Studio, decouple front-end/back-end | Foundation — established the two-service architecture |
+| #1 | Rebrand to Axioms Lab, decouple front-end/back-end | Foundation — established the two-service architecture |
 | #2 | Hero 3D background centring, View Work cursor showcase | Superseded |
 | #3 | Case-study showcase moved above Services; cursor clipping | Superseded |
 | #4 | Black & White + **Antigravity palette**, 4 core services, site-wide motion choreography | **Live theme** |
@@ -215,7 +215,7 @@ Control, same front-end environment, old command: `npm run typecheck` → **exit
 5. **Dead `/api/labs/*` helpers** in `src/lib/apiClient.ts` — four exported functions with no back-end endpoint and no call sites.
 6. **Orphaned modules** — `src/data/navigation.ts`, `src/data/caseStudies.ts` and the landing folder can be deleted if the owner chooses to retire them (documentation in `README.md` §8 would need one line of adjustment).
 7. **CI brand-hygiene grep** references a `public/` directory that does not exist in this repository; the check still passes, but the path is noise.
-8. **Footer contact address is inconsistent with the rest of the site.** `src/components/Footer.tsx` links `hello@axiomstudio.ai`, while the canonical address everywhere else — metadata, JSON-LD, contact page, back-end notification default — is `contact@axiomstudio.agency`. Confirm which address is correct and align the footer.
+8. **Footer contact address is inconsistent with the rest of the site.** `src/components/Footer.tsx` links `info@axiomslab.com`, while the canonical address everywhere else — metadata, JSON-LD, contact page, back-end notification default — is `info@axiomslab.com`. Confirm which address is correct and align the footer.
 9. **Two components never consult `prefers-reduced-motion`** (pre-existing; found while verifying the hydration fix, and *not* hydration bugs — they render identically on server and client):
    - `src/components/MethodologySection.tsx` — the four PHASE cards use `initial={{opacity:0,y:28,filter:"blur(6px)"}}` + `whileInView` with a hard-coded `duration: 0.68`, so they fade and slide in even for reduced-motion users.
    - `src/components/WorkPageContent.tsx` — the hand-rolled `<h1 aria-label="WORK">` splits `"WORK"` into `motion.span` characters driven by `initial`/`animate` and gated only on `useBlurFilter`, never on reduced motion.

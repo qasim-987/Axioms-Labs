@@ -14,7 +14,7 @@ export function requestLogger(
     if (req.path !== "/api/health") {
       console.log(
         JSON.stringify({
-          service: "axiom-studio-backend",
+          service: "axioms-lab-backend",
           timestamp: new Date().toISOString(),
           method: req.method,
           path: req.originalUrl,

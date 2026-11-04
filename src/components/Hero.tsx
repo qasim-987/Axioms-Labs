@@ -199,7 +199,7 @@ export default function Hero() {
           className="font-extrabold uppercase tracking-[0.03em] text-[#121317]/[0.032] whitespace-nowrap leading-none scale-y-110 text-center mx-auto"
           style={{ fontSize: "clamp(2.25rem, 9.2vw, 9rem)" }}
         >
-          AXIOM STUDIO
+          AXIOMS LAB
         </span>
       </div>
 

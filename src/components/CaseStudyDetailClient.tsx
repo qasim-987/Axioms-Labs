@@ -123,7 +123,7 @@ export default function CaseStudyDetailClient({
               </div>
               <div className="flex items-center gap-2 text-xs font-mono text-[#4ADE80] bg-[#00B95C]/15 px-3.5 py-2 rounded-full border border-[#00B95C]/30 shrink-0 self-start sm:self-auto">
                 <CheckCircle2 className="w-4 h-4 text-[#4ADE80]" />
-                <span>Axiom Studio Internal Concept Build</span>
+                <span>Axioms Lab Internal Concept Build</span>
               </div>
             </div>
 
@@ -217,10 +217,10 @@ export default function CaseStudyDetailClient({
             >
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-[#3186FF] font-semibold mb-3 block">
-                  Our Studio Blueprint
+                  Our Lab Blueprint
                 </span>
                 <h3 className="text-xl font-bold text-[#121317] mb-4">
-                  How Axiom Studio Built It
+                  How Axioms Lab Built It
                 </h3>
                 <p className="text-[#45474D] text-sm leading-relaxed">
                   {study.solution}

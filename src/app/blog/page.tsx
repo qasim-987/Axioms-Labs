@@ -49,7 +49,7 @@ export default function BlogIndexPage() {
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono uppercase tracking-wider text-[#3186FF] font-semibold mb-6"
           >
             <FileText className="w-3.5 h-3.5" />
-            Axiom Studio Notes &amp; Guides
+            Axioms Lab Notes &amp; Guides
           </motion.div>
 
           <SplitTextReveal

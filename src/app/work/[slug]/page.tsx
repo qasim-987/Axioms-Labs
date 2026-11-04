@@ -17,10 +17,10 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: CaseStudyPageProps) {
   const study = clientsData.find((s) => s.slug === params.slug);
-  if (!study) return { title: "Case Study Not Found | Axiom Studio" };
+  if (!study) return { title: "Case Study Not Found | Axioms Lab" };
 
   return {
-    title: `${study.title} — ${study.client} Dossier | Axiom Studio`,
+    title: `${study.title} — ${study.client} Dossier | Axioms Lab`,
     description: study.summary,
   };
 }

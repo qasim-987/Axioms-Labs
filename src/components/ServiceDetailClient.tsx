@@ -103,7 +103,7 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
       }
     } catch {
       setSubmitError(
-        "Unable to reach Axiom Studio API server. Please retry in a moment."
+        "Unable to reach Axioms Lab API server. Please retry in a moment."
       );
     } finally {
       setSubmitting(false);

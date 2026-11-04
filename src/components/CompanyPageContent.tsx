@@ -28,7 +28,7 @@ const studioHubs = [
     city: "Lahore",
     country: "Pakistan",
     coords: "31.52° N, 74.36° E",
-    role: "Engineering, Web Design & AI Systems Studio",
+    role: "Engineering, Web Design & AI Systems Lab",
     focus:
       "Full-stack Next.js/Node.js engineering, interactive motion, and AI agent development.",
     accent: "#00B95C",
@@ -91,7 +91,7 @@ export default function CompanyPageContent() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-5"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#3186FF]" />
-            <span>ABOUT AXIOM STUDIO</span>
+            <span>ABOUT AXIOMS LAB</span>
           </motion.div>
 
           <SplitTextReveal
@@ -112,7 +112,7 @@ export default function CompanyPageContent() {
             }}
             className="text-lg text-[#45474D] leading-relaxed max-w-2xl"
           >
-            Axiom Studio is a focused design and engineering studio operating
+            Axioms Lab is a focused design and engineering lab operating
             across Kuopio, Finland and Lahore, Pakistan. We partner with
             founders and growing teams to build modern web platforms, refined
             user interfaces, and practical AI agents.
@@ -150,7 +150,7 @@ export default function CompanyPageContent() {
             <div className="max-w-md">
               <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#749BFF] mb-3">
                 <Globe2 className="w-4 h-4 text-[#3186FF]" />
-                <span>TWO CONNECTED STUDIO HUBS</span>
+                <span>TWO CONNECTED LAB HUBS</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3">
                 Nordic Strategy Meets High-Velocity Engineering
@@ -166,7 +166,7 @@ export default function CompanyPageContent() {
               <svg
                 viewBox="0 0 440 160"
                 className="w-full h-full overflow-visible"
-                aria-label="Global Studio Corridor connecting Kuopio, Finland and Lahore, Pakistan"
+                aria-label="Global Lab Corridor connecting Kuopio, Finland and Lahore, Pakistan"
               >
                 <defs>
                   <linearGradient
