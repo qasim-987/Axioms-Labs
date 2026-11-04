@@ -1,4 +1,4 @@
-import { createSeededRandom } from "@/lib/particleEngine";
+import { createSeededRandom } from "@/lib/particleMath";
 
 /**
  * Data-driven 3D Point-Cloud Generators for the "Our Services" Particle-Morph Section.

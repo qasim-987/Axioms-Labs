@@ -644,3 +644,21 @@ html { scrollbar-gutter: stable; }
 .mobile-service-desc { color:rgba(255,255,255,.82); }
 .mobile-service-footer h4, .mobile-service-title > div > span { color:#d0ccff; }
 .mobile-card-transition { position:absolute;inset:0;z-index:4;pointer-events:none;isolation:isolate;visibility:hidden;clip-path:inset(-4px -4px -4px 0); }
+
+/* Deferred 3-D sphere: soft glow holds the space; canvas fades in on arrival. */
+.sphere-glow-placeholder {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(49, 134, 255, 0.12),
+    rgba(116, 155, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0) 70%
+  );
+}
+@keyframes sphere-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.sphere-fade-in { animation: sphere-fade-in 0.7s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .sphere-fade-in { animation: none; }
+}

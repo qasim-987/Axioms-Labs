@@ -67,7 +67,6 @@ export default function WorkPageContent() {
                           opacity: 0,
                           y: 36,
                           rotateX: -42,
-                          filter: "blur(8px)",
                         }
                       : {
                           opacity: 0,
@@ -81,7 +80,6 @@ export default function WorkPageContent() {
                           opacity: 1,
                           y: 0,
                           rotateX: 0,
-                          filter: "blur(0px)",
                         }
                       : {
                           opacity: 1,
@@ -177,17 +175,17 @@ export default function WorkPageContent() {
                   key={study.slug}
                   initial={
                     useBlurFilter
-                      ? { opacity: 0, y: 28, filter: "blur(6px)" }
+                      ? { opacity: 0, y: 28}
                       : { opacity: 0, y: 24 }
                   }
                   animate={
                     useBlurFilter
-                      ? { opacity: 1, y: 0, filter: "blur(0px)" }
+                      ? { opacity: 1, y: 0}
                       : { opacity: 1, y: 0 }
                   }
                   exit={
                     useBlurFilter
-                      ? { opacity: 0, scale: 0.96, filter: "blur(4px)" }
+                      ? { opacity: 0, scale: 0.96}
                       : { opacity: 0, scale: 0.96 }
                   }
                   transition={{
