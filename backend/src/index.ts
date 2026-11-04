@@ -6,13 +6,13 @@ const app = createBackendApp();
 if (!process.env.VERCEL) {
   const server = app.listen(env.port, env.host, () => {
     console.log(
-      `[AXIOM STUDIO BACKEND] Listening on http://${env.host}:${env.port} (env: ${env.nodeEnv})`
+      `[AXIOMS LAB BACKEND] Listening on http://${env.host}:${env.port} (env: ${env.nodeEnv})`
     );
   });
 
   const shutdown = (signal: string) => {
     console.log(
-      `[AXIOM STUDIO BACKEND] Received ${signal}. Closing server...`
+      `[AXIOMS LAB BACKEND] Received ${signal}. Closing server...`
     );
     server.close(() => {
       process.exit(0);

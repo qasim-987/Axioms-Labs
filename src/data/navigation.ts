@@ -40,7 +40,7 @@ export const footerLinks = {
     { label: "Atlas Autonomous Agent", href: "/work/atlas-ai-agent" },
   ],
   company: [
-    { label: "About Axiom Studio", href: "/company" },
+    { label: "About Axioms Lab", href: "/company" },
     { label: "Core Beliefs & Process", href: "/company#beliefs" },
     { label: "Insights & Blog", href: "/blog" },
     { label: "Start Your Project", href: "/contact" },

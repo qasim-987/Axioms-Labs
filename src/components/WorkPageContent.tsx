@@ -125,7 +125,7 @@ export default function WorkPageContent() {
             className="text-lg text-[#45474D] leading-relaxed max-w-2xl"
           >
             Explore our internally engineered Studio Concept Builds—crafted to
-            demonstrate how Axiom Studio approaches Web Development, Web
+            demonstrate how Axioms Lab approaches Web Development, Web
             Designing, UI/UX Design Systems, and Autonomous AI Agents.
           </motion.p>
         </div>

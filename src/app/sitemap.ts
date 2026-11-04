@@ -2,9 +2,10 @@ import { MetadataRoute } from "next";
 import { servicesData } from "@/data/services";
 import { clientCaseStudies } from "@/data/clients";
 import { blogPosts } from "@/data/blog";
+import { SITE_URL } from "@/config/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://axiomstudio.agency";
+  const baseUrl = SITE_URL;
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [

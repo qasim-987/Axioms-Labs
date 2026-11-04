@@ -49,7 +49,7 @@ export function createBackendApp() {
   // Root status welcome
   app.get("/", (_req, res) => {
     res.status(200).json({
-      service: "Axiom Studio Standalone API Server",
+      service: "Axioms Lab Standalone API Server",
       version: "2.5.0",
       studios: STUDIO_LOCATIONS.map((l) => `${l.city}, ${l.country}`),
       capabilities: [
@@ -80,7 +80,7 @@ export function createBackendApp() {
      * injection vector the moment this API is ever rendered in a browser context.
      */
     res.status(404).json({
-      error: "Route not found on Axiom Studio Backend.",
+      error: "Route not found on Axioms Lab Backend.",
     });
   });
 

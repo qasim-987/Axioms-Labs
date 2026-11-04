@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Sparkles, Mail, MapPin, Clock } from "lucide-react";
 import { MOTION_EASE } from "@/lib/motionTokens";
+import { SITE_EMAIL, SITE_NAME } from "@/config/site";
 
 function LiveStudioClock() {
   const [times, setTimes] = useState<{ kuopio: string; lahore: string } | null>(
@@ -178,7 +179,7 @@ export default function Footer() {
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <span className="text-lg font-bold tracking-tight text-[#121317]">
-                Axiom<span className="text-[#3186FF]">Studio</span>
+                Axioms <span className="text-[#3186FF]">Lab</span>
               </span>
             </Link>
             <p className="text-sm text-[#45474D] max-w-sm leading-relaxed mb-6">
@@ -194,10 +195,10 @@ export default function Footer() {
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#3186FF]" />
                 <a
-                  href="mailto:hello@axiomstudio.ai"
+                  href={`mailto:${SITE_EMAIL}`}
                   className="hover:text-[#121317] transition-colors"
                 >
-                  hello@axiomstudio.ai
+                  {SITE_EMAIL}
                 </a>
               </div>
             </div>
@@ -307,7 +308,7 @@ export default function Footer() {
 
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#6A6A71]">
           <p>
-            © {new Date().getFullYear()} Axiom Studio. Kuopio, Finland &amp;
+            © {new Date().getFullYear()} {SITE_NAME}. Kuopio, Finland &amp;
             Lahore, Pakistan.
           </p>
           <div className="flex items-center gap-6">

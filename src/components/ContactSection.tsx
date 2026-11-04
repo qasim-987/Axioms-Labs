@@ -7,6 +7,7 @@ import { submitContactInquiry } from "@/lib/apiClient";
 import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
 import { PricingTrustCopy } from "./LaunchPricing";
 import { MOTION_EASE } from "@/lib/motionTokens";
+import { SITE_EMAIL } from "@/config/site";
 import {
   Send,
   CheckCircle2,
@@ -89,7 +90,7 @@ export default function ContactSection() {
     } catch {
       setStatus("error");
       setFeedback(
-        "Network error encountered. Please email us directly at contact@axiomstudio.agency."
+        `Network error encountered. Please email us directly at ${SITE_EMAIL}.`
       );
     }
   };
@@ -135,13 +136,13 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <div className="text-xs font-mono uppercase tracking-wider text-[#6A6A71]">
-                    Direct Studio Email
+                    Direct Lab Email
                   </div>
                   <a
-                    href="mailto:contact@axiomstudio.agency"
+                    href={`mailto:${SITE_EMAIL}`}
                     className="text-base font-semibold text-[#121317] hover:text-[#3186FF] transition-colors"
                   >
-                    contact@axiomstudio.agency
+                    {SITE_EMAIL}
                   </a>
                 </div>
               </div>

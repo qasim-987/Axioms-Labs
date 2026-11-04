@@ -1,6 +1,6 @@
-# Axiom Studio — Web Development, Web Designing, UI/UX & AI Agents
+# Axioms Lab — Web Development, Web Designing, UI/UX & AI Agents
 
-> **Axiom Studio** is a digital product & AI agent studio operating from **Kuopio, Finland** and **Lahore, Pakistan**. This repository holds the production front-end (Next.js 14 App Router) and a standalone back-end API service (Express + TypeScript + Zod).
+> **Axioms Lab** is a digital product & AI agent studio operating from **Kuopio, Finland** and **Lahore, Pakistan**. This repository holds the production front-end (Next.js 14 App Router) and a standalone back-end API service (Express + TypeScript + Zod).
 
 > **Document status:** this README describes the code that is actually in the repository **today** — 12 route definitions / 23 prerendered routes (26 pages in the Next.js build counter), 4 service pillars, 4 studio concept builds, and a decoupled back-end that owns the contact pipeline. It was last reconciled against the codebase on **31 October 2026** (branch `arena/c1f221f4-axioms-labs`, commit `e93cf7a`). Older architecture notes that describe removed routes (`/demos/*`, `/open-axiom`, `/resources/vendor-matrix`) are retained only as history in `docs/01`–`docs/05` and are **not** a description of the current site.
 
@@ -10,7 +10,7 @@
 
 | | |
 | :--- | :--- |
-| **Brand** | Axiom Studio — `https://axiomstudio.agency` · `contact@axiomstudio.agency` |
+| **Brand** | Axioms Lab — `https://www.axiomslab.com` · `info@axiomslab.com` |
 | **Studios** | Kuopio, Finland (Nordics & EU client strategy) · Lahore, Pakistan (full-stack engineering) |
 | **Core disciplines** | Web Development · Web Designing · UI/UX Design · AI Agents |
 | **Routes shipped** | **12** route definitions → **23** prerendered routes → **26** pages in the Next.js production build counter (1 home, 1 work index + 4 dossiers, 4 compatibility redirects, 1 company, 1 contact, 1 blog index + 4 articles, 4 service pages, sitemap, robots, 404) |
@@ -26,7 +26,7 @@
 ### 2.1 Home (`/`)
 `src/app/page.tsx` composes, in order: `Navbar` → `Hero` → `LogoStrip` → `StatsSection` → `ConceptBuildsGate` → `ServicesGrid` → `MethodologySection` → `ContactSection` → `Footer`.
 
-- **Hero** — five-layer scene: radial micro-grid backdrop, giant `AXIOM STUDIO` ghost watermark with scroll parallax, mouse-reactive pastel light beam, centred hollow WebGL particle sphere, and character-by-character 3D kinetic typography with magnetic pill CTAs and a `0123456789` odometer strip. Multi-plane scrubbed exit.
+- **Hero** — five-layer scene: radial micro-grid backdrop, giant `AXIOMS LAB` ghost watermark with scroll parallax, mouse-reactive pastel light beam, centred hollow WebGL particle sphere, and character-by-character 3D kinetic typography with magnetic pill CTAs and a `0123456789` odometer strip. Multi-plane scrubbed exit.
 - **LogoStrip** — continuous technology/framework marquee (Next.js, React, TypeScript, Tailwind, Figma, Framer Motion, Three.js, AI Agents, Supabase, Vercel) with inline monoline icons, desktop hover pause, offscreen pause, and a reduced-motion single-copy wrap.
 - **StatsSection / RollingNumber** — scroll-triggered slot-machine odometer counters.
 - **ConceptBuildsGate** — desktop-only lazy mount of the `CaseStudies` showcase (`HIDE_CONCEPT_BUILDER = "mobile"`), so phones/tablets never allocate the WebGL or the showcase subtree.
@@ -274,11 +274,11 @@ Carried forward from the collaborator's own audits; none of these are silently h
 4. **Pointer-release settle time.** Measured 182–569 ms depending on width, with a 360 px outlier above the strict target.
 5. **No device certification.** No Lighthouse, CLS, physical iOS Safari/Android, real-GPU or heap-growth certification exists. All viewport results come from emulated Chromium.
 6. **Dead client helpers.** `src/lib/apiClient.ts` still exports four `/api/labs/*` helpers (`analyzeEmotionViaApi`, `searchVectorsViaApi`, `synthesizeOutreachViaApi`, `fetchThreatTelemetryViaApi`) whose endpoints no longer exist in the back-end and which have no call sites.
-7. **Footer contact address differs from the canonical one.** `src/components/Footer.tsx` links `hello@axiomstudio.ai`; every other surface uses `contact@axiomstudio.agency`. Needs an owner decision and alignment.
+7. **Footer contact address differs from the canonical one.** `src/components/Footer.tsx` links `info@axiomslab.com`; every other surface uses `info@axiomslab.com`. Needs an owner decision and alignment.
 8. **Two components never consult `prefers-reduced-motion`.** Pre-existing, and *not* hydration bugs — they render identically on server and client. `MethodologySection.tsx` fades/slides its four PHASE cards in with a hard-coded `duration: 0.68`, and `WorkPageContent.tsx`'s hand-rolled `<h1 aria-label="WORK">` splits into `motion.span` characters gated only on `useBlurFilter`. Content is fully visible either way; only the motion is not suppressed. Fixing them changes animation behaviour, so they were deliberately left alone.
 
 ---
 
 ## 10. Licence
 
-MIT. All code, copy, data and architecture in this repository are original to Axiom Studio. Client names in the portfolio are explicitly labelled **Studio Concept** builds rather than real third-party engagements.
+MIT. All code, copy, data and architecture in this repository are original to Axioms Lab. Client names in the portfolio are explicitly labelled **Studio Concept** builds rather than real third-party engagements.

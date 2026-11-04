@@ -1,6 +1,6 @@
-# Axiom Studio — `antimatterai.agency` Exact Animation Blueprint (`Animations.md`)
+# Axioms Lab — `antimatterai.agency` Exact Animation Blueprint (`Animations.md`)
 
-> **Purpose**: This specification reverse-engineers every signature motion system, scroll choreography, shader backdrop, micro-interaction, and interactive canvas animation from **[antimatterai.agency](https://www.antimatterai.agency)** and provides exact, drop-in implementation blueprints tailored to the **Axiom Studio** codebase (`Next.js 14 App Router`, `React 18`, `TypeScript`, `Tailwind CSS 3.4`).
+> **Purpose**: This specification reverse-engineers every signature motion system, scroll choreography, shader backdrop, micro-interaction, and interactive canvas animation from **[antimatterai.agency](https://www.antimatterai.agency)** and provides exact, drop-in implementation blueprints tailored to the **Axioms Lab** codebase (`Next.js 14 App Router`, `React 18`, `TypeScript`, `Tailwind CSS 3.4`).
 
 ---
 
@@ -9,7 +9,7 @@
 0. [Hero 3D Particle Sphere & Cursor Dynamics Specification (Video Ground Truth)](#0-hero-3d-particle-sphere--cursor-dynamics-specification-video-ground-truth)
    - [Case study cursor](#case-study-cursor)
 1. [Motion Stack & Architecture Overview](#1-motion-stack--architecture-overview)
-2. [Current Axiom Studio vs. `antimatterai.agency` Parity Matrix](#2-current-axiom-studio-vs-antimatteraiagency-parity-matrix)
+2. [Current Axioms Lab vs. `antimatterai.agency` Parity Matrix](#2-current-axioms-lab-vs-antimatteraiagency-parity-matrix)
 3. [Global Smooth Scroll & Timing Tokens (`Lenis` + `GSAP` + `Framer Motion`)](#3-global-smooth-scroll--timing-tokens-lenis--gsap--framer-motion)
 4. [Animation 01 — Volumetric Light Rays, Pointer Parallax & Dust Mote Shader](#4-animation-01--volumetric-light-rays-pointer-parallax--dust-mote-shader)
 5. [Animation 02 — Character-Split Kinetic Typography (`SplitTextReveal`)](#5-animation-02--character-split-kinetic-typography-splittextreveal)
@@ -20,7 +20,7 @@
 10. [Animation 07 — Glassmorphic Scroll-Morph Navbar & Spring Mega-Menu](#10-animation-07--glassmorphic-scroll-morph-navbar--spring-mega-menu)
 11. [Animation 08 — Subpage, Canvas Scrub & Interactive Lab Choreographies](#11-animation-08--subpage-canvas-scrub--interactive-lab-choreographies)
 12. [GPU Performance Budget & `prefers-reduced-motion` Compliance](#12-gpu-performance-budget--prefers-reduced-motion-compliance)
-13. [Step-by-Step File Integration Checklist for Axiom Studio](#13-step-by-step-file-integration-checklist-for-axiom-studio)
+13. [Step-by-Step File Integration Checklist for Axioms Lab](#13-step-by-step-file-integration-checklist-for-axioms-lab)
 
 ---
 
@@ -31,7 +31,7 @@ The hero section recreates the exact visual identity, atmospheric volumetric lig
 ### 0.1 Scene Architecture & Visual Hierarchy (Back to Front)
 
 1. **Backdrop (`#020108` to `#000000`)**: Deep obsidian canvas, near-black space.
-2. **Ghost Watermark (`AXIOM STUDIO`)**: Huge uppercase brand typography (~40vh height), spanning wider than the viewport and cropped at both screen edges, rendered in static white at 3.5% opacity (`text-white/[0.035]`).
+2. **Ghost Watermark (`AXIOMS LAB`)**: Huge uppercase brand typography (~40vh height), spanning wider than the viewport and cropped at both screen edges, rendered in static white at 3.5% opacity (`text-white/[0.035]`).
 3. **Top-Left Light Beam / Spotlight (`LightBeam.tsx`)**: Volumetric glow originating from the top-left corner, angled diagonally down-right (~32°), fading to black by ~45% viewport width. Built with a conic gradient (`core: #4b3fd6` at ~68% opacity, fading outward to `#6e5ff0` and transparent) filtered with `blur(140px)` and blended via `mix-blend-mode: screen`. Pulses with a slow breathing loop (opacity 0.85 to 1.0, 7s cycle).
 4. **Hollow 3D Particle Sphere (`ParticleSphereHero.tsx`)**: Positioned at $x \approx 39\%$ of viewport width, $y \approx 45\%$ of hero height (diameter $\approx 320\text{px}$ on 1884px desktop). Semi-transparent shell with visible back particles and faint violet inner core glow.
 5. **Foreground Typography & UI**:
@@ -92,7 +92,7 @@ The hero section recreates the exact visual identity, atmospheric volumetric lig
 
 ## Case study cursor
 
-The Case Study section (`src/components/CaseStudies.tsx` + `src/components/ViewWorkCursor.tsx`) reproduces the `"View Work"` magnetic difference-blend cursor follower and 50/50 device showcase from the 17-second reference footage (`1884×754`), branded for **Axiom Studio** using Axiom Studio's own project cards (*Strata Systems* `/work/strata-systems` and *Zenith Health* `/work/zenith-health`).
+The Case Study section (`src/components/CaseStudies.tsx` + `src/components/ViewWorkCursor.tsx`) reproduces the `"View Work"` magnetic difference-blend cursor follower and 50/50 device showcase from the 17-second reference footage (`1884×754`), branded for **Axioms Lab** using Axioms Lab's own project cards (*Strata Systems* `/work/strata-systems` and *Zenith Health* `/work/zenith-health`).
 
 #### 1. Visual Hierarchy & 50/50 Layout
 - **Backdrop**: Pure black (`#000000`) with a thin `1px` top divider line (`border-t border-white/15`) and top/bottom studio padding.
@@ -176,7 +176,7 @@ In RGB color space, difference blending computes $C_\text{result} = |C_\text{bac
 
 Inspection of `antimatterai.agency` (including its official studio template architecture and case study engineering specifications) confirms a four-layer motion stack running on Next.js + Tailwind CSS:
 
-| Layer | Library / API | Role on `antimatterai.agency` | Target Usage in **Axiom Studio** |
+| Layer | Library / API | Role on `antimatterai.agency` | Target Usage in **Axioms Lab** |
 | :--- | :--- | :--- | :--- |
 | **Inertial Scroll** | `lenis` (`@studio-freight/lenis` / `lenis`) | Smooths wheel & trackpad velocity (`lerp: 0.05–0.07`) for keynote-grade weight and zero scroll jitter. | Wrap `src/app/layout.tsx` children in `<SmoothScrollProvider>`. |
 | **Scroll Scrubbing & Pinning** | `gsap` + `gsap/ScrollTrigger` | Scrubs pinned timelines, section progress bars, and `<canvas>` frame sequences tied to exact scroll progress. | Used in Case Study showcases, `/services/[slug]` roadmaps, and pinned reveals. |
@@ -193,9 +193,9 @@ npm install three @types/three
 
 ---
 
-## 2. Current Axiom Studio vs. `antimatterai.agency` Parity Matrix
+## 2. Current Axioms Lab vs. `antimatterai.agency` Parity Matrix
 
-| Section / Component | Current `Axiom Studio` Implementation | Exact `antimatterai.agency` Behavior | Upgrade Action |
+| Section / Component | Current `Axioms Lab` Implementation | Exact `antimatterai.agency` Behavior | Upgrade Action |
 | :--- | :--- | :--- | :--- |
 | **Viewport Scroll** | Native CSS `scroll-behavior: smooth` | `Lenis` inertial scrolling (`lerp: 0.06`) synced to `GSAP ScrollTrigger` | Add `src/components/SmoothScrollProvider.tsx` |
 | **Hero & Section Headings** (`Hero.tsx`, `/work`, `/contact`, `Footer`) | Static `<h1>` / `<h2>` with basic fade | Every character wrapped in individual `<span>` (`B u i l d i n g ...`) with staggered 3D `rotateX` + `translateY` + `blur` reveal | Create `src/components/SplitTextReveal.tsx` and apply to Hero, Section Titles, and Footer CTA |
@@ -1129,7 +1129,7 @@ And on the marquee track in `src/components/LogoStrip.tsx`, add `hover:[animatio
 ## 11. Animation 08 — Subpage, Canvas Scrub & Interactive Lab Choreographies
 
 ### 11.1 `/company` — Dotted World Map Hub Beacons & Core Beliefs Stack
-- **World Map Beacons**: SVG dotted world map displays Axiom Studio engineering hubs (San Francisco & London) with dual concentric pulsing rings (`animate-ping` at `2.4s` interval + solid `#8587e3` center node) and SVG curved dashed connection arcs (`stroke-dasharray: 4 4`, animated `stroke-dashoffset` flow).
+- **World Map Beacons**: SVG dotted world map displays Axioms Lab engineering hubs (San Francisco & London) with dual concentric pulsing rings (`animate-ping` at `2.4s` interval + solid `#8587e3` center node) and SVG curved dashed connection arcs (`stroke-dasharray: 4 4`, animated `stroke-dashoffset` flow).
 - **`01–04` Core Beliefs Cards**: Scroll-linked opacity & border illumination (`whileInView={{ opacity: 1, x: 0 }}`, `amount: 0.4`) so each principle lights up sequentially as the reader scrolls down the narrative.
 
 ### 11.2 `/services/[slug]` — Scroll-Linked 4-Phase Delivery Timeline (`01 Discover` → `04 Deliver`)
@@ -1178,9 +1178,9 @@ To maintain **60fps frame pacing** and **Lighthouse Performance >= 95** across d
 
 ---
 
-## 13. Step-by-Step File Integration Checklist for Axiom Studio
+## 13. Step-by-Step File Integration Checklist for Axioms Lab
 
-Use this exact sequence when applying all `antimatterai.agency` animations to **Axiom Studio**:
+Use this exact sequence when applying all `antimatterai.agency` animations to **Axioms Lab**:
 
 - [x] **Step 1**: Install motion dependencies (`npm install framer-motion gsap lenis`).
 - [x] **Step 2**: Create `src/lib/motionTokens.ts` with `MOTION_EASE`, `MOTION_SPRING`, and `STAGGER` constants.

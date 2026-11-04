@@ -1,4 +1,4 @@
-name: Axiom Studio Separated Front-End & Back-End CI
+name: Axioms Lab Separated Front-End & Back-End CI
 
 on:
   push:

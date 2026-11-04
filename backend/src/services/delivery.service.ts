@@ -27,7 +27,7 @@ export interface StoredInquiry {
  * gitignored `data/` directory.
  */
 const DATA_DIR = process.env.VERCEL
-  ? path.join("/tmp", "axiom-studio-data")
+  ? path.join("/tmp", "axioms-lab-data")
   : path.resolve(__dirname, "../../data");
 const INQUIRIES_FILE = path.join(DATA_DIR, "inquiries.jsonl");
 
@@ -77,10 +77,10 @@ export async function processAndDeliverInquiry(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Axiom Studio Engine <onboarding@resend.dev>",
+          from: "Axioms Lab Engine <onboarding@resend.dev>",
           to: [env.contactNotificationEmail],
           reply_to: payload.email,
-          subject: `[Axiom Studio Scoping] ${cleanService} — ${clientName}`,
+          subject: `[Axioms Lab Scoping] ${cleanService} — ${clientName}`,
           text: [
             `Inquiry ID: ${id}`,
             `Client: ${clientName} (${payload.email})`,
@@ -112,7 +112,7 @@ export async function processAndDeliverInquiry(
         body: JSON.stringify({
           id,
           receivedAt,
-          brand: "Axiom Studio",
+          brand: "Axioms Lab",
           clientName,
           email: payload.email,
           company: cleanCompany,

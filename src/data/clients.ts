@@ -43,7 +43,7 @@ export const clientsData: ClientCaseStudy[] = [
     year: "2026",
     duration: "Studio Prototype",
     summary:
-      "An internal Axiom Studio engineering build showcasing how we architect modern full-stack web applications—combining Next.js App Router, typed Express APIs, real-time inventory state, and instant edge page loads.",
+      "An internal Axioms Lab engineering build showcasing how we architect modern full-stack web applications—combining Next.js App Router, typed Express APIs, real-time inventory state, and instant edge page loads.",
     challenge:
       "Conventional template-based websites and bloated e-commerce themes suffer from 4+ second mobile load times, rigid checkout flows, and fragile plugin updates that hurt conversions.",
     solution:
@@ -142,7 +142,7 @@ export const clientsData: ClientCaseStudy[] = [
     year: "2026",
     duration: "Studio Prototype",
     summary:
-      "An internal UI/UX design system and SaaS workspace prototype demonstrating how Axiom Studio turns complex product workflows into clean, accessible, developer-ready interfaces.",
+      "An internal UI/UX design system and SaaS workspace prototype demonstrating how Axioms Lab turns complex product workflows into clean, accessible, developer-ready interfaces.",
     challenge:
       "Growing software teams often struggle with inconsistent screens, confusing user onboarding, and messy design-to-developer handoffs that slow down feature releases.",
     solution:

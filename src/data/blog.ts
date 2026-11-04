@@ -30,7 +30,7 @@ export const blogPosts: BlogPost[] = [
       "Why most website chatbots frustrate visitors—and how grounded RAG retrieval, strict tool schemas, and smooth human handoff turn AI agents into reliable teammates.",
     category: "AI Agents",
     author: {
-      name: "Axiom Studio Team",
+      name: "Axioms Lab Team",
       role: "AI & Web Engineering • Kuopio & Lahore",
       avatar: "AX",
     },
@@ -39,7 +39,7 @@ export const blogPosts: BlogPost[] = [
     featured: true,
     content: {
       introduction:
-        "Most businesses want AI to answer repetitive questions, qualify incoming leads, and book meetings 24/7. Yet generic prompt-only chatbots often guess answers or trap customers in loops. Here is the practical blueprint we use at Axiom Studio to ship reliable AI agents.",
+        "Most businesses want AI to answer repetitive questions, qualify incoming leads, and book meetings 24/7. Yet generic prompt-only chatbots often guess answers or trap customers in loops. Here is the practical blueprint we use at Axioms Lab to ship reliable AI agents.",
       sections: [
         {
           heading: "1. Ground Every Answer in Verified Knowledge (RAG)",
@@ -71,7 +71,7 @@ export const blogPosts: BlogPost[] = [
       "How clean Server Components, zero-jank animations, and smart asset loading make modern business websites feel instantaneous on every device.",
     category: "Web Development",
     author: {
-      name: "Axiom Studio Team",
+      name: "Axioms Lab Team",
       role: "Full-Stack Web Development",
       avatar: "AX",
     },
@@ -103,7 +103,7 @@ export const blogPosts: BlogPost[] = [
       "Great web designing isn't decoration—it guides the eye, builds immediate brand credibility, and makes taking the next step effortless.",
     category: "Web Designing",
     author: {
-      name: "Axiom Studio Team",
+      name: "Axioms Lab Team",
       role: "Brand & Web Design",
       avatar: "AX",
     },
@@ -135,7 +135,7 @@ export const blogPosts: BlogPost[] = [
       "How structured Figma variables, reusable component kits, and interactive user flows cut development rework in half.",
     category: "UI/UX Design",
     author: {
-      name: "Axiom Studio Team",
+      name: "Axioms Lab Team",
       role: "Product UI/UX Design",
       avatar: "AX",
     },

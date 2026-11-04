@@ -1,7 +1,7 @@
-# Axiom Studio — Design Architecture
+# Axioms Lab — Design Architecture
 
 - **Document ID**: `AXS-DES-002`
-- **Platform**: **Axiom Studio** (`https://axiomstudio.agency`)
+- **Platform**: **Axioms Lab** (`https://www.axiomslab.com`)
 - **Color Benchmark**: `https://antigravity.google/` (Crisp `#FFFFFF` / `#F8F9FC` Daylight Surfaces + `#121317` Obsidian Primary Ink/Pills + Multicolor Antigravity Spectrum)
 - **Motion Benchmark**: `https://antimatterai.agency` (Kinetic Split Text, 3D Particle Sphere, Odometer Counters & Difference-Blend Project Cursor)
 - **Motion Companion Spec**: `/Animations.md`
@@ -10,7 +10,7 @@
 
 ## 1. Design Philosophy & Aesthetic Direction
 
-**Axiom Studio** pairs the crisp, airy editorial color architecture of **`https://antigravity.google/`** with the signature choreographed motion mechanics of **`https://antimatterai.agency`**. Every visual decision adheres to four foundational design axioms:
+**Axioms Lab** pairs the crisp, airy editorial color architecture of **`https://antigravity.google/`** with the signature choreographed motion mechanics of **`https://antimatterai.agency`**. Every visual decision adheres to four foundational design axioms:
 
 1. **Crisp Daylight Surfaces (`#FFFFFF` & `#F8F9FC`)**: Pure `#FFFFFF` (`--palette-grey-0`) anchors the page canvas, alternating with cool off-white containers (`#F8F9FC`, `#EFF2F7`, `#E6EAF0`) and subtle `1px` structural outlines (`rgba(33, 34, 38, 0.08)`). Strategic `#121317` inverse dark callout cards (`.card.dark`) create dramatic visual punctuation before the clean white footer.
 2. **Multicolor Antigravity Particle & Atmospheric Spectrum**: Centered 3D Fibonacci sphere particles (`THREE.NormalBlending`) and pastel atmospheric halos blend Electric Blue (`#3186FF`), Periwinkle (`#749BFF`), Coral Red (`#FC413D`), Signal Yellow (`#FBBC04`), and Vivid Green (`#00B95C`).
@@ -86,7 +86,7 @@
 
 ## 3. Typography & Editorial Hierarchy
 
-Axiom Studio uses a dual-axis typographic system with OpenType stylistic sets enabled (`font-feature-settings: "cv02", "cv03", "cv04", "cv11"`):
+Axioms Lab uses a dual-axis typographic system with OpenType stylistic sets enabled (`font-feature-settings: "cv02", "cv03", "cv04", "cv11"`):
 
 | Role | Font Stack | Size Scale (Mobile → Desktop) | Weight & Tracking | Motion / Numeric Treatment |
 | :--- | :--- | :--- | :--- | :--- |
@@ -129,7 +129,7 @@ flowchart TB
 ## 5. Component Design Specifications & Interactive States
 
 ### 5.1 Navigation Header & Mega-Menu (`src/components/Navbar.tsx`)
-- **Brand Lockup**: `32x32px` rounded-lg gradient border (`from-brand-muted via-brand-primary to-white p-[1px]`) framing `#08080a` inner square with `AX` bold monospace mark + `AXIOM STUDIO` + `6px` emerald pulsing dot.
+- **Brand Lockup**: `32x32px` rounded-lg gradient border (`from-brand-muted via-brand-primary to-white p-[1px]`) framing `#08080a` inner square with `AX` bold monospace mark + `AXIOMS LAB` + `6px` emerald pulsing dot.
 - **Mega-Menu Panel**: `max-w-5xl` glassmorphic dropdown (`bg-[#09090d]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl`) containing a 2-column grid of the 6 service pillars + bottom bar CTA to `/work` / featured case study preview.
 - **Interactive States**:
   - `Default`: `text-zinc-300 bg-transparent`

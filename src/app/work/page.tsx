@@ -4,9 +4,9 @@ import ContactSection from "@/components/ContactSection";
 import WorkPageContent from "@/components/WorkPageContent";
 
 export const metadata = {
-  title: "Concept Work | Axiom Studio",
+  title: "Concept Work | Axioms Lab",
   description:
-    "Explore Axiom Studio's production-grade concept builds in Web Development, Web Designing, UI/UX Design, and AI Agents.",
+    "Explore Axioms Lab's production-grade concept builds in Web Development, Web Designing, UI/UX Design, and AI Agents.",
 };
 
 export default function WorkPage() {

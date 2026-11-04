@@ -37,7 +37,7 @@ const isProduction = nodeEnv === "production";
  */
 const VERCEL_PREVIEW_PATTERN = "https://axioms-labs*.vercel.app";
 
-const DEFAULT_SITE_URL = "https://axiomstudio.agency";
+const DEFAULT_SITE_URL = "https://www.axiomslab.com";
 
 function parseOriginList(raw: string): string[] {
   return raw

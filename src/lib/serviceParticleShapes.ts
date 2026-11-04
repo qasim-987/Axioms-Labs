@@ -13,7 +13,7 @@ export type ServiceShapeId =
   | "dnaHelix";
 
 /**
- * Data-driven pairing of Axiom Studio's 4 existing services (`src/data/services.ts`)
+ * Data-driven pairing of Axioms Lab's 4 existing services (`src/data/services.ts`)
  * to their 3D particle shapes:
  *   01 UI/UX Design    -> wireframe   (3D hollow UI wireframe / browser outline with two inner panels)
  *   02 Web Development -> brackets    (3D extruded </> code brackets)

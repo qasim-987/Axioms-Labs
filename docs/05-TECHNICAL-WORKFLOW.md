@@ -1,7 +1,7 @@
-# Axiom Studio — Technical Workflow & Engineering Playbooks
+# Axioms Lab — Technical Workflow & Engineering Playbooks
 
 - **Document ID**: `AXS-WFL-005`
-- **Platform**: **Axiom Studio** (`axiom-studio@1.0.0`)
+- **Platform**: **Axioms Lab** (`axioms-lab@1.0.0`)
 - **Companion Docs**: `/Animations.md`, `/AGENTS.md`, `docs/01`–`04`
 
 ---
@@ -64,7 +64,7 @@ npm run build
 
 ### 3.2 Pull Request Review Checklist
 Every PR must confirm:
-- [ ] **Brand Invariant**: Strictly uses **Axiom Studio** (`AXIOM STUDIO`, `axiomstudio.agency`).
+- [ ] **Brand Invariant**: Strictly uses **Axioms Lab** (`AXIOMS LAB`, `www.axiomslab.com`).
 - [ ] **Build Health**: `npm run build` compiles all static & dynamic routes with `0` errors.
 - [ ] **Bundle Discipline**: Shared First-Load JS remains `< 95 kB` unless justified by approved motion libraries (`framer-motion`, `gsap`, `lenis`).
 - [ ] **Accessibility & Motion**: `@media (prefers-reduced-motion: reduce)` and `useReducedMotion()` tested; no orphaned `setInterval` or `requestAnimationFrame` loops on component unmount.
@@ -118,7 +118,7 @@ sequenceDiagram
    - Verify `iconName` maps cleanly in `ServicesGrid.tsx`, `Navbar.tsx`, and `src/app/services/[slug]/page.tsx`.
    - Add footer entry in `src/data/navigation.ts`.
 3. **New Engineering Blog Article (`/blog/[slug]`)**:
-   - Append a typed `BlogPost` object in `src/data/blog.ts` (`author.role` referencing `Axiom Studio`).
+   - Append a typed `BlogPost` object in `src/data/blog.ts` (`author.role` referencing `Axioms Lab`).
    - Run `npm run build` to verify static generation under `/blog/[slug]`.
 
 ---
@@ -164,7 +164,7 @@ sequenceDiagram
 Create `.github/workflows/ci.yml` when enabling automated GitHub pull-request gates:
 
 ```yaml
-name: Axiom Studio CI
+name: Axioms Lab CI
 
 on:
   push:
@@ -188,10 +188,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Brand Hygiene Gate (Enforce Axiom Studio)
+      - name: Brand Hygiene Gate (Enforce Axioms Lab)
         run: |
           if grep -rn -i "axiom labs\|axiomlabs\|anti-quanta" src/ README.md PROGRESS.md package.json; then
-            echo "❌ Legacy branding detected! Use 'Axiom Studio' exclusively."
+            echo "❌ Legacy branding detected! Use 'Axioms Lab' exclusively."
             exit 1
           fi
 
@@ -209,7 +209,7 @@ jobs:
 
 ## 6. Deployment Promotion & Instant Rollback Protocol
 
-1. **Preview Deployment**: Pushing any branch automatically triggers a Vercel Preview URL (`https://<branch>-axiom-studio.vercel.app`). Verify Hero `LightRays`, odometer counters, mega-menu transitions, and `/api/contact` on mobile and desktop before merging.
+1. **Preview Deployment**: Pushing any branch automatically triggers a Vercel Preview URL (`https://<branch>-axioms-lab.vercel.app`). Verify Hero `LightRays`, odometer counters, mega-menu transitions, and `/api/contact` on mobile and desktop before merging.
 2. **Production Promotion**: Merging to `main` promotes atomically to Vercel's global Edge CDN with zero downtime.
 3. **Instant Rollback**: If post-deploy Real User Monitoring shows `CLS > 0.05`, `5xx` errors on `/api/contact`, or broken client hydration, execute an immediate atomic rollback in Vercel (`Deployments -> Previous Healthy Production Build -> Instant Rollback`) in `< 10 seconds`, then reproduce locally via `npm run build && npm run start`.
 

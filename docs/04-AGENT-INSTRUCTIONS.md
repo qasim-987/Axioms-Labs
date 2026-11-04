@@ -1,7 +1,7 @@
-# Axiom Studio — AI Coding Agent Instructions (`AGENTS.md`)
+# Axioms Lab — AI Coding Agent Instructions (`AGENTS.md`)
 
 - **Document ID**: `AXS-AGT-004`
-- **Brand Identity**: **Axiom Studio** (`AXIOM STUDIO` / `AX` monogram / `https://axiomstudio.agency`)
+- **Brand Identity**: **Axioms Lab** (`AXIOMS LAB` / `A` monogram / `https://www.axiomslab.com`)
 - **Decoupled Service Architecture**:
   - **Front-End (`src/`)**: Next.js `14.2` (App Router on `0.0.0.0:3000`), React `18.3`, TypeScript `5.6` (`strict: true`), Tailwind CSS `3.4`, `lucide-react` — zero API route handlers in `src/app/api/*`; communicates exclusively via relative `/api/*` HTTP calls (`src/lib/apiClient.ts`) proxied to `BACKEND_INTERNAL_URL`.
   - **Back-End (`backend/`)**: Standalone Express + TypeScript + Zod REST service (`0.0.0.0:4000`) owning `/api/health`, `/api/contact`, `/api/vendors/*`, and `/api/labs/*`.
@@ -12,8 +12,8 @@
 
 ## 1. Non-Negotiable Invariants ("ALWAYS / NEVER" Rules)
 
-1. **STRICT BRANDING — "Axiom Studio" ONLY**:
-   - **ALWAYS** use `"Axiom Studio"` (or `"AXIOM STUDIO"` in uppercase lockups, `contact@axiomstudio.agency`, `https://axiomstudio.agency`).
+1. **STRICT BRANDING — "Axioms Lab" ONLY**:
+   - **ALWAYS** use `"Axioms Lab"` (or `"AXIOMS LAB"` in uppercase lockups, `info@axiomslab.com`, `https://www.axiomslab.com`).
    - **NEVER** re-introduce legacy strings `"Axiom Labs"`, `"axiomlabs"`, `"Anti Quanta"`, `"anti-quanta"`, or third-party `"Antimatter"` / `"Antimatter AI"` in any UI copy, `<title>`, OpenGraph tag, JSON response, or package manifest. (Exception: dummy client name `"Synthetix Labs"` in `src/data/clients.ts` and the backward-compatible `/open-antimatter -> /open-axiom` redirect shim).
 2. **SERVER-FIRST (RSC) ARCHITECTURE**:
    - **ALWAYS** keep pages and static layout wrappers as React Server Components unless interactive browser state/hooks (`useState`, `useEffect`, `IntersectionObserver`, `requestAnimationFrame`, event handlers) are strictly required.

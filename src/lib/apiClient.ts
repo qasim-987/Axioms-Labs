@@ -1,7 +1,7 @@
 /**
- * Axiom Studio — Typed Front-End HTTP Client
+ * Axioms Lab — Typed Front-End HTTP Client
  * Communicates strictly via relative `/api/*` paths (proxied by Next.js rewrites
- * to the standalone Axiom Studio Backend Server on port 4000).
+ * to the standalone Axioms Lab Backend Server on port 4000).
  */
 
 export interface ContactSubmissionInput {

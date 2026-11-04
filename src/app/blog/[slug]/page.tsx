@@ -28,10 +28,10 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: ArticlePageProps): Metadata {
   const post = blogPosts.find((p) => p.slug === params.slug);
   if (!post) {
-    return { title: "Article Not Found | Axiom Studio" };
+    return { title: "Article Not Found | Axioms Lab" };
   }
   return {
-    title: `${post.title} — Axiom Studio Insights`,
+    title: `${post.title} — Axioms Lab Insights`,
     description: post.excerpt,
     openGraph: {
       title: post.title,
@@ -152,7 +152,7 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
         <div className="p-8 rounded-3xl bg-[#F8F9FC] border border-[#212226]/[0.08] mb-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
             <span className="text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold block mb-1">
-              WORK WITH AXIOM STUDIO
+              WORK WITH AXIOMS LAB
             </span>
             <h3 className="text-xl font-bold text-[#121317] mb-1">
               Want this built for your website or product?

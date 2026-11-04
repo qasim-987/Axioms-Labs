@@ -11,14 +11,15 @@ import TransitionErrorBoundary from "@/components/transitions/TransitionErrorBou
 import PageTransitionProvider from "@/components/transitions/PageTransitionProvider";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
+import { SITE_EMAIL, SITE_NAME, SITE_URL } from "@/config/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://axiomstudio.agency"),
-  title: "Axiom Studio — Web Development, Web Designing, UI/UX & AI Agents",
+  metadataBase: new URL(SITE_URL),
+  title: "Axioms Lab — Web Development, Web Designing, UI/UX & AI Agents",
   description:
-    "Axiom Studio crafts custom web applications, high-converting web designs, intuitive UI/UX design systems, and practical AI agents. Operating from Kuopio, Finland and Lahore, Pakistan for clients worldwide.",
+    "Axioms Lab crafts custom web applications, high-converting web designs, intuitive UI/UX design systems, and practical AI agents. Operating from Kuopio, Finland and Lahore, Pakistan for clients worldwide.",
   keywords: [
-    "Axiom Studio",
+    "Axioms Lab",
     "Web Development",
     "Web Designing",
     "UI/UX Design",
@@ -26,21 +27,21 @@ export const metadata: Metadata = {
     "Next.js Agency",
     "Figma Design Systems",
     "Kuopio Web Agency",
-    "Lahore Software Studio",
+    "Lahore Software Lab",
   ],
-  authors: [{ name: "Axiom Studio" }],
+  authors: [{ name: SITE_NAME }],
   openGraph: {
-    title: "Axiom Studio — Web Development, Web Designing, UI/UX & AI Agents",
+    title: "Axioms Lab — Web Development, Web Designing, UI/UX & AI Agents",
     description:
       "Custom Web Development, High-Converting Web Designing, Product UI/UX Design, and Practical AI Agents — Kuopio, Finland & Lahore, Pakistan.",
-    url: "https://axiomstudio.agency",
-    siteName: "Axiom Studio",
+    url: SITE_URL,
+    siteName: SITE_NAME,
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Axiom Studio — Web Development, Web Designing, UI/UX & AI Agents",
+    title: "Axioms Lab — Web Development, Web Designing, UI/UX & AI Agents",
     description:
       "Custom Web Development, High-Converting Web Designing, Product UI/UX Design, and Practical AI Agents.",
   },
@@ -61,11 +62,11 @@ export const viewport: Viewport = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Axiom Studio",
-  url: "https://axiomstudio.agency",
-  email: "contact@axiomstudio.agency",
+  name: SITE_NAME,
+  url: SITE_URL,
+  email: SITE_EMAIL,
   description:
-    "Digital design, web engineering, and AI agent studio operating in Kuopio, Finland and Lahore, Pakistan.",
+    "Digital design, web engineering, and AI lab operating in Kuopio, Finland and Lahore, Pakistan.",
   areaServed: "Worldwide",
   location: [
     {

@@ -3,9 +3,9 @@ import Footer from "@/components/Footer";
 import CompanyPageContent from "@/components/CompanyPageContent";
 
 export const metadata = {
-  title: "About Studio | Axiom Studio",
+  title: "About Us | Axioms Lab",
   description:
-    "Axiom Studio is a focused digital product & AI studio across Kuopio, Finland and Lahore, Pakistan specializing in Web Development, Web Designing, UI/UX Design, and AI Agents.",
+    "Axioms Lab is a focused digital product & AI lab across Kuopio, Finland and Lahore, Pakistan specializing in Web Development, Web Designing, UI/UX Design, and AI Agents.",
 };
 
 export default function CompanyPage() {
