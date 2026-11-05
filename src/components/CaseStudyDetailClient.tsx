@@ -14,10 +14,10 @@ import { MOTION_EASE } from "@/lib/motionTokens";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 
 const dialGauges = [
-  { label: "Lighthouse Speed", display: "99/100", pct: 99, stroke: "#3186FF" },
-  { label: "UI Token Consistency", display: "100%", pct: 100, stroke: "#00B95C" },
-  { label: "Edge Latency", display: "<85ms", pct: 94, stroke: "#FC413D" },
-  { label: "Responsive & A11y", display: "WCAG AA", pct: 98, stroke: "#FBBC04" },
+  { label: "Lighthouse Speed (target)", display: "90+", pct: 90, stroke: "#3186FF" },
+  { label: "UI Token Consistency (target)", display: "100%", pct: 100, stroke: "#00B95C" },
+  { label: "Edge Latency (target)", display: "<85 ms", pct: 85, stroke: "#FC413D" },
+  { label: "Responsive & A11y (target)", display: "WCAG AA", pct: 90, stroke: "#FBBC04" },
 ];
 
 export default function CaseStudyDetailClient({

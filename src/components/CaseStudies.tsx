@@ -144,8 +144,8 @@ function ProjectShowcaseVisual({
               </div>
               <div>
                 <div className="flex justify-between text-[10px] font-mono text-[#B2BBC5] mb-1">
-                  <span>Checkout Interaction Latency</span>
-                  <span className="text-[#749BFF]">&lt; 50ms</span>
+                  <span>Checkout Interaction Latency (lab target)</span>
+                  <span className="text-[#749BFF]">&lt; 50 ms target</span>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
                   <div className="h-full w-[92%] rounded-full bg-gradient-to-r from-[#3186FF] to-[#FBBC04]" />
@@ -339,7 +339,7 @@ export default function CaseStudies() {
             </div>
             <SplitTextReveal
               as="h2"
-              text="Case Studies"
+              text="Selected Concept Builds"
               accentFromWordIndex={1}
               accentClassName="text-[#3186FF]"
               className="text-3xl sm:text-5xl font-bold tracking-tight text-[#121317]"
