@@ -27,54 +27,38 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: baseUrl,
       lastModified: STATIC_CONTENT_LASTMOD,
-      changeFrequency: "weekly",
-      priority: 1.0,
     },
     {
       url: `${baseUrl}/work`,
       lastModified: STATIC_CONTENT_LASTMOD,
-      changeFrequency: "weekly",
-      priority: 0.9,
     },
     {
       url: `${baseUrl}/company`,
       lastModified: STATIC_CONTENT_LASTMOD,
-      changeFrequency: "monthly",
-      priority: 0.8,
     },
     {
       url: `${baseUrl}/blog`,
       lastModified: STATIC_CONTENT_LASTMOD,
-      changeFrequency: "weekly",
-      priority: 0.8,
     },
     {
       url: `${baseUrl}/contact`,
       lastModified: STATIC_CONTENT_LASTMOD,
-      changeFrequency: "monthly",
-      priority: 0.9,
     },
   ];
 
   const serviceRoutes: MetadataRoute.Sitemap = servicesData.map((s) => ({
     url: `${baseUrl}/services/${s.slug}`,
     lastModified: STATIC_CONTENT_LASTMOD,
-    changeFrequency: "monthly",
-    priority: 0.95,
   }));
 
   const conceptRoutes: MetadataRoute.Sitemap = clientCaseStudies.map((c) => ({
     url: `${baseUrl}/work/${c.slug}`,
     lastModified: STATIC_CONTENT_LASTMOD,
-    changeFrequency: "monthly",
-    priority: 0.85,
   }));
 
   const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((b) => ({
     url: `${baseUrl}/blog/${b.slug}`,
     lastModified: blogLastmod(b.publishedAt),
-    changeFrequency: "monthly",
-    priority: 0.75,
   }));
 
   return [...staticRoutes, ...serviceRoutes, ...conceptRoutes, ...blogRoutes];
