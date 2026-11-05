@@ -172,6 +172,18 @@ export default function BlogArticlePage({ params }: ArticlePageProps) {
           <div className="p-6 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] text-sm sm:text-base text-[#121317] leading-relaxed">
             {post.content.conclusion}
           </div>
+
+          {post.relatedService && (
+            <p className="mt-6 text-sm sm:text-base text-[#45474D]">
+              Related service:{" "}
+              <Link
+                href={`/services/${post.relatedService.slug}`}
+                className="text-[#3186FF] font-medium underline underline-offset-4 hover:text-[#121317] transition-colors"
+              >
+                {post.relatedService.label} at Axioms Lab
+              </Link>
+            </p>
+          )}
         </article>
 
         {/* Consultation Callout */}
