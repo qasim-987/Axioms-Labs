@@ -12,6 +12,10 @@ import PageTransitionProvider from "@/components/transitions/PageTransitionProvi
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 import { SITE_EMAIL, SITE_NAME, SITE_URL } from "@/config/site";
+import jakarta400 from "@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-400-normal.woff2";
+import jakarta700 from "@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-700-normal.woff2";
+import jakarta800 from "@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-800-normal.woff2";
+import jakarta800i from "@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-800-italic.woff2";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -103,6 +107,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      {/* Above-the-fold brand weights: preload so first paint is already final typography. */}
+      <head>
+        {[jakarta400, jakarta700, jakarta800, jakarta800i].map((href) => (
+          <link key={href} rel="preload" as="font" type="font/woff2" href={href} crossOrigin="anonymous" />
+        ))}
+      </head>
       <body className="font-sans min-h-screen bg-[#FFFFFF] text-[#121317] antialiased selection:bg-[#3186FF] selection:text-white">
         <script
           type="application/ld+json"

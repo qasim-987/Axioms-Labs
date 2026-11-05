@@ -217,8 +217,11 @@ function DesktopParticleSphereHero({
       blending: THREE.NormalBlending,
     });
 
+    // Visual-stability rule: the hero sphere is the brand moment, so its
+    // particle density is frozen at the mount-time tier. The runtime governor
+    // may still relax DPR (a subtle sharpness change) to protect weak GPUs,
+    // but never thins the sphere a few seconds into a visit.
     const monitor = createAdaptiveFpsMonitor(tier.tier, (next) => {
-      geometry.setDrawRange(0, Math.min(PARTICLE_COUNT, next.particleCount));
       stage.setMaxDpr(next.dprCap);
     });
     const points = new THREE.Points(geometry, shaderMaterial);

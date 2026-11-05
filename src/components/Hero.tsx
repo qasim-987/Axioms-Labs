@@ -270,7 +270,7 @@ export default function Hero() {
               delay: 0.62,
               ease: MOTION_EASE.cinematicOut,
             }}
-            className="max-w-xl mx-auto text-center text-sm sm:text-base md:text-lg text-[#45474D] leading-relaxed font-normal mb-8 bg-white/65 backdrop-blur-[2px] rounded-2xl px-4 py-1"
+            className="max-w-xl mx-auto text-center text-sm sm:text-base md:text-lg text-[#45474D] leading-relaxed font-normal mb-8 bg-white/80 rounded-2xl px-4 py-1"
           >
             We craft high-converting websites, intuitive UI/UX interfaces,
             scalable web applications, and custom AI agents for modern brands.
@@ -301,7 +301,7 @@ export default function Hero() {
               href="/work"
               onMouseMove={handleMagneticMove}
               onMouseLeave={handleMagneticLeave}
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-full text-sm font-medium bg-[#B7BFD9]/[0.18] hover:bg-[#F0F1F5] border border-[#212226]/[0.08] text-[#121317] tracking-wide transition-all duration-200 backdrop-blur-sm will-change-transform"
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-full text-sm font-medium bg-[#EFF2F7] hover:bg-[#E4E9F0] border border-[#212226]/[0.08] text-[#121317] tracking-wide transition-all duration-200 will-change-transform"
             >
               <span>Explore Concept Work</span>
             </Link>
