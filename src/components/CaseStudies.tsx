@@ -135,8 +135,8 @@ function ProjectShowcaseVisual({
             <div className="my-4 space-y-2.5">
               <div>
                 <div className="flex justify-between text-[10px] font-mono text-[#B2BBC5] mb-1">
-                  <span>SSR Streaming &amp; Edge Cache</span>
-                  <span className="text-[#4ADE80]">99 / 100</span>
+                  <span>SSR Streaming &amp; Edge Cache (lab target)</span>
+                  <span className="text-[#4ADE80]">90+ target</span>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
                   <div className="h-full w-[96%] rounded-full bg-gradient-to-r from-[#3186FF] via-[#749BFF] to-[#00B95C]" />
