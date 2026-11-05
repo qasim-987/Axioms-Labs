@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { usePageTransition } from "@/components/transitions/context";
 import Link from "next/link";
+import axlMonogram from "@/assets/axl-monogram.png";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { servicesData } from "@/data/services";
@@ -202,18 +204,14 @@ export default function Navbar() {
               href="/"
               className="inline-flex items-center gap-2.5 min-h-[44px] lg:min-h-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] rounded-lg"
             >
-              <span
+              <Image
+                src={axlMonogram}
+                alt=""
                 aria-hidden="true"
-                className="w-5 h-5 rounded-md flex items-center justify-center p-[2px] shrink-0"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #3186FF 0%, #FC413D 45%, #FBBC04 75%, #00B95C 100%)",
-                }}
-              >
-                <span className="w-full h-full rounded-[4px] bg-white flex items-center justify-center font-mono text-[9px] font-black text-[#3186FF]">
-                  A
-                </span>
-              </span>
+                width={24}
+                height={24}
+                className="h-6 w-6 shrink-0"
+              />
               <span className="font-bold text-base sm:text-lg tracking-tight text-[#202124]">
                 Axioms Lab
               </span>
