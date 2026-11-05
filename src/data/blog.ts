@@ -37,7 +37,7 @@ export const blogPosts: BlogPost[] = [
       avatar: "AX",
     },
     publishedAt: "October 2026",
-    readingTime: "6 min read",
+    readingTime: "8 min read",
     featured: true,
     content: {
       introduction:
@@ -61,6 +61,24 @@ export const blogPosts: BlogPost[] = [
             "Log conversations so your team has full context before every call.",
           ],
         },
+      {
+        heading: "Guardrails We Ship by Default",
+        body: "In our own stack, every agent-adjacent boundary is validated server-side: contact submissions are checked against strict Zod schemas in the API layer before anything is stored, our database runs with Row Level Security enabled and no public policies (deny by default), and secrets never reach the browser because external calls go through a server-side proxy. None of this is exotic — it is the minimum we consider shippable, and it is exactly the posture we bring to agent tool-calling: validate every parameter, deny by default, keep keys server-side.",
+        takeaways: [
+          "Validate tool-call parameters with strict schemas at the API boundary, not in the prompt.",
+          "Deny by default at the data layer; grant only what the agent's task needs.",
+          "Route external API calls through server-side proxies so credentials never ship to clients.",
+        ],
+      },
+      {
+        heading: "The First Agent We Would Ship You",
+        body: "Not a do-everything assistant. The narrowest useful agent we know is a lead-qualification copilot on your contact form: it reads the enquiry, checks it against your service list and budget bands, drafts a structured brief for a human, and stops there. Our own contact form already captures the fields such an agent needs — service, budget band, goals and timeline — which is why this is the cheapest high-value starting point we can defend. The limit: it improves response quality, not response volume, and it needs a human in the loop from day one.",
+        takeaways: [
+          "Start with one workflow that already has structured inputs.",
+          "Give the agent a write-up role before a write-access role.",
+          "Measure handoff quality, not just containment rate.",
+        ],
+      },
       ],
       conclusion:
         "When AI agents combine accurate retrieval with clean UI integration and human handoff, they elevate your customer experience instead of getting in the way.",
@@ -139,7 +157,7 @@ export const blogPosts: BlogPost[] = [
       avatar: "AX",
     },
     publishedAt: "September 2026",
-    readingTime: "5 min read",
+    readingTime: "7 min read",
     featured: false,
     content: {
       introduction:
@@ -154,6 +172,24 @@ export const blogPosts: BlogPost[] = [
             "Use purposeful micro-interactions to highlight key actions without distracting the reader.",
           ],
         },
+      {
+        heading: "The Section Order We Actually Use",
+        body: "Our own landing page follows one rule: answer 'what do you do and for whom' before asking for anything. The order is hero statement with a single primary action, then production-stack proof, then the four disciplines, then delivery process with weekly cadences, then the contact form. Every section earns its scroll by reducing a specific doubt — capability, reliability, scope, process, risk — and the primary action repeats only after each doubt is addressed.",
+        takeaways: [
+          "Map each section to one doubt it removes.",
+          "Keep one primary action per viewport; repeat it after proof, not before.",
+          "Put process and cadence before the form — it prices the commitment honestly.",
+        ],
+      },
+      {
+        heading: "Contrast and Motion Are Hierarchy Tools, Not Decoration",
+        body: "We run a two-ink system: near-black #121317 for headings and actions, mid-grey #45474D for supporting copy, on white — enough contrast that hierarchy survives with colour switched off. Motion follows the same discipline: entrances animate transform and opacity only, and every sequence is disabled under prefers-reduced-motion. Where we publish numbers (load times, scores), they are labelled as targets or lab results, because a hierarchy claim you cannot evidence is just decoration too.",
+        takeaways: [
+          "Test hierarchy in greyscale before shipping colour.",
+          "Compositor-only motion keeps scroll hierarchy intact on weak devices.",
+          "Label every metric as target, lab result, or field data.",
+        ],
+      },
       ],
       conclusion:
         "Thoughtful web designing turns your website into your hardest-working salesperson around the clock.",
@@ -172,7 +208,7 @@ export const blogPosts: BlogPost[] = [
       avatar: "AX",
     },
     publishedAt: "September 2026",
-    readingTime: "6 min read",
+    readingTime: "8 min read",
     featured: false,
     content: {
       introduction:
@@ -187,6 +223,24 @@ export const blogPosts: BlogPost[] = [
             "Keep accessibility (WCAG AA contrast and keyboard navigation) baked into your base tokens.",
           ],
         },
+      {
+        heading: "One Source of Truth: Tokens as TypeScript, Not Just Figma Variables",
+        body: "Figma variables only survive contact with code if they live somewhere both sides import. In our repository, brand constants (colours, copy, contact details) sit in typed config modules, and UI components consume them directly — the same module feeds the navbar, the pricing blocks on service pages and the contact form, so a token change is one edit with compiler-checked reach. Your Figma variable names should mirror those module keys exactly; the naming map is the handoff.",
+        takeaways: [
+          "Publish tokens from typed config modules, not screenshots or PDFs.",
+          "Mirror Figma variable names to code keys one-to-one.",
+          "Let the compiler verify token reach across components.",
+        ],
+      },
+      {
+        heading: "Where Token Systems Break (and How We Contain It)",
+        body: "Three failure modes we watch: one-off hex values sneaking into components (we review diffs for raw literals), state styles multiplying faster than states (hover/focus/disabled variants are declared once per component), and arbitrary-value drift in Tailwind classes when a token is missing (the fix is adding the token, not the literal). None of this needs tooling beyond code review and a shared component library — but it does need the discipline to say no to the fast workaround.",
+        takeaways: [
+          "Review diffs for raw colour literals.",
+          "Declare state variants once, per component.",
+          "Missing token? Add the token, never the literal.",
+        ],
+      },
       ],
       conclusion:
         "A cohesive UI/UX system gives your product an unmistakable sense of quality today while letting your team ship new features twice as fast tomorrow.",
