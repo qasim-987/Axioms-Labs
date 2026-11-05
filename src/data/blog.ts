@@ -20,6 +20,8 @@ export interface BlogPost {
     }[];
     conclusion: string;
   };
+  /** One internal link to the service this post genuinely relates to. */
+  relatedService?: { slug: string; label: string };
 }
 
 export const blogPosts: BlogPost[] = [
@@ -63,12 +65,13 @@ export const blogPosts: BlogPost[] = [
       conclusion:
         "When AI agents combine accurate retrieval with clean UI integration and human handoff, they elevate your customer experience instead of getting in the way.",
     },
+    relatedService: { slug: "ai-agents", label: "AI Agents" },
   },
   {
     slug: "nextjs-performance-checklist-for-99-lighthouse-websites",
-    title: "Next.js 14 Performance Blueprint: Hitting 99+ Lighthouse Scores",
+    title: "Next.js 14 Performance Blueprint: How We Cut Homepage JavaScript 41% (385 kB to 227 kB)",
     excerpt:
-      "How clean Server Components, zero-jank animations, and smart asset loading make modern business websites feel instantaneous on every device.",
+      "The exact changes we shipped on our own site: lazy-loading the 3D stack, deleting paint-heavy blur effects, and keeping motion on the GPU — with the real before/after build numbers and their limits.",
     category: "Web Development",
     author: {
       name: "Axioms Lab Team",
@@ -76,7 +79,7 @@ export const blogPosts: BlogPost[] = [
       avatar: "AX",
     },
     publishedAt: "October 2026",
-    readingTime: "5 min read",
+    readingTime: "7 min read",
     featured: false,
     content: {
       introduction:
@@ -91,10 +94,38 @@ export const blogPosts: BlogPost[] = [
             "Animate transform and opacity rather than layout-triggering width or top properties.",
           ],
         },
+      {
+        heading: "Make the 3D Library a Lazy Async Chunk",
+        body: "Our homepage hero renders a WebGL particle sphere with three.js. Statically imported, that put the entire 3D stack on the critical path of every hard load. We switched the hero canvas to next/dynamic with ssr: false so three.js ships as a separate async chunk, and held the layout with a lightweight CSS radial glow that fades out when the canvas arrives. Server-rendered HTML stays complete for crawlers and first paint; the 3D layer enhances afterwards.",
+        takeaways: [
+          "Heavy visual libraries belong behind dynamic imports, not static ones.",
+          "Reserve space with CSS so lazy layers never shift layout.",
+          "Respect prefers-reduced-motion by skipping the canvas entirely.",
+        ],
+      },
+      {
+        heading: "Delete Paint-Heavy Effects Before Optimising Anything",
+        body: "Entrance animations that animate filter: blur() force the browser to repaint large regions every frame. Replacing them with compositor-only properties (transform and opacity) removed that per-frame paint cost across the landing page. Combined with the chunk split above, our home route's first-load JavaScript fell from 385 kB to 227 kB in the next build output — a real, repeatable lab number from our own repository.",
+        takeaways: [
+          "Audit animations for layout- and paint-triggering properties first.",
+          "Measure with build output before and after; guesswork wastes sprints.",
+          "Code-split per route so below-fold sections pay their own way.",
+        ],
+      },
+      {
+        heading: "Know What Your Numbers Are — and Are Not",
+        body: "First-load JavaScript size is a lab metric: reproducible, but blind to real networks, devices and caching. Core Web Vitals from real users (field data) is what Google actually weighs, and we do not yet have enough traffic to publish it honestly. Until we do, we label every figure on this site as a target or a lab result — and we suggest you hold any agency, including us, to the same standard.",
+        takeaways: [
+          "Label every published metric as target, lab result, or field data.",
+          "Ship RUM (real-user monitoring) before claiming Core Web Vitals wins.",
+          "Absence of field data is not a failure; hiding that absence is.",
+        ],
+      },
       ],
       conclusion:
-        "High performance isn't an afterthought plugin—it is the result of disciplined architecture from the very first component.",
+        "High performance isn't an afterthought plugin—it is the result of disciplined architecture from the very first component. One honest caveat: the 385 kB to 227 kB figures above are first-load JavaScript sizes from our own next build output (a lab measurement on one route), not field data from real users, and a Lighthouse score on your machine will vary with device, network and extensions. Treat the numbers as direction, not a promise — and if you want this discipline applied to your own site, see our web development service.",
     },
+    relatedService: { slug: "web-development", label: "Web Development" },
   },
   {
     slug: "high-converting-web-design-hierarchy-and-visual-storytelling",
@@ -127,6 +158,7 @@ export const blogPosts: BlogPost[] = [
       conclusion:
         "Thoughtful web designing turns your website into your hardest-working salesperson around the clock.",
     },
+    relatedService: { slug: "web-designing", label: "Web Designing" },
   },
   {
     slug: "figma-to-code-ui-ux-design-systems-that-scale",
@@ -159,6 +191,7 @@ export const blogPosts: BlogPost[] = [
       conclusion:
         "A cohesive UI/UX system gives your product an unmistakable sense of quality today while letting your team ship new features twice as fast tomorrow.",
     },
+    relatedService: { slug: "ui-ux-design", label: "UI/UX Design" },
   },
 ];
 

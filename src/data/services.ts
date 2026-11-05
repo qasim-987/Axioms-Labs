@@ -283,7 +283,7 @@ export const servicesData: ServiceItem[] = [
     longDesc:
       "Great software feels effortless to use. We turn complex workflows into clean, intuitive user experiences backed by structured user flows, interactive Figma prototypes, accessibility standards, and tokenized design systems your developers love.",
     iconName: "Layout",
-    metrics: "100% WCAG 2.1 AA Accessible",
+    metrics: "WCAG 2.1 AA-focused design & builds",
     deliverables: [
       {
         title: "UX Audits & User Journey Mapping",

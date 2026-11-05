@@ -36,10 +36,10 @@ export const clientsData: ClientCaseStudy[] = [
     title: "Nexus SaaS & Headless Commerce Platform",
     client: "Lab Concept • 01",
     tagline:
-      "Internal full-stack Next.js 14 & Supabase reference platform demonstrating sub-second storefront rendering and real-time analytics.",
+      "Internal full-stack Next.js 14 & Supabase reference platform targeting sub-second storefront rendering and real-time analytics.",
     category: "Web Development",
-    impactMetric: "99/100",
-    impactLabel: "Lighthouse Performance & Core Web Vitals Benchmark",
+    impactMetric: "90+",
+    impactLabel: "Lighthouse performance & Core Web Vitals target (lab concept, not a measured client result)",
     year: "2026",
     duration: "Lab Prototype",
     summary:
@@ -66,7 +66,7 @@ export const clientsData: ClientCaseStudy[] = [
       },
     ],
     results: [
-      "99/100 Lighthouse Performance and Accessibility benchmark on desktop & mobile",
+      "Lighthouse 90+ performance & accessibility target on desktop & mobile (lab target, not yet independently measured)",
       "Sub-300ms route transitions with Next.js App Router prefetching",
       "Clean, reusable full-stack starter blueprint ready for client customization",
     ],
@@ -88,8 +88,8 @@ export const clientsData: ClientCaseStudy[] = [
     tagline:
       "Concept brand website pairing editorial typography, 60fps Framer Motion & GSAP choreography, and conversion-first storytelling.",
     category: "Web Designing",
-    impactMetric: "<1.1s",
-    impactLabel: "First Contentful Paint with Full 60fps Motion Suite",
+    impactMetric: "Sub-1.1s",
+    impactLabel: "first contentful paint target with the full motion suite (lab target, unmeasured)",
     year: "2026",
     duration: "Lab Prototype",
     summary:
@@ -116,7 +116,7 @@ export const clientsData: ClientCaseStudy[] = [
       },
     ],
     results: [
-      "Under 1.1s First Contentful Paint alongside interactive WebGL & scroll motion",
+      "Sub-1.1s first contentful paint target alongside interactive WebGL & scroll motion (lab target, unmeasured)",
       "Full prefers-reduced-motion accessibility support built in from day one",
       "Modular visual language adaptable to SaaS, AI, and modern digital brands",
     ],
@@ -161,13 +161,13 @@ export const clientsData: ClientCaseStudy[] = [
       {
         title: "WCAG 2.1 AA Accessibility",
         description:
-          "Verified contrast ratios, focus rings, and screen-reader semantics across every interactive state.",
+          "Contrast ratios, focus rings, and screen-reader semantics designed to WCAG 2.1 AA across every interactive state.",
       },
     ],
     results: [
-      "120+ documented component variants covering forms, charts, modals, and navigation",
-      "100% WCAG 2.1 AA contrast compliance across both dark and light modes",
-      "Cuts frontend UI implementation time in half through clean auto-layout handoff",
+      "Documented component variant library covering forms, charts, modals, and navigation",
+      "WCAG 2.1 AA contrast targeted across both dark and light modes (design target, not an audit result)",
+      "Designed to shorten frontend UI implementation through clean auto-layout handoff (target, not measured)",
     ],
     techStack: [
       "Figma",
