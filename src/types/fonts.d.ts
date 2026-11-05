@@ -1,0 +1,9 @@
+/** Webfont files resolve to hashed static URLs via Next's asset modules. */
+declare module "*.woff2" {
+  const src: string;
+  export default src;
+}
+declare module "*.woff" {
+  const src: string;
+  export default src;
+}

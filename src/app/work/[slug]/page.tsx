@@ -1,6 +1,9 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { clientsData } from "@/data/clients";
+import { SITE_URL } from "@/config/site";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbList } from "@/lib/seo";
 import CaseStudyDetailClient from "@/components/CaseStudyDetailClient";
 
 interface CaseStudyPageProps {
@@ -22,6 +25,7 @@ export function generateMetadata({ params }: CaseStudyPageProps) {
   return {
     title: `${study.title} — ${study.client} Dossier | Axioms Lab`,
     description: study.summary,
+    alternates: { canonical: `${SITE_URL}/work/${study.slug}` },
   };
 }
 
@@ -43,10 +47,19 @@ export default function CaseStudyDetail({ params }: CaseStudyPageProps) {
       : clientsData[0];
 
   return (
-    <CaseStudyDetailClient
+    <>
+      <JsonLd
+        data={breadcrumbList([
+          { name: "Home", url: SITE_URL },
+          { name: "Concept Work", url: `${SITE_URL}/work` },
+          { name: study.title, url: `${SITE_URL}/work/${study.slug}` },
+        ])}
+      />
+      <CaseStudyDetailClient
       study={study}
       prevStudy={prevStudy}
       nextStudy={nextStudy}
     />
+    </>
   );
 }

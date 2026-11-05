@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { SITE_URL } from "@/config/site";
 import Hero from "@/components/Hero";
 import LogoStrip from "@/components/LogoStrip";
 import StatsSection from "@/components/StatsSection";
@@ -6,6 +8,10 @@ import ConceptBuildsGate from "@/components/ConceptBuildsGate";
 import MethodologySection from "@/components/MethodologySection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+
+export const metadata: Metadata = {
+  alternates: { canonical: SITE_URL },
+};
 
 export default function HomePage() {
   return (

@@ -2,6 +2,19 @@
 const nextConfig = {
   reactStrictMode: true,
   /**
+   * Allow JS-side imports of webfont files so src/app/layout.tsx can <link rel="preload">
+   * the above-the-fold brand weights (kills the late fallback→Jakarta swap flash).
+   * CSS url() references are untouched — those keep going through Next's css-loader pipeline.
+   */
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.woff2?$/,
+      type: "asset/resource",
+      generator: { filename: "static/media/[name].[hash:8][ext]" },
+    });
+    return config;
+  },
+  /**
    * Suppress Next.js's own `X-Powered-By: Next.js`. The acceptance criteria for this change
    * are "no X-Powered-By"; the backend banner was already removed in securityHeaders.ts, but
    * the frontend was still advertising its framework on every response.

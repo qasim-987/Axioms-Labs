@@ -95,7 +95,7 @@ export default function PageTransitionProvider({ children }: { children: ReactNo
       }, C.SAFETY_TIMEOUT_MS);
       gsap.set(shade.current, { opacity: 0 });
       gsap.set(progress.current, { scaleX: 0, opacity: 0 });
-      gsap.set(curtain.current, { y: 0, yPercent: initial.history || reduced ? 0 : 100, opacity: reduced ? 0 : 1, willChange: "transform,opacity" });
+      gsap.set(curtain.current, { y: 0, yPercent: initial.history || reduced ? 0 : 100, opacity: reduced ? 0 : 1, visibility: reduced ? "hidden" : "visible", willChange: "transform,opacity" });
       gsap.set(band.current, { yPercent: 0, scaleY: 1, top: 0, bottom: "auto", opacity: reduced ? 0 : 1 });
       if (initial.history) {
         gsap.set(curtain.current, { yPercent: 0 });
@@ -173,6 +173,7 @@ export default function PageTransitionProvider({ children }: { children: ReactNo
       await animate(curtain.current, reduced
         ? { opacity: 0, duration: .17 }
         : { yPercent: -100, duration: C.DURATION_REVEAL * factor, ease: C.EASE_COVER });
+      gsap.set(curtain.current, { visibility: "hidden" });
       if (!alive()) return;
       // Keep originals hidden until their presentation-only line masks finish.
       if (reveals.current?.timeline.isActive()) await reveals.current.timeline.then();
