@@ -42,12 +42,21 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: `${SITE_URL}/og/axioms-lab-og.png`,
+        width: 1200,
+        height: 630,
+        alt: "Axioms Lab — AXL monogram with wordmark and service line",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Axioms Lab — Web Development, Web Designing, UI/UX & AI Agents",
     description:
       "Custom Web Development, High-Converting Web Designing, Product UI/UX Design, and Practical AI Agents.",
+    images: [`${SITE_URL}/og/axioms-lab-og.png`],
   },
   robots: {
     index: true,
@@ -68,6 +77,7 @@ const organizationJsonLd = {
   "@type": "Organization",
   name: SITE_NAME,
   url: SITE_URL,
+  logo: `${SITE_URL}/brand/axl-monogram-512.png`,
   email: SITE_EMAIL,
   description:
     "Digital design, web engineering, and AI lab operating in Kuopio, Finland and Lahore, Pakistan.",

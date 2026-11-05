@@ -41,6 +41,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: STATIC_CONTENT_LASTMOD,
     },
     {
+      url: `${baseUrl}/services`,
+      lastModified: STATIC_CONTENT_LASTMOD,
+    },
+    {
       url: `${baseUrl}/contact`,
       lastModified: STATIC_CONTENT_LASTMOD,
     },

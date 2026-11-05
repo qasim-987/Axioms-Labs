@@ -212,6 +212,14 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm text-[#45474D]">
               <li>
                 <Link
+                  href="/services"
+                  className="hover:text-[#121317] transition-colors font-medium text-[#3186FF]"
+                >
+                  All services (overview)
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/services/ui-ux-design"
                   className="hover:text-[#121317] transition-colors"
                 >
