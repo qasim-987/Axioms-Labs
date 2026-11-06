@@ -49,6 +49,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/work/nexus-commerce-os",
+        destination: "/work/kuopio-bites",
+        permanent: true,
+      },
+      {
         source: "/open-axiom",
         destination: "/work",
         permanent: false,
@@ -127,7 +132,7 @@ const nextConfig = {
       // Redirect legacy fake client slugs to honest Studio Concept Builds
       {
         source: "/work/strata-systems",
-        destination: "/work/nexus-commerce-os",
+        destination: "/work/kuopio-bites",
         permanent: true,
       },
       {
