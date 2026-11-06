@@ -131,7 +131,10 @@ function ProjectShowcaseVisual({
               </div>
             </div>
 
-            {/* Synthetic Performance Bars */}
+            {/* Performance bars are lab-target visuals for concept builds only.
+                Live products show their production URL instead. */}
+            {!study.liveUrl ? (
+              <>{/* Synthetic Performance Bars */}
             <div className="my-4 space-y-2.5">
               <div>
                 <div className="flex justify-between text-[10px] font-mono text-[#B2BBC5] mb-1">
@@ -153,6 +156,17 @@ function ProjectShowcaseVisual({
               </div>
             </div>
 
+              </>
+            ) : (
+              <div className="my-4 flex flex-wrap items-center gap-2 text-[11px] font-mono">
+                <span className="w-2 h-2 rounded-full bg-[#00B95C]" />
+                <span className="text-[#4ADE80] font-semibold">LIVE IN PRODUCTION</span>
+                <a href={study.liveUrl} target="_blank" rel="noopener noreferrer"
+                  className="text-[#B2BBC5] underline underline-offset-2 hover:text-white">
+                  {study.liveUrl.replace(/^https?:\/\//, "")}
+                </a>
+              </div>
+            )}
             <div className="flex flex-wrap gap-1.5">
               {study.techStack.slice(0, 3).map((tech) => (
                 <span

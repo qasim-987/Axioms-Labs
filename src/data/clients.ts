@@ -31,60 +31,58 @@ export const clientCategories = [
 
 export const clientsData: ClientCaseStudy[] = [
   {
-    id: "nexus-commerce-os",
-    slug: "nexus-commerce-os",
-    title: "Nexus SaaS & Headless Commerce Platform",
-    client: "Lab Concept • 01",
-    tagline:
-      "Internal full-stack Next.js 14 & Supabase reference platform targeting sub-second storefront rendering and real-time analytics.",
+    id: "kuopio-bites",
+    slug: "kuopio-bites",
+    title: "Kuopio Bites — Restaurant Website & Online Ordering",
+    client: "Live Product • Kuopio, Finland",
+    tagline: "Grilli, pizzeria & South Asian kitchen under one roof — a full online menu, live offers and ordering info for Kuopio.",
     category: "Web Development",
-    impactMetric: "90+",
-    impactLabel: "Lighthouse performance & Core Web Vitals target (lab concept, not a measured client result)",
-    year: "2026",
-    duration: "Lab Prototype",
-    summary:
-      "An internal Axioms Lab engineering build showcasing how we architect modern full-stack web applications—combining Next.js App Router, typed Express APIs, real-time inventory state, and instant edge page loads.",
-    challenge:
-      "Conventional template-based websites and bloated e-commerce themes suffer from 4+ second mobile load times, rigid checkout flows, and fragile plugin updates that hurt conversions.",
-    solution:
-      "We engineered a modular headless reference architecture pairing server-rendered Next.js routes with a clean TypeScript API layer, optimistic cart mutations, and responsive Tailwind components.",
+    impactMetric: "Live",
+    impactLabel: "Production product at kuopiobites.fi — a real business, not a concept build",
+    year: "Live",
+    duration: "Founder-built, in production",
+    summary: "Kuopio Bites is a working restaurant on Jalkasenkatu, Kuopio — a grilli, wood-fired pizzeria and South Asian kitchen in one. We built its public home: a category-driven online menu with item deep-links, daily specials, time-boxed offers, opening hours, map, phone ordering, and clear links to Wolt, Uber Eats and WhatsApp.",
+    challenge: "A neighbourhood restaurant with three food cultures and dozens of dishes had its story scattered across delivery apps, phone orders and social posts — customers could not see today's specials, offers or opening hours in one place.",
+    solution: "One fast, mobile-first website: a browse-by-category menu with featured dishes, a specials and offers layer, an hours-map-contact block with pickup and delivery radius, and external delivery partners linked exactly where they belong.",
     architectureHighlights: [
       {
-        title: "Hybrid Edge & SSR Rendering",
+        title: "Online Ordering Menu",
         description:
-          "Static product and landing routes paired with dynamic streaming dashboards for instant navigation.",
+          "Category grid and item deep-links across 20+ menu sections, with featured house favourites.",
       },
       {
-        title: "End-to-End TypeScript Contracts",
+        title: "Specials & Offers",
         description:
-          "Shared Zod validation schemas across frontend forms and backend API endpoints to eliminate runtime bugs.",
+          "Daily specials and time-boxed offers — like weekend halwa puri pre-orders — visible at a glance.",
       },
       {
-        title: "Zero-Bloat Bundle Architecture",
+        title: "Hours, Map & Phone Ordering",
         description:
-          "Code-split interactive islands keeping initial JavaScript lean and mobile Lighthouse scores at 99+.",
+          "Per-day opening hours, address with directions, and tap-to-call during kitchen hours.",
+      },
+      {
+        title: "Delivery Partner Links",
+        description:
+          "Wolt, Uber Eats and WhatsApp ordering linked clearly alongside pickup and 6 km delivery info.",
       },
     ],
     results: [
-      "Lighthouse 90+ performance & accessibility target on desktop & mobile (lab target, not yet independently measured)",
-      "Sub-300ms route transitions with Next.js App Router prefetching",
-      "Clean, reusable full-stack starter blueprint ready for client customization",
+      "Live in production at kuopiobites.fi",
+      "Menu, specials and offers presented from a single source",
+      "Pickup and delivery within 6 km, min order €0.00, stated up front",
     ],
     techStack: [
-      "Next.js 14",
-      "React",
-      "TypeScript",
-      "Node.js",
-      "Supabase",
-      "Tailwind CSS",
-      "Vercel",
+      "Mobile-first responsive build",
+      "Structured menu & offers data",
+      "Wolt / Uber Eats / WhatsApp integrations",
     ],
+    liveUrl: "https://www.kuopiobites.fi",
   },
   {
     id: "aura-web-experience",
     slug: "aura-web-experience",
     title: "Aura Interactive Brand & Motion Flagship",
-    client: "Lab Concept • 02",
+    client: "Lab Concept • 01",
     tagline:
       "Concept brand website pairing editorial typography, 60fps Framer Motion & GSAP choreography, and conversion-first storytelling.",
     category: "Web Designing",
@@ -133,7 +131,7 @@ export const clientsData: ClientCaseStudy[] = [
     id: "finflow-design-system",
     slug: "finflow-design-system",
     title: "FinFlow Multi-Theme SaaS UI/UX System",
-    client: "Lab Concept • 03",
+    client: "Lab Concept • 02",
     tagline:
       "Comprehensive Figma-to-React product UI/UX concept featuring 120+ tokenized components, user flows, and dark/light parity.",
     category: "UI/UX Design",
@@ -182,7 +180,7 @@ export const clientsData: ClientCaseStudy[] = [
     id: "atlas-ai-agent",
     slug: "atlas-ai-agent",
     title: "Atlas Autonomous Support & Lead-Qualification Agent",
-    client: "Lab Concept • 04",
+    client: "Lab Concept • 03",
     tagline:
       "Custom RAG & tool-calling AI agent prototype that answers product queries from verified docs, qualifies leads, and books calls 24/7.",
     category: "AI Agents",

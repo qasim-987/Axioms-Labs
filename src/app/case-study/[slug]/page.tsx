@@ -16,5 +16,10 @@ export function generateStaticParams() {
 export default function CaseStudyRedirect({ params }: PageProps) {
   // Permanent (308, method-preserving): these URLs moved for good, so link
   // equity and crawlers settle on /work/[slug] instead of a temporary hop.
-  permanentRedirect(`/work/${params.slug}`);
+  // Retired concept slugs hop straight to their successor in one step.
+  const LEGACY_WORK_SLUGS: Record<string, string> = {
+    "nexus-commerce-os": "kuopio-bites",
+    "strata-systems": "kuopio-bites",
+  };
+  permanentRedirect(`/work/${LEGACY_WORK_SLUGS[params.slug] ?? params.slug}`);
 }

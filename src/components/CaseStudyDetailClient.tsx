@@ -123,11 +123,22 @@ export default function CaseStudyDetailClient({
               </div>
               <div className="flex items-center gap-2 text-xs font-mono text-[#4ADE80] bg-[#00B95C]/15 px-3.5 py-2 rounded-full border border-[#00B95C]/30 shrink-0 self-start sm:self-auto">
                 <CheckCircle2 className="w-4 h-4 text-[#4ADE80]" />
-                <span>Axioms Lab Internal Concept Build</span>
+                <span>{study.liveUrl
+                    ? "Live Product — founder-built, in production"
+                    : "Axioms Lab Internal Concept Build"}
+                  </span>
               </div>
+              {study.liveUrl && (
+                <a href={study.liveUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs font-mono text-[#749BFF] bg-[#3186FF]/15 px-3.5 py-2 rounded-full border border-[#3186FF]/30 hover:bg-[#3186FF]/25 transition-colors shrink-0 self-start sm:self-auto">
+                  Visit live site ↗
+                </a>
+              )}
             </div>
 
-            {/* 4 Scroll-Driven Multicolor Antigravity Radial SVG Dial Gauges */}
+            {!study.liveUrl ? (
+              <>
+{/* 4 Scroll-Driven Multicolor Antigravity Radial SVG Dial Gauges */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
               {dialGauges.map((g, idx) => {
                 const targetOffset = circumference * (1 - g.pct / 100);
@@ -180,6 +191,14 @@ export default function CaseStudyDetailClient({
                 );
               })}
             </div>
+          </>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {["Live at kuopiobites.fi", "20+ menu categories", "Pickup & 6 km delivery", "Wolt • Uber Eats • WhatsApp"].map((f) => (
+                  <span key={f} className="px-3 py-1.5 rounded-full bg-white/[0.07] border border-white/10 text-[11px] font-mono text-[#E6EAF0]">{f}</span>
+                ))}
+              </div>
+            )}
           </motion.div>
 
           {/* Concept Overview */}
