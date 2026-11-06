@@ -11,7 +11,7 @@ import SpotlightCard from "@/components/SpotlightCard";
 import CaseStudyScrollShowcase from "@/components/CaseStudyScrollShowcase";
 import { ClientCaseStudy } from "@/data/clients";
 import { MOTION_EASE } from "@/lib/motionTokens";
-import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
 
 const dialGauges = [
   { label: "Lighthouse Speed (target)", display: "90+", pct: 90, stroke: "#3186FF" },
@@ -198,6 +198,18 @@ export default function CaseStudyDetailClient({
                   <span key={f} className="px-3 py-1.5 rounded-full bg-white/[0.07] border border-white/10 text-[11px] font-mono text-[#E6EAF0]">{f}</span>
                 ))}
               </div>
+            )}
+
+            {study.liveUrl && (
+              <a
+                href={study.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-8 inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-[#3186FF] text-white text-sm sm:text-base font-semibold hover:bg-[#2570E0] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              >
+                <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                Visit the live site — {study.liveUrl.replace(/^https?:\/\//, "")}
+              </a>
             )}
           </motion.div>
 
