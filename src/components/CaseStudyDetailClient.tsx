@@ -204,7 +204,7 @@ export default function CaseStudyDetailClient({
           {/* Concept Overview */}
           <div className="mb-16">
             <h2 className="text-xs font-mono uppercase tracking-widest text-[#3186FF] mb-3 font-semibold">
-              Concept Overview
+              {study.liveUrl ? "Project Overview" : "Concept Overview"}
             </h2>
             <p className="text-lg text-[#121317] leading-relaxed">
               {study.summary}
@@ -236,7 +236,7 @@ export default function CaseStudyDetailClient({
             >
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-[#3186FF] font-semibold mb-3 block">
-                  Our Lab Blueprint
+                  {study.liveUrl ? "How We Built It" : "Our Lab Blueprint"}
                 </span>
                 <h3 className="text-xl font-bold text-[#121317] mb-4">
                   How Axioms Lab Built It
@@ -289,7 +289,7 @@ export default function CaseStudyDetailClient({
           {/* Prototype Benchmarks */}
           <div className="mb-16 p-8 sm:p-10 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08]">
             <h2 className="text-xs font-mono uppercase tracking-widest text-[#3186FF] mb-2 font-semibold">
-              Prototype Benchmarks
+              {study.liveUrl ? "Results" : "Prototype Benchmarks"}
             </h2>
             <h3 className="text-2xl font-bold text-[#121317] mb-6">
               What This Architecture Delivers for Clients
@@ -320,7 +320,7 @@ export default function CaseStudyDetailClient({
           {/* Tech Stack Pills */}
           <div className="mb-16">
             <h3 className="text-xs font-mono uppercase tracking-widest text-[#6A6A71] mb-4">
-              Tools &amp; Stack Used in This Concept
+              {study.liveUrl ? "Tools & Stack" : "Tools & Stack Used in This Concept"}
             </h3>
             <div className="flex flex-wrap gap-2">
               {study.techStack.map((tech, idx) => (
@@ -342,7 +342,7 @@ export default function CaseStudyDetailClient({
             >
               <span className="text-xs font-mono text-[#6A6A71] mb-2 flex items-center gap-1.5">
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                Previous Concept Build
+                {study.liveUrl ? "Previous Build" : "Previous Concept Build"}
               </span>
               <span className="text-base font-semibold text-[#121317] group-hover:text-[#3186FF] transition-colors">
                 {prevStudy.title}
@@ -354,7 +354,7 @@ export default function CaseStudyDetailClient({
               className="p-5 rounded-xl border border-[#212226]/[0.08] bg-[#F8F9FC] hover:bg-[#EFF2F7] hover:border-[#3186FF]/35 transition-all group flex flex-col justify-between text-right"
             >
               <span className="text-xs font-mono text-[#6A6A71] mb-2 flex items-center justify-end gap-1.5">
-                Next Concept Build
+                {study.liveUrl ? "Next Build" : "Next Concept Build"}
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </span>
               <span className="text-base font-semibold text-[#121317] group-hover:text-[#3186FF] transition-colors">
@@ -370,7 +370,7 @@ export default function CaseStudyDetailClient({
                 Want something like this built for your brand?
               </h4>
               <p className="text-xs text-[#45474D]">
-                Book a free discovery call with our team in Kuopio &amp; Lahore
+                Book a discovery call with our team in Kuopio &amp; Lahore
                 to scope your website, UI/UX design, or AI agent.
               </p>
             </div>

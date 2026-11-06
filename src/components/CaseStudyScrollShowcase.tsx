@@ -56,7 +56,9 @@ export default function CaseStudyScrollShowcase({
       },
       {
         index: "04",
-        label: `Concept Target Benchmark (${study.impactMetric})`,
+        label: study.liveUrl
+          ? `Production Status (${study.impactMetric})`
+          : `Concept Target Benchmark (${study.impactMetric})`,
         sublabel: study.impactLabel,
         accent: "#FBBC04",
       },
@@ -383,7 +385,7 @@ export default function CaseStudyScrollShowcase({
                     LAYER {stage.index}
                   </span>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-[#6A6A71]">
-                    {study.techStack[idx % study.techStack.length]}
+                    {idx < study.techStack.length ? study.techStack[idx] : ""}
                   </span>
                 </div>
                 <h3 className="text-lg font-bold text-[#121317] mb-2">
