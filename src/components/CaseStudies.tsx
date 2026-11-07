@@ -418,7 +418,7 @@ export default function CaseStudies() {
                 </Link>
 
                 {/* Minimal Numbered Caption Row Below Image (01 / 02 + Category Tags) */}
-                <div className="mt-5 px-1 flex items-baseline justify-between gap-4">
+                <div className="mt-5 px-1 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-4">
                   <div className="flex items-baseline gap-4 min-w-0">
                     <span className="text-3xl sm:text-4xl font-light font-sans tracking-tight text-[#121317] tabular-nums select-none">
                       {indexLabel}
