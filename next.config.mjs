@@ -22,6 +22,8 @@ const nextConfig = {
   poweredByHeader: false,
   async redirects() {
     return [
+      // Legacy icon URL from the old file-convention setup; stable URL is /favicon.ico.
+      { source: "/icon.png", destination: "/favicon.ico", permanent: true },
       // Redirect removed competitor-cloned demo/resource routes cleanly
       {
         source: "/demos/:path*",

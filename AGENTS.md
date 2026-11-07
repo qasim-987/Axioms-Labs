@@ -145,3 +145,12 @@ The five `react-hooks/exhaustive-deps` warnings in `src/components/landing/*` ar
 - **ALWAYS** record the real limitations of a change. Where a behaviour was not measured (FPS on real hardware, Lighthouse, physical Safari, CLS, heap growth), say so explicitly rather than implying it was verified.
 - **ALWAYS** follow the collaborator's documentation pattern for non-trivial work: a short report under `docs/` capturing root causes, the exact constants changed, what was verified, and what was left open.
 - **NEVER** describe removed routes, renamed clients, or superseded components as if they were live. If you are unsure whether a file is live, check `PROGRESS.md` §3–§4 or walk the import graph from `src/app/`.
+
+## Stable asset URLs (owner rule — never break)
+
+- Favicon: ALWAYS served at `/favicon.ico` (file: `public/favicon.ico`).
+- Logo: ALWAYS served at `/brand/axl-monogram-512.png` (file: `public/brand/axl-monogram-512.png`).
+- When refreshing either image, replace the BYTES at the same path. Never
+  rename, move, delete, or re-path them; never introduce an alternative
+  public URL for the same asset. CI's "Stable Asset URL Guard" enforces this.
+- Legacy `/icon.png` 308-redirects to `/favicon.ico` (next.config.mjs).

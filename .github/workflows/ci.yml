@@ -54,6 +54,15 @@ jobs:
             exit 1
           fi
 
+      - name: Stable Asset URL Guard
+        # Owner rule: /favicon.ico and /brand/axl-monogram-512.png are
+        # permanent public URLs. Swap the image bytes inside them, never
+        # rename/move/delete the paths. Fails the build if either vanishes.
+        run: |
+          test -f public/favicon.ico || { echo "::error::public/favicon.ico is missing - stable URL rule violated"; exit 1; }
+          test -f public/brand/axl-monogram-512.png || { echo "::error::public/brand/axl-monogram-512.png is missing - stable URL rule violated"; exit 1; }
+          grep -q '"/favicon.ico"' src/app/layout.tsx || { echo "::error::metadata no longer links /favicon.ico"; exit 1; }
+
       - name: Install Front-End Dependencies
         run: npm ci
 

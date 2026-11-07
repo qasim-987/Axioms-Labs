@@ -1,6 +1,6 @@
 # AXL Monogram — Final Social Media Kit
 
-Symbol: user-approved "AXL" stencil monogram (ink #101012, blue #0D7EFF).
+Symbol: owner-supplied triangle "A/L" monogram in brand blue with the "AXIOMS LAB" lockup (light + dark masters).
 Brand NAME in text stays "Axioms Lab" everywhere.
 
 | Use | File |
