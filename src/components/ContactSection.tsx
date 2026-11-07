@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SplitTextReveal from "./SplitTextReveal";
 import { submitContactInquiry } from "@/lib/apiClient";
+import { servicesData } from "@/data/services";
 import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
 import { PricingTrustCopy } from "./LaunchPricing";
 import { MOTION_EASE } from "@/lib/motionTokens";
@@ -18,12 +19,9 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const projectScopes = [
-  "Web Development",
-  "Web Designing",
-  "UI/UX Design",
-  "AI Agents",
-];
+// Derived from the single services source of truth so the hub form's
+// scope list can never drift from the live service pages again.
+const projectScopes = servicesData.map((s) => s.title);
 
 const budgetRanges = pricing.budgetBands;
 
