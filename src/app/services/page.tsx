@@ -42,7 +42,7 @@ export default function ServicesIndexPage() {
         <div className="max-w-6xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-            <span>08 CORE SERVICES</span>
+            <span>{String(servicesData.length).padStart(2, "0")} CORE SERVICES</span>
           </div>
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
             Our Services
