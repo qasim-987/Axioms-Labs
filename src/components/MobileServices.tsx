@@ -34,9 +34,11 @@ interface Props {
 const clamp = (n:number,min:number,max:number) => Math.max(min,Math.min(max,n));
 /** Full fractional morph window, rather than spending the first part of a swipe in a hold. */
 export function mobileDragProgress(position:number) {
-  const i=Math.floor(clamp(position,0,3)), f=position-i;
-  if(f<.001 || i===3) return STEP_HOLD_PROGRESS[i];
-  return [ .15, .46, .77 ][i] + f * [ .16, .16, .15 ][i];
+  const n=STEP_HOLD_PROGRESS.length;
+  const seg=1/n, hold=0.48*seg;
+  const i=Math.floor(clamp(position,0,n-1)), f=position-i;
+  if(f<.001 || i===n-1) return STEP_HOLD_PROGRESS[i];
+  return i*seg+hold + f*(seg-hold);
 }
 export default function MobileServices({entries,progress,bridge,onWebGLUnavailable}:Props) {
   const section=useRef<HTMLElement>(null), header=useRef<HTMLDivElement>(null), track=useRef<HTMLDivElement>(null);
@@ -174,7 +176,7 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
     <div className="mobile-service-footer"><div className="mobile-services-list"><h4>Services</h4><ul>{entry.compactBullets.map(text=><li key={text}>{text}</li>)}</ul></div><div className="mobile-services-tools"><h4>Tools</h4><div>{entry.displayTools.map((tool,k)=><span key={`${tool}-${k}`} title={tool} aria-label={tool} role="img" className="mobile-tool">{hasServiceToolIcon(tool) && renderServiceToolIcon(tool)}<span className={hasServiceToolIcon(tool)?"mobile-tool-label":"mobile-tool-fallback"}>{tool}</span></span>)}</div></div></div>
   </div>;
   return <section ref={section} id="services" data-active-step={index} className={`mobile-services-stage ${stacked?"is-stacked":"is-side"}`} style={{"--mobile-nav":`${nav}px`} as React.CSSProperties} aria-labelledby="mobile-services-heading">
-    <header ref={header} className="mobile-services-heading"><div><span className="mobile-services-badge">04 CORE CAPABILITIES</span><h2 id="mobile-services-heading">Our <span>Services</span></h2></div><div className="mobile-service-steps"><span>0{index+1} / 04</span><div>{entries.map((e,i)=><button key={e.service.id} type="button" onClick={()=>seek(i)} aria-label={`Show ${e.service.title}`} aria-pressed={i===index}><span /></button>)}</div></div></header>
+    <header ref={header} className="mobile-services-heading"><div><span className="mobile-services-badge">{String(entries.length).padStart(2, "0")} CORE CAPABILITIES</span><h2 id="mobile-services-heading">Our <span>Services</span></h2></div><div className="mobile-service-steps"><span>{String(index + 1).padStart(2, "0")} / {String(entries.length).padStart(2, "0")}</span><div>{entries.map((e,i)=><button key={e.service.id} type="button" onClick={()=>seek(i)} aria-label={`Show ${e.service.title}`} aria-pressed={i===index}><span /></button>)}</div></div></header>
     <div className="mobile-services-row">{showParticles && <div className="mobile-services-shape"><ServicesParticleCanvas scrollProgressRef={progress} hoverBridgeRef={bridge} layoutMode="mobile" onWebGLUnavailable={onWebGLUnavailable} className="w-full h-full" /></div>}
       <div className="mobile-card-area">
         {[2,1].map(slot=>index+slot<entries.length?<div key={slot} aria-hidden="true" className={`mobile-deck-preview depth-${slot}`} style={{transform:`translateX(${slot*SWIPE.DECK_STEP_PX}px) scale(${slot===1?.97:.94})`}}>{card(entries[index+slot],index+slot,true)}</div>:null)}

@@ -513,4 +513,420 @@ export const servicesData: ServiceItem[] = [
       "TypeScript",
     ],
   },
+  {
+    id: "seo-aeo",
+    slug: "seo-aeo",
+    title: "SEO & AEO",
+    badge: "Search & Answer-Engine Optimization",
+    heroHeadline: "Built to Be Found — by Search Engines and AI Answers",
+    shortDesc:
+      "Technical SEO, structured data and answer-engine optimization so your site is crawlable, fast, schema-marked and citable by modern AI assistants.",
+    longDesc:
+      "We make your site technically impeccable for search: server-rendered pages, semantic HTML, correct canonicals and redirects, JSON-LD structured data, and concise answer blocks that AI answer engines can quote verbatim. No ranking promises — measurable hygiene, honest baselines and transparent reporting.",
+    iconName: "Search",
+    metrics: "Search- & AI-Answer-Ready",
+    deliverables: [
+      {
+        title: "Technical SEO Audit & Fixes",
+        description:
+          "Crawlability, canonicals, sitemap, redirect hygiene and Core Web Vitals cleanup on a server-rendered stack.",
+      },
+      {
+        title: "On-Page & Metadata Systems",
+        description:
+          "Title/description frameworks, OpenGraph cards and semantic heading structure per template, not per page.",
+      },
+      {
+        title: "Structured Data (JSON-LD)",
+        description:
+          "Organization, Service, Article and FAQ schema deployed only where the underlying facts are true.",
+      },
+      {
+        title: "AEO Answer Blocks",
+        description:
+          "Concise question-and-answer content sections structured so AI assistants can cite you verbatim.",
+      },
+      {
+        title: "Search Console & Baseline Setup",
+        description:
+          "Google Search Console verification, sitemap submission and an honest recorded baseline before work starts.",
+      },
+      {
+        title: "Transparent Reporting Cadence",
+        description:
+          "Regular reports separating measured metrics from estimates — never guaranteed rankings, never vanity numbers.",
+      },
+    ],
+    processPhases: [
+      {
+        number: "01",
+        title: "Audit & Baseline",
+        duration: "Week 1",
+        description:
+          "Full technical crawl, Search Console connection and a recorded baseline of today's real visibility.",
+        deliverables: ["Technical Audit Report", "GSC Baseline Snapshot", "Prioritized Fix List"],
+      },
+      {
+        number: "02",
+        title: "Fixes & Structured Data",
+        duration: "Weeks 2-3",
+        description:
+          "Shipping crawl fixes, metadata systems and truthful JSON-LD schema through reviewed pull requests.",
+        deliverables: ["Merged SEO Fixes", "JSON-LD Schema Live", "Redirect & Canonical Map"],
+      },
+      {
+        number: "03",
+        title: "Content & AEO Blocks",
+        duration: "Weeks 3-4",
+        description:
+          "Rewriting key pages into clear answer-first sections with question headings and quotable facts.",
+        deliverables: ["Answer-Block Copy", "FAQ Structures", "Internal Linking Plan"],
+      },
+      {
+        number: "04",
+        title: "Measure & Report",
+        duration: "Monthly",
+        description:
+          "Tracking impressions, clicks and coverage in Search Console and reporting what actually moved.",
+        deliverables: ["Monthly GSC Report", "Labeled Metric Notes", "Next Iteration Plan"],
+      },
+    ],
+    faqs: [
+      {
+        question: "Do you guarantee first-page rankings?",
+        answer:
+          "No — and be cautious of anyone who does. We guarantee measurable technical hygiene, correct structured data and transparent reporting; rankings depend on competition and search engines.",
+      },
+      {
+        question: "What is AEO (answer-engine optimization)?",
+        answer:
+          "Structuring content so AI assistants and AI search overviews can quote you accurately: concise answers under clear questions, factual pages and machine-readable schema.",
+      },
+      {
+        question: "How soon will we see movement?",
+        answer:
+          "Technical fixes land immediately; Search Console trends typically need weeks to months of data. We report measured changes and clearly label anything unmeasured.",
+      },
+    ],
+    tools: [
+      "Google Search Console",
+      "Schema.org JSON-LD",
+      "Next.js 14",
+      "Lighthouse",
+      "TypeScript",
+      "Vercel",
+    ],
+  },
+  {
+    id: "video-editing",
+    slug: "video-editing",
+    title: "Video Editing",
+    badge: "Short-Form & Brand Motion",
+    heroHeadline: "Scroll-Stopping Cuts, Clean Motion, On-Brand Sound",
+    shortDesc:
+      "Vertical-first edits for Reels, Shorts and TikTok, flat-vector logo reveals and brand motion packages — delivered in platform-ready exports.",
+    longDesc:
+      "We turn your raw footage and brand assets into tight short-form edits and crisp flat-vector motion: logo reveals, tagline type-on sequences and product teasers with synthesized or licensed sound, captions for sound-off viewing, and exports tuned per platform.",
+    iconName: "Clapperboard",
+    metrics: "Vertical-First Delivery",
+    deliverables: [
+      {
+        title: "Short-Form Cuts (9:16)",
+        description:
+          "Tight 15-60 second edits for Reels, Shorts and TikTok with hook-first structure and clean pacing.",
+      },
+      {
+        title: "Logo Reveals & Brand Motion",
+        description:
+          "Flat-vector reveals built from your real logo assets — no redraws, no stock-template look.",
+      },
+      {
+        title: "Captions & Subtitles",
+        description:
+          "Burned-in or sidecar captions for sound-off viewing and accessibility, styled to your brand type.",
+      },
+      {
+        title: "Audio Cleanup & Mix",
+        description:
+          "Dialogue cleanup, loudness normalization and synthesized or properly licensed music beds.",
+      },
+      {
+        title: "Platform Export Presets",
+        description:
+          "H.264/AAC MP4 masters plus per-platform sizes: 9:16, 1:1 and 16:9 at correct bitrates.",
+      },
+      {
+        title: "Source & Project Handoff",
+        description:
+          "Frames, project scripts and source files delivered with the masters — you own everything.",
+      },
+    ],
+    processPhases: [
+      {
+        number: "01",
+        title: "Footage & Storyboard",
+        duration: "Week 1",
+        description:
+          "Reviewing your raw clips or brand assets and agreeing a shot-by-shot storyboard and duration.",
+        deliverables: ["Storyboard", "Asset Checklist", "Runtime Plan"],
+      },
+      {
+        number: "02",
+        title: "Assembly & Motion",
+        duration: "Week 2",
+        description:
+          "Cutting the edit and building flat-vector motion passes with eased, overshoot-free-by-accident timing.",
+        deliverables: ["First Cut", "Motion Pass v1", "Review Link"],
+      },
+      {
+        number: "03",
+        title: "Captions, Audio & Polish",
+        duration: "Week 3",
+        description:
+          "Adding captions, sound design and color consistency within your brand palette only.",
+        deliverables: ["Captioned Cut", "Mixed Audio", "Color-Passed Master"],
+      },
+      {
+        number: "04",
+        title: "Exports & Handoff",
+        duration: "Week 3-4",
+        description:
+          "Rendering platform presets, QC on real device frames and handing over masters plus sources.",
+        deliverables: ["Platform Exports", "QC Notes", "Source Handoff"],
+      },
+    ],
+    faqs: [
+      {
+        question: "Do you shoot footage too?",
+        answer:
+          "We edit client-provided footage and produce vector motion in-house. If you need a shoot, we scope it separately with a local partner.",
+      },
+      {
+        question: "What do you need from us to start?",
+        answer:
+          "Raw clips or logo/brand assets, one reference video you like, and the single message each cut must deliver.",
+      },
+      {
+        question: "Is the music licensed?",
+        answer:
+          "Yes — we use synthesized sound design or royalty-free licensed tracks only, and the license terms are handed over with the masters.",
+      },
+    ],
+    tools: [
+      "FFmpeg",
+      "Python Motion Pipeline",
+      "Framer Motion",
+      "Figma",
+      "TypeScript",
+      "Vercel",
+    ],
+  },
+  {
+    id: "graphic-design",
+    slug: "graphic-design",
+    title: "Graphic Design",
+    badge: "Brand & Visual Systems",
+    heroHeadline: "One Consistent Visual System Across Every Surface",
+    shortDesc:
+      "Logo and monogram systems, brand kits, social media kits and marketing collateral — flat, crisp and delivered with usage rules.",
+    longDesc:
+      "We design identity systems that survive real use: monograms that stay legible at 16px, palettes with defined light/dark/blue variants, social kits sized per platform, and collateral that your team can reproduce because the rules are written down.",
+    iconName: "Palette",
+    metrics: "Flat-Vector, Print-Ready",
+    deliverables: [
+      {
+        title: "Logo & Monogram Systems",
+        description:
+          "Primary mark, monogram and clear-space rules with light, dark and brand-color variants.",
+      },
+      {
+        title: "Brand Kits & Usage Rules",
+        description:
+          "Palette tokens, type scale, do/don't rules and a one-page guideline your team can actually follow.",
+      },
+      {
+        title: "Social Media Kits",
+        description:
+          "Profile pictures, covers, OG images and story templates sized exactly per platform spec.",
+      },
+      {
+        title: "Marketing Collateral",
+        description:
+          "Decks, one-pagers, banners and email headers built on the same grid as your brand kit.",
+      },
+      {
+        title: "Iconography & Flat Illustration",
+        description:
+          "Monoline icon sets and flat vector illustrations — no gradients, no stock-look clipping.",
+      },
+      {
+        title: "Print-Ready & Web Exports",
+        description:
+          "SVG/PNG/PDF exports with correct color profiles, plus favicon and app-icon sets.",
+      },
+    ],
+    processPhases: [
+      {
+        number: "01",
+        title: "Discovery & Direction",
+        duration: "Week 1",
+        description:
+          "Audience, competitors and taste calibration through moodboards and two distinct directions.",
+        deliverables: ["Moodboards", "Two Directions", "Written Rationale"],
+      },
+      {
+        number: "02",
+        title: "Core Identity",
+        duration: "Weeks 1-2",
+        description:
+          "Refining the chosen direction into logo, monogram, palette and type with variant matrices.",
+        deliverables: ["Logo System", "Variant Matrix", "Type & Color Tokens"],
+      },
+      {
+        number: "03",
+        title: "Kits & Collateral",
+        duration: "Weeks 2-3",
+        description:
+          "Producing social kits, templates and collateral on the approved system, platform by platform.",
+        deliverables: ["Social Kit", "Template Set", "Collateral Pack"],
+      },
+      {
+        number: "04",
+        title: "Guidelines & Handoff",
+        duration: "Week 4",
+        description:
+          "Writing the usage rules and handing over organized source files and export folders.",
+        deliverables: ["Brand Guidelines", "Source Files", "Export Folders"],
+      },
+    ],
+    faqs: [
+      {
+        question: "Who owns the final designs?",
+        answer:
+          "You do — 100%. Source files, exports and guidelines are handed over with full ownership and no license traps.",
+      },
+      {
+        question: "How many revision rounds are included?",
+        answer:
+          "One structured round per phase, with changes tracked in writing. Extra rounds are quoted before they start, never surprise-billed.",
+      },
+      {
+        question: "Can you work with our existing logo?",
+        answer:
+          "Yes. We can clean up, vectorize and systematize an existing mark without redrawing its character, exactly as we did for our own monogram.",
+      },
+    ],
+    tools: [
+      "Figma",
+      "Figma Variables",
+      "SVG Vector Workflow",
+      "ImageMagick",
+      "Tailwind CSS",
+      "Vercel",
+    ],
+  },
+  {
+    id: "social-media-management",
+    slug: "social-media-management",
+    title: "Social Media Management",
+    badge: "Content & Community Operations",
+    heroHeadline: "A Steady, Honest Presence Your Audience Can Trust",
+    shortDesc:
+      "Profile optimization, monthly content calendars, on-brand post design and captions, scheduled publishing and honest monthly reporting.",
+    longDesc:
+      "We run your social presence like a product: a documented voice, a monthly calendar you approve, designs from your brand kit, platform-native formatting, a reply workflow with escalation to you, and reports that say what was posted, what we measured and what we learned.",
+    iconName: "Megaphone",
+    metrics: "Consistent Weekly Cadence",
+    deliverables: [
+      {
+        title: "Profile Setup & Optimization",
+        description:
+          "Bios, links, highlights and platform kits configured per channel with a consistent handle strategy.",
+      },
+      {
+        title: "Monthly Content Calendar",
+        description:
+          "A themed, approved-before-publishing calendar balancing proof, education and behind-the-scenes.",
+      },
+      {
+        title: "Post Design & Captions",
+        description:
+          "On-brand visuals from your kit plus captions in your documented voice — no generic AI filler.",
+      },
+      {
+        title: "Scheduling & Publishing",
+        description:
+          "Platform-native scheduling at your audience's active windows, with format checks per network.",
+      },
+      {
+        title: "Community & Reply Workflow",
+        description:
+          "Response templates, SLA targets and clear escalation to you for anything sensitive or sales-critical.",
+      },
+      {
+        title: "Honest Monthly Reporting",
+        description:
+          "What shipped, what each platform's own analytics measured, and what we change next — labeled clearly.",
+      },
+    ],
+    processPhases: [
+      {
+        number: "01",
+        title: "Audit & Voice",
+        duration: "Week 1",
+        description:
+          "Auditing existing channels and writing the voice, do/don't and approval rules into a one-pager.",
+        deliverables: ["Channel Audit", "Voice One-Pager", "Approval Rules"],
+      },
+      {
+        number: "02",
+        title: "Calendar & Kit",
+        duration: "Week 1-2",
+        description:
+          "Building the first monthly calendar and the reusable post template kit from your brand system.",
+        deliverables: ["Month-1 Calendar", "Template Kit", "Bio Updates"],
+      },
+      {
+        number: "03",
+        title: "Production & Publishing",
+        duration: "Weekly",
+        description:
+          "Designing, captioning and scheduling the approved calendar, monitoring comments and messages.",
+        deliverables: ["Published Posts", "Reply Coverage", "Weekly Check-in"],
+      },
+      {
+        number: "04",
+        title: "Report & Iterate",
+        duration: "Monthly",
+        description:
+          "Reviewing platform analytics honestly and adjusting next month's mix based on what moved.",
+        deliverables: ["Monthly Report", "Learnings Log", "Next Calendar"],
+      },
+    ],
+    faqs: [
+      {
+        question: "Do you buy followers or use engagement pods?",
+        answer:
+          "Never. Fake growth destroys trust and platform standing. We grow only through consistent, useful publishing.",
+      },
+      {
+        question: "Which platforms do you manage?",
+        answer:
+          "Instagram and Facebook via Meta Business Suite, LinkedIn, X and TikTok formats — we recommend the two or three your buyers actually use, not all of them.",
+      },
+      {
+        question: "Do we approve posts before they go live?",
+        answer:
+          "Yes. Nothing publishes without your sign-off on the calendar, and sensitive topics always escalate to you first.",
+      },
+    ],
+    tools: [
+      "Meta Business Suite",
+      "LinkedIn Pages",
+      "Buffer Scheduler",
+      "Figma",
+      "Next.js 14",
+      "Vercel",
+    ],
+  },
 ];

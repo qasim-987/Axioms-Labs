@@ -7,6 +7,127 @@ import React from "react";
 export function renderServiceToolIcon(toolName: string): React.ReactNode {
   const key = toolName.toLowerCase();
 
+  // Figma Variables (checked before the generic Figma branch)
+  if (key.includes("figma variables")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3.5" y="3.5" width="7" height="17" rx="1.8" />
+        <rect x="13.5" y="3.5" width="7" height="7.5" rx="1.8" />
+        <rect x="13.5" y="13" width="7" height="7.5" rx="1.8" />
+      </svg>
+    );
+  }
+
+  // Google Search Console
+  if (key.includes("search console")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="10" cy="10" r="5.5" />
+        <path d="M14.2 14.2 20 20" />
+        <path d="M7.8 11.2V9.4M10 11.2V7.6M12.2 11.2V8.6" />
+      </svg>
+    );
+  }
+
+  // Schema.org JSON-LD
+  if (key.includes("schema") || key.includes("json-ld")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 4c-2 0-2.5 1-2.5 2.5S6.5 9.5 4.5 10v4c2 .5 2 1.5 2 3S7 20 9 20" />
+        <path d="M15 4c2 0 2.5 1 2.5 2.5s0 3 2 3.5v4c-2 .5-2 1.5-2 3s-.5 3-2.5 3" />
+      </svg>
+    );
+  }
+
+  // Lighthouse
+  if (key.includes("lighthouse")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 14a8 8 0 0 1 16 0" />
+        <path d="M12 14l4-4" />
+        <path d="M4 18h16" />
+      </svg>
+    );
+  }
+
+  // FFmpeg / video pipeline
+  if (key.includes("ffmpeg")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="8" width="18" height="12" rx="2.5" />
+        <path d="M3.5 8 6 4h4L7.5 8M10 8l2.5-4h4L14 8M17 8l2.5-4H21" />
+      </svg>
+    );
+  }
+
+  // Python motion pipeline
+  if (key.includes("python")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 3c-3 0-4 1.4-4 3v2h6v1H6c-2 0-3 1.6-3 4s1 4 3 4h2v-2.5c0-2 1.6-3.5 3.5-3.5H16c1.7 0 3-1.3 3-3V6c0-1.6-1-3-3-3Z" />
+        <path d="M12 21c3 0 4-1.4 4-3v-2h-6v-1h8c2 0 3-1.6 3-4" />
+        <circle cx="9.5" cy="5.5" r="0.6" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  // SVG vector workflow
+  if (key.includes("svg")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 3 7 14h10L12 3Z" />
+        <path d="M12 10v4" />
+        <circle cx="12" cy="16" r="1.6" />
+        <path d="M8.5 20h7" />
+      </svg>
+    );
+  }
+
+  // ImageMagick
+  if (key.includes("imagemagick")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 20 15 9" />
+        <path d="M15 9l2.5-2.5a2.1 2.1 0 0 1 3 3L18 12Z" />
+        <path d="M7 4v3M5.5 5.5h3M17 17v3M15.5 18.5h3" />
+      </svg>
+    );
+  }
+
+  // Meta Business Suite
+  if (key.includes("meta")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 15c0-4 2-8 4.5-8S11 11 12 13c1-2 2-6 4.5-6S21 11 21 15" />
+        <path d="M3 15c0 2 1 4 2.5 4S8 17 9 15" />
+        <path d="M21 15c0 2-1 4-2.5 4S16 17 15 15" />
+      </svg>
+    );
+  }
+
+  // LinkedIn Pages
+  if (key.includes("linkedin")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
+        <path d="M8 10.5V17" />
+        <circle cx="8" cy="7.6" r="0.7" fill="currentColor" />
+        <path d="M12 17v-4a2.5 2.5 0 0 1 5 0v4" />
+      </svg>
+    );
+  }
+
+  // Buffer / scheduler
+  if (key.includes("buffer")) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 3 3 8l9 5 9-5-9-5Z" />
+        <path d="M3 12.5l9 5 9-5" />
+        <path d="M3 17l9 5 9-5" />
+      </svg>
+    );
+  }
+
   // Figma
   if (key.includes("figma")) {
     return (
@@ -218,5 +339,5 @@ export function renderServiceToolIcon(toolName: string): React.ReactNode {
 /** Allows responsive chips to fall back to text rather than a generic/broken logo. */
 export function hasServiceToolIcon(name: string): boolean {
   const key=name.toLowerCase();
-  return ["figma", "auto layout", "variable", "figjam", "radix", "tailwind", "framer", "gsap", "lenis", "three", "next", "react", "typescript", "node", "supabase", "postgres", "openai", "claude", "anthropic", "langgraph", "vercel"].some(term=>key.includes(term));
+  return ["figma", "auto layout", "variable", "figjam", "radix", "tailwind", "framer", "gsap", "lenis", "three", "next", "react", "typescript", "node", "supabase", "postgres", "openai", "claude", "anthropic", "langgraph", "vercel", "search console", "schema", "json-ld", "lighthouse", "ffmpeg", "python", "svg", "imagemagick", "meta", "linkedin", "buffer"].some(term=>key.includes(term));
 }
