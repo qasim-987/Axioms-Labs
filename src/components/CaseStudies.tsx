@@ -13,8 +13,6 @@ import {
   ArrowUpRight,
   Sparkles,
   CheckCircle2,
-  Terminal,
-  TrendingUp,
 } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -33,158 +31,36 @@ function ProjectShowcaseVisual({
 }) {
   if (variant === "dark") {
     return (
-      <div className="relative w-full h-full overflow-hidden bg-[#121317] select-none flex flex-col justify-between p-5 sm:p-7 lg:p-8">
-        {/* Ambient Antigravity Electric Blue & Periwinkle Studio Glow */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -left-16 w-[80%] h-[78%] rounded-full blur-3xl opacity-65"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(49,134,255,0.42) 0%, rgba(116,155,255,0.16) 52%, transparent 75%)",
-          }}
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-24 -right-12 w-[72%] h-[72%] rounded-full blur-3xl opacity-55"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(0,185,92,0.22) 0%, rgba(49,134,255,0.18) 55%, transparent 78%)",
-          }}
-        />
-
-        {/* Subtle Architectural Grid */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.1]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(255,255,255,0.22) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.22) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-
-        {/* Full-Width Browser Chrome Header */}
-        <div className="relative z-10 flex items-center justify-between gap-3 pb-3 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FC413D]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FBBC04]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#00B95C]" />
-            <span className="ml-2 text-[11px] font-mono tracking-wider uppercase text-white/75">
-              {study.client} • {study.category}
-            </span>
-          </div>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#00B95C]/15 border border-[#00B95C]/30 text-[10px] font-mono text-[#4ADE80]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00B95C] animate-pulse" />
-            Next.js 14 • Edge Ready
+      <div data-showcase="clean" className="flex h-full w-full select-none flex-col bg-[#121317] p-6 sm:p-7 lg:p-8">
+        <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#B2BBC5]">
+            {study.category}
           </span>
+          <span className="text-[10px] text-[#B2BBC5]">{study.liveUrl ? "Live project" : "Studio concept"}</span>
         </div>
 
-        {/* Full-Width 12-Col SaaS Product Workspace Mockup */}
-        <div className="relative z-10 my-auto py-4 grid grid-cols-12 gap-3.5 sm:gap-4 items-stretch w-full">
-          {/* Left Navigation & KPI Rail */}
-          <div className="col-span-5 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md p-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#749BFF]">
-                  WEB ARCHITECTURE
-                </span>
-                <Terminal className="w-3.5 h-3.5 text-[#3186FF]" />
-              </div>
-              <div className="text-2xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">
-                {study.impactMetric}
-              </div>
-              <div className="text-[11px] text-[#B2BBC5] mt-1 leading-snug">
-                {study.impactLabel}
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-white/10 space-y-2">
-              {study.architectureHighlights.slice(0, 2).map((hl) => (
-                <div
-                  key={hl.title}
-                  className="flex items-center justify-between text-[11px]"
-                >
-                  <span className="text-[#B2BBC5] truncate pr-2">
-                    {hl.title}
-                  </span>
-                  <span className="font-mono font-semibold text-[#4ADE80]">
-                    ✓
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Live Telemetry & Storefront Preview */}
-          <div className="col-span-7 rounded-2xl bg-gradient-to-br from-[#18191D]/95 via-[#121317]/95 to-[#1D2842]/80 border border-[#3186FF]/30 p-4 sm:p-5 flex flex-col justify-between shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs font-semibold text-white">
-                  {study.title}
-                </div>
-                <div className="text-[11px] text-[#B2BBC5] mt-0.5 line-clamp-1">
-                  {study.category} • {study.duration}
-                </div>
-              </div>
-              <div className="w-8 h-8 rounded-xl bg-[#3186FF]/20 border border-[#3186FF]/40 flex items-center justify-center shrink-0">
-                <TrendingUp className="w-4 h-4 text-[#749BFF]" />
-              </div>
-            </div>
-
-            {/* Performance bars are lab-target visuals for concept builds only.
-                Live products show their production URL instead. */}
-            {!study.liveUrl ? (
-              <>{/* Synthetic Performance Bars */}
-            <div className="my-4 space-y-2.5">
-              <div>
-                <div className="flex justify-between text-[10px] font-mono text-[#B2BBC5] mb-1">
-                  <span>SSR Streaming &amp; Edge Cache (lab target)</span>
-                  <span className="text-[#4ADE80]">90+ target</span>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
-                  <div className="h-full w-[96%] rounded-full bg-gradient-to-r from-[#3186FF] via-[#749BFF] to-[#00B95C]" />
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-[10px] font-mono text-[#B2BBC5] mb-1">
-                  <span>Checkout Interaction Latency (lab target)</span>
-                  <span className="text-[#749BFF]">&lt; 50 ms target</span>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
-                  <div className="h-full w-[92%] rounded-full bg-gradient-to-r from-[#3186FF] to-[#FBBC04]" />
-                </div>
-              </div>
-            </div>
-
-              </>
-            ) : (
-              <div className="my-4 flex flex-wrap items-center gap-2 text-[11px] font-mono">
-                <span className="w-2 h-2 rounded-full bg-[#00B95C]" />
-                <span className="text-[#4ADE80] font-semibold">LIVE IN PRODUCTION</span>
-                <a href={study.liveUrl} target="_blank" rel="noopener noreferrer"
-                  className="text-[#B2BBC5] underline underline-offset-2 hover:text-white">
-                  {study.liveUrl.replace(/^https?:\/\//, "")}
-                </a>
-              </div>
-            )}
-            <div className="flex flex-wrap gap-1.5">
-              {study.techStack.slice(0, 3).map((tech) => (
-                <span
-                  key={tech}
-                  className="px-2 py-0.5 rounded-md bg-white/[0.07] border border-white/10 text-[10px] font-mono text-[#E6EAF0]"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
+        <div className="flex flex-1 flex-col justify-center py-6">
+          <h3 className="max-w-md text-xl font-semibold leading-snug tracking-tight text-white lg:text-2xl">
+            {study.title}
+          </h3>
+          <p className="mt-3 max-w-sm text-xs leading-relaxed text-[#B2BBC5] lg:text-sm">
+            {study.tagline}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+            {study.architectureHighlights.slice(0, 2).map((item) => (
+              <span key={item.title} className="text-[11px] text-[#E6EAF0]">
+                {item.title}
+              </span>
+            ))}
           </div>
         </div>
 
-        {/* Bottom Studio Footer Strip */}
-        <div className="relative z-10 flex items-center justify-between pt-3 border-t border-white/10 text-[11px] font-mono text-[#B2BBC5]">
-          <span>Axioms Lab • Concept Showcase</span>
-          <span className="text-[#749BFF] flex items-center gap-1">
-            Interactive Build <ArrowUpRight className="w-3.5 h-3.5" />
+        <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-4">
+          <span className="min-w-0 break-words text-[11px] text-[#B2BBC5]">
+            {study.liveUrl ? study.liveUrl.replace(/^https?:\/\//, "") : "Axiom Studio"}
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-2 text-[11px] font-medium text-white">
+            View project <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
           </span>
         </div>
       </div>
@@ -396,7 +272,7 @@ export default function CaseStudies() {
                 <Link
                   href={`/work/${study.slug}`}
                   aria-label={`View Concept Build: ${study.client} — ${study.title}`}
-                  className="group relative block w-full aspect-[16/10] rounded-[24px] overflow-hidden border border-[#212226]/[0.1] hover:border-[#3186FF]/40 shadow-[0_12px_36px_rgba(18,19,23,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] cursor-pointer"
+                  className={`group relative block w-full ${idx === 0 ? "aspect-[4/5] xl:aspect-[16/10]" : "aspect-[16/10]"} rounded-[24px] overflow-hidden border border-[#212226]/[0.1] hover:border-[#3186FF]/40 shadow-[0_12px_36px_rgba(18,19,23,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] cursor-pointer`}
                 >
                   {/* 100%-Width Scroll-Parallax Visual Canvas */}
                   <div
