@@ -21,8 +21,7 @@ import {
   Globe,
   Layout,
   Code,
-  Sparkles,Search, Clapperboard, Palette, Megaphone,
-} from "lucide-react";
+  Sparkles,Search, Clapperboard, Palette, } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
   Code: <Code className="w-5 h-5 text-[#3186FF]" />,
@@ -33,7 +32,6 @@ const iconMap: Record<string, React.ReactNode> = {
   Search: <Search className="w-5 h-5 text-[#00B95C]" />,
   Clapperboard: <Clapperboard className="w-5 h-5 text-[#FC413D]" />,
   Palette: <Palette className="w-5 h-5 text-[#FBBC04]" />,
-  Megaphone: <Megaphone className="w-5 h-5 text-[#3186FF]" />,
 };
 
 export default function Navbar() {

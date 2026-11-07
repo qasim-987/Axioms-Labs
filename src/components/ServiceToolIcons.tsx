@@ -94,40 +94,6 @@ export function renderServiceToolIcon(toolName: string): React.ReactNode {
     );
   }
 
-  // Meta Business Suite
-  if (key.includes("meta")) {
-    return (
-      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 15c0-4 2-8 4.5-8S11 11 12 13c1-2 2-6 4.5-6S21 11 21 15" />
-        <path d="M3 15c0 2 1 4 2.5 4S8 17 9 15" />
-        <path d="M21 15c0 2-1 4-2.5 4S16 17 15 15" />
-      </svg>
-    );
-  }
-
-  // LinkedIn Pages
-  if (key.includes("linkedin")) {
-    return (
-      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
-        <path d="M8 10.5V17" />
-        <circle cx="8" cy="7.6" r="0.7" fill="currentColor" />
-        <path d="M12 17v-4a2.5 2.5 0 0 1 5 0v4" />
-      </svg>
-    );
-  }
-
-  // Buffer / scheduler
-  if (key.includes("buffer")) {
-    return (
-      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 3 3 8l9 5 9-5-9-5Z" />
-        <path d="M3 12.5l9 5 9-5" />
-        <path d="M3 17l9 5 9-5" />
-      </svg>
-    );
-  }
-
   // Figma
   if (key.includes("figma")) {
     return (
@@ -339,5 +305,5 @@ export function renderServiceToolIcon(toolName: string): React.ReactNode {
 /** Allows responsive chips to fall back to text rather than a generic/broken logo. */
 export function hasServiceToolIcon(name: string): boolean {
   const key=name.toLowerCase();
-  return ["figma", "auto layout", "variable", "figjam", "radix", "tailwind", "framer", "gsap", "lenis", "three", "next", "react", "typescript", "node", "supabase", "postgres", "openai", "claude", "anthropic", "langgraph", "vercel", "search console", "schema", "json-ld", "lighthouse", "ffmpeg", "python", "svg", "imagemagick", "meta", "linkedin", "buffer"].some(term=>key.includes(term));
+  return ["figma", "auto layout", "variable", "figjam", "radix", "tailwind", "framer", "gsap", "lenis", "three", "next", "react", "typescript", "node", "supabase", "postgres", "openai", "claude", "anthropic", "langgraph", "vercel", "search console", "schema", "json-ld", "lighthouse", "ffmpeg", "python", "svg", "imagemagick"].some(term=>key.includes(term));
 }

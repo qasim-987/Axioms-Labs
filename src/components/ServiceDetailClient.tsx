@@ -25,8 +25,7 @@ import {
   Check,
   AlertCircle,
   Loader2,
-  Wrench,Search, Clapperboard, Palette, Megaphone,
-} from "lucide-react";
+  Wrench,Search, Clapperboard, Palette, } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
   Code: <Code className="w-8 h-8 text-[#3186FF]" />,
@@ -36,7 +35,6 @@ const iconMap: Record<string, React.ReactNode> = {
   Search: <Search className="w-8 h-8 text-[#00B95C]" />,
   Clapperboard: <Clapperboard className="w-8 h-8 text-[#FC413D]" />,
   Palette: <Palette className="w-8 h-8 text-[#FBBC04]" />,
-  Megaphone: <Megaphone className="w-8 h-8 text-[#3186FF]" />,
   Bot: <Bot className="w-8 h-8 text-[#FBBC04]" />,
 };
 
