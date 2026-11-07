@@ -892,7 +892,7 @@ export default function ServicesGrid() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] font-mono text-[10.5px] text-[#45474D] mb-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-                <span>04 CORE CAPABILITIES</span>
+                <span>{String(entries.length).padStart(2, "0")} CORE CAPABILITIES</span>
               </div>
               <h2
                 id="services-heading-reduced"
@@ -1017,7 +1017,7 @@ export default function ServicesGrid() {
                   }`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-                  <span>04 CORE CAPABILITIES</span>
+                  <span>{String(entries.length).padStart(2, "0")} CORE CAPABILITIES</span>
                 </div>
                 <div className="flex items-baseline flex-wrap gap-x-4 gap-y-2">
                 <SplitTextReveal

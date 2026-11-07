@@ -10,7 +10,11 @@ export type ServiceShapeId =
   | "wireframe"
   | "brackets"
   | "growthChart"
-  | "dnaHelix";
+  | "dnaHelix"
+  | "magnifier"
+  | "playBadge"
+  | "penNib"
+  | "shareGraph";
 
 /**
  * Data-driven pairing of Axioms Lab's 4 existing services (`src/data/services.ts`)
@@ -19,6 +23,10 @@ export type ServiceShapeId =
  *   02 Web Development -> brackets    (3D extruded </> code brackets)
  *   03 Web Designing   -> growthChart (ascending 3D conversion/performance bars + rising arrow)
  *   04 AI Agents       -> dnaHelix    (rotating vertical 3D DNA double helix with horizontal rungs)
+ *   05 SEO & AEO       -> magnifier   (3D search magnifier: hollow lens ring + angled handle)
+ *   06 Video Editing   -> playBadge   (3D circular badge with an inset play-triangle outline)
+ *   07 Graphic Design  -> penNib      (3D pen nib: triangle shell, centre slit, breather hole, base bar)
+ *   08 Social Media    -> shareGraph  (3D share graph: three node rings joined by link segments)
  */
 export const SERVICE_STAGE_ORDER: {
   slug: string;
@@ -28,6 +36,10 @@ export const SERVICE_STAGE_ORDER: {
   { slug: "web-development", shape: "brackets" },
   { slug: "web-designing", shape: "growthChart" },
   { slug: "ai-agents", shape: "dnaHelix" },
+  { slug: "seo-aeo", shape: "magnifier" },
+  { slug: "video-editing", shape: "playBadge" },
+  { slug: "graphic-design", shape: "penNib" },
+  { slug: "social-media-management", shape: "shareGraph" },
 ];
 
 function gaussianJitter(rng: () => number, scale: number): number {
@@ -469,6 +481,136 @@ export function generateDnaHelixPoints(
   return out;
 }
 
+
+function sampleRingPoint(
+  rng: () => number,
+  cx: number,
+  cy: number,
+  r: number,
+  zSpread: number
+): [number, number, number] {
+  const a = rng() * Math.PI * 2;
+  const rad = r + gaussianJitter(rng, 0.02);
+  return [cx + Math.cos(a) * rad, cy + Math.sin(a) * rad, (rng() - 0.5) * zSpread];
+}
+
+function sampleSegPoint(
+  rng: () => number,
+  ax: number,
+  ay: number,
+  bx: number,
+  by: number,
+  jitter: number,
+  zSpread: number
+): [number, number, number] {
+  const t = rng();
+  return [
+    ax + (bx - ax) * t + gaussianJitter(rng, jitter),
+    ay + (by - ay) * t + gaussianJitter(rng, jitter),
+    (rng() - 0.5) * zSpread,
+  ];
+}
+
+/** 05 SEO & AEO: hollow magnifier lens ring with an angled handle bar. */
+export function generateMagnifierPoints(count: number, seed = 606): Float32Array {
+  const rng = createSeededRandom(seed);
+  const out = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const pick = rng();
+    let pt: [number, number, number];
+    if (pick < 0.68) {
+      pt = sampleRingPoint(rng, -0.14, 0.16, 0.52, 0.24);
+    } else {
+      pt = sampleSegPoint(rng, 0.26, -0.24, 0.74, -0.72, 0.05, 0.2);
+    }
+    out[i * 3] = pt[0];
+    out[i * 3 + 1] = pt[1];
+    out[i * 3 + 2] = pt[2];
+  }
+  return out;
+}
+
+/** 06 Video Editing: circular badge ring with an inset play-triangle outline. */
+export function generatePlayBadgePoints(count: number, seed = 707): Float32Array {
+  const rng = createSeededRandom(seed);
+  const out = new Float32Array(count * 3);
+  const ax = -0.26, ay = -0.4;
+  const bx = -0.26, by = 0.4;
+  const cx = 0.46, cy = 0;
+  for (let i = 0; i < count; i++) {
+    const pick = rng();
+    let pt: [number, number, number];
+    if (pick < 0.55) {
+      pt = sampleRingPoint(rng, 0, 0, 0.78, 0.22);
+    } else if (pick < 0.7) {
+      pt = sampleSegPoint(rng, ax, ay, bx, by, 0.02, 0.18);
+    } else if (pick < 0.85) {
+      pt = sampleSegPoint(rng, bx, by, cx, cy, 0.02, 0.18);
+    } else {
+      pt = sampleSegPoint(rng, cx, cy, ax, ay, 0.02, 0.18);
+    }
+    out[i * 3] = pt[0];
+    out[i * 3 + 1] = pt[1];
+    out[i * 3 + 2] = pt[2];
+  }
+  return out;
+}
+
+/** 07 Graphic Design: pen nib — triangle shell, centre slit, breather hole, base bar. */
+export function generatePenNibPoints(count: number, seed = 808): Float32Array {
+  const rng = createSeededRandom(seed);
+  const out = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const pick = rng();
+    let pt: [number, number, number];
+    if (pick < 0.28) {
+      pt = sampleSegPoint(rng, 0, 0.85, -0.44, -0.5, 0.02, 0.18);
+    } else if (pick < 0.56) {
+      pt = sampleSegPoint(rng, 0, 0.85, 0.44, -0.5, 0.02, 0.18);
+    } else if (pick < 0.7) {
+      pt = sampleSegPoint(rng, 0, 0.32, 0, -0.12, 0.015, 0.14);
+    } else if (pick < 0.85) {
+      pt = sampleRingPoint(rng, 0, -0.28, 0.13, 0.14);
+    } else {
+      pt = sampleSegPoint(rng, -0.44, -0.72, 0.44, -0.72, 0.02, 0.18);
+    }
+    out[i * 3] = pt[0];
+    out[i * 3 + 1] = pt[1];
+    out[i * 3 + 2] = pt[2];
+  }
+  return out;
+}
+
+/** 08 Social Media: share graph — three node rings joined by link segments. */
+export function generateShareGraphPoints(count: number, seed = 909): Float32Array {
+  const rng = createSeededRandom(seed);
+  const out = new Float32Array(count * 3);
+  const n1: [number, number] = [-0.56, 0.46];
+  const n2: [number, number] = [0.56, 0.46];
+  const n3: [number, number] = [0, -0.56];
+  for (let i = 0; i < count; i++) {
+    const pick = rng();
+    let pt: [number, number, number];
+    if (pick < 0.18) {
+      pt = sampleRingPoint(rng, n1[0], n1[1], 0.17, 0.16);
+    } else if (pick < 0.36) {
+      pt = sampleRingPoint(rng, n2[0], n2[1], 0.17, 0.16);
+    } else if (pick < 0.54) {
+      pt = sampleRingPoint(rng, n3[0], n3[1], 0.17, 0.16);
+    } else if (pick < 0.69) {
+      pt = sampleSegPoint(rng, n1[0], n1[1], n2[0], n2[1], 0.02, 0.18);
+    } else if (pick < 0.84) {
+      pt = sampleSegPoint(rng, n1[0], n1[1], n3[0], n3[1], 0.02, 0.18);
+    } else {
+      pt = sampleSegPoint(rng, n2[0], n2[1], n3[0], n3[1], 0.02, 0.18);
+    }
+    out[i * 3] = pt[0];
+    out[i * 3 + 1] = pt[1];
+    out[i * 3 + 2] = pt[2];
+  }
+  return out;
+}
+
 export function buildAllServiceShapes(
   count: number
 ): Record<ServiceShapeId, Float32Array> {
@@ -477,5 +619,9 @@ export function buildAllServiceShapes(
     brackets: generateBracketsPoints(count, 303),
     growthChart: generateGrowthChartPoints(count, 404),
     dnaHelix: generateDnaHelixPoints(count, 505),
+    magnifier: generateMagnifierPoints(count, 606),
+    playBadge: generatePlayBadgePoints(count, 707),
+    penNib: generatePenNibPoints(count, 808),
+    shareGraph: generateShareGraphPoints(count, 909),
   };
 }

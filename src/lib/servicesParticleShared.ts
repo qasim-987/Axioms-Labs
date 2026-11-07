@@ -54,7 +54,18 @@ export interface ServicesHoverBridge {
 export const MORPH_DISPERSAL = 0.35;
 export const ENTRY_ASSEMBLE_MS = 900;
 
-export const STEP_HOLD_PROGRESS = [0.075, 0.385, 0.695, 0.96] as const;
+/** Hold-midpoint progress targets, derived from the stage count so the
+ *  deck timeline stays correct when services are added or removed. */
+export const STEP_HOLD_PROGRESS: number[] = (() => {
+  const n = ORDERED_SERVICE_SHAPES.length;
+  const seg = 1 / n;
+  const hold = 0.48 * seg;
+  const out: number[] = [];
+  for (let i = 0; i < n; i++) {
+    out.push(i < n - 1 ? i * seg + hold / 2 : (n - 1) * seg + (1 - (n - 1) * seg) / 2);
+  }
+  return out;
+})();
 
 export function evaluateServicesMasterTimeline(
   rawP: number
@@ -64,15 +75,21 @@ export function evaluateServicesMasterTimeline(
   // Scroll begins and returns to the first service, never the Hero sphere.
   const u = p;
 
-  const windows = [
-    { type: "hold" as const, start: 0.0, end: 0.15, idx: 0 },
-    { type: "trans" as const, start: 0.15, end: 0.31, from: 0, to: 1 },
-    { type: "hold" as const, start: 0.31, end: 0.46, idx: 1 },
-    { type: "trans" as const, start: 0.46, end: 0.62, from: 1, to: 2 },
-    { type: "hold" as const, start: 0.62, end: 0.77, idx: 2 },
-    { type: "trans" as const, start: 0.77, end: 0.92, from: 2, to: 3 },
-    { type: "hold" as const, start: 0.92, end: 1.0001, idx: 3 },
-  ];
+  const n = ORDERED_SERVICE_SHAPES.length;
+  const seg = 1 / n;
+  const holdLen = 0.48 * seg;
+  const windows: (
+    | { type: "hold"; start: number; end: number; idx: number }
+    | { type: "trans"; start: number; end: number; from: number; to: number }
+  )[] = [];
+  for (let i = 0; i < n; i++) {
+    const hs = i * seg;
+    const he = i < n - 1 ? hs + holdLen : 1.0001;
+    windows.push({ type: "hold", start: hs, end: he, idx: i });
+    if (i < n - 1) {
+      windows.push({ type: "trans", start: he, end: (i + 1) * seg, from: i, to: i + 1 });
+    }
+  }
 
   for (const w of windows) {
     if (u >= w.start && u <= w.end) {
@@ -103,13 +120,14 @@ export function evaluateServicesMasterTimeline(
     }
   }
 
+  const last = ORDERED_SERVICE_SHAPES.length - 1;
   return {
-    scrollIndex: 3,
-    fromCardIndex: 3,
-    toCardIndex: 3,
+    scrollIndex: last,
+    fromCardIndex: last,
+    toCardIndex: last,
     cardTransitionT: 0,
-    fromShape: ORDERED_SERVICE_SHAPES[3],
-    toShape: ORDERED_SERVICE_SHAPES[3],
+    fromShape: ORDERED_SERVICE_SHAPES[last],
+    toShape: ORDERED_SERVICE_SHAPES[last],
     shapeMorphT: 0,
   };
 }

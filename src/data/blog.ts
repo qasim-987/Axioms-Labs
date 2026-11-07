@@ -174,7 +174,7 @@ export const blogPosts: BlogPost[] = [
         },
       {
         heading: "The Section Order We Actually Use",
-        body: "Our own landing page follows one rule: answer 'what do you do and for whom' before asking for anything. The order is hero statement with a single primary action, then production-stack proof, then the four disciplines, then delivery process with weekly cadences, then the contact form. Every section earns its scroll by reducing a specific doubt — capability, reliability, scope, process, risk — and the primary action repeats only after each doubt is addressed.",
+        body: "Our own landing page follows one rule: answer 'what do you do and for whom' before asking for anything. The order is hero statement with a single primary action, then production-stack proof, then the service disciplines, then delivery process with weekly cadences, then the contact form. Every section earns its scroll by reducing a specific doubt — capability, reliability, scope, process, risk — and the primary action repeats only after each doubt is addressed.",
         takeaways: [
           "Map each section to one doubt it removes.",
           "Keep one primary action per viewport; repeat it after proof, not before.",
