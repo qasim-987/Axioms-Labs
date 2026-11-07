@@ -13,8 +13,7 @@ export type ServiceShapeId =
   | "dnaHelix"
   | "magnifier"
   | "playBadge"
-  | "penNib"
-  | "shareGraph";
+  | "penNib";
 
 /**
  * Data-driven pairing of Axioms Lab's 4 existing services (`src/data/services.ts`)
@@ -26,7 +25,6 @@ export type ServiceShapeId =
  *   05 SEO & AEO       -> magnifier   (3D search magnifier: hollow lens ring + angled handle)
  *   06 Video Editing   -> playBadge   (3D circular badge with an inset play-triangle outline)
  *   07 Graphic Design  -> penNib      (3D pen nib: triangle shell, centre slit, breather hole, base bar)
- *   08 Social Media    -> shareGraph  (3D share graph: three node rings joined by link segments)
  */
 export const SERVICE_STAGE_ORDER: {
   slug: string;
@@ -39,7 +37,6 @@ export const SERVICE_STAGE_ORDER: {
   { slug: "seo-aeo", shape: "magnifier" },
   { slug: "video-editing", shape: "playBadge" },
   { slug: "graphic-design", shape: "penNib" },
-  { slug: "social-media-management", shape: "shareGraph" },
 ];
 
 function gaussianJitter(rng: () => number, scale: number): number {
@@ -581,36 +578,6 @@ export function generatePenNibPoints(count: number, seed = 808): Float32Array {
   return out;
 }
 
-/** 08 Social Media: share graph — three node rings joined by link segments. */
-export function generateShareGraphPoints(count: number, seed = 909): Float32Array {
-  const rng = createSeededRandom(seed);
-  const out = new Float32Array(count * 3);
-  const n1: [number, number] = [-0.56, 0.46];
-  const n2: [number, number] = [0.56, 0.46];
-  const n3: [number, number] = [0, -0.56];
-  for (let i = 0; i < count; i++) {
-    const pick = rng();
-    let pt: [number, number, number];
-    if (pick < 0.18) {
-      pt = sampleRingPoint(rng, n1[0], n1[1], 0.17, 0.16);
-    } else if (pick < 0.36) {
-      pt = sampleRingPoint(rng, n2[0], n2[1], 0.17, 0.16);
-    } else if (pick < 0.54) {
-      pt = sampleRingPoint(rng, n3[0], n3[1], 0.17, 0.16);
-    } else if (pick < 0.69) {
-      pt = sampleSegPoint(rng, n1[0], n1[1], n2[0], n2[1], 0.02, 0.18);
-    } else if (pick < 0.84) {
-      pt = sampleSegPoint(rng, n1[0], n1[1], n3[0], n3[1], 0.02, 0.18);
-    } else {
-      pt = sampleSegPoint(rng, n2[0], n2[1], n3[0], n3[1], 0.02, 0.18);
-    }
-    out[i * 3] = pt[0];
-    out[i * 3 + 1] = pt[1];
-    out[i * 3 + 2] = pt[2];
-  }
-  return out;
-}
-
 export function buildAllServiceShapes(
   count: number
 ): Record<ServiceShapeId, Float32Array> {
@@ -622,6 +589,5 @@ export function buildAllServiceShapes(
     magnifier: generateMagnifierPoints(count, 606),
     playBadge: generatePlayBadgePoints(count, 707),
     penNib: generatePenNibPoints(count, 808),
-    shareGraph: generateShareGraphPoints(count, 909),
   };
 }

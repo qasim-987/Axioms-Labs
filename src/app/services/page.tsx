@@ -12,7 +12,7 @@ import { SITE_URL } from "@/config/site";
 export const metadata: Metadata = {
   title: "Services — Web Development, Web Designing, UI/UX & AI Agents | Axioms Lab",
   description:
-    "All eight Axioms Lab services in one place: web development, web designing, UI/UX design, AI agents, SEO & AEO, video editing, graphic design, and social media management — each with deliverables, process and pricing context.",
+    "All seven Axioms Lab services in one place: web development, web designing, UI/UX design, AI agents, SEO & AEO, video editing, and graphic design — each with deliverables, process and pricing context.",
   alternates: { canonical: `${SITE_URL}/services` },
 };
 
@@ -42,13 +42,13 @@ export default function ServicesIndexPage() {
         <div className="max-w-6xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#121317] mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3186FF]" />
-            <span>08 CORE SERVICES</span>
+            <span>{String(servicesData.length).padStart(2, "0")} CORE SERVICES</span>
           </div>
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
             Our Services
           </h1>
           <p className="max-w-2xl text-base sm:text-lg text-[#45474D] leading-relaxed mb-12">
-            Axioms Lab works across eight connected services. Every engagement
+            Axioms Lab works across seven connected services. Every engagement
             is scoped in clear weekly milestones, priced with published starting
             estimates, and delivered with full source ownership.
           </p>
