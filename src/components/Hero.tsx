@@ -29,14 +29,14 @@ interface HeroWordToken {
 }
 
 const HERO_LINE_1: HeroWordToken[] = [
-  { word: "Web Development,", className: "font-normal text-[#121317]" },
-  { word: "UI/UX", className: "font-extrabold italic text-[#121317]" },
+  { word: "Building", className: "font-normal text-[#121317]" },
+  { word: "Digital", className: "font-extrabold italic text-[#121317]" },
 ];
 
 const HERO_LINE_2: HeroWordToken[] = [
-  { word: "& AI Agents", className: "font-extrabold italic text-[#3186FF]" },
-  { word: "for Modern", className: "font-normal text-[#45474D]" },
-  { word: "Businesses", className: "font-normal text-[#45474D]" },
+  { word: "Solutions", className: "font-extrabold italic text-[#3186FF]" },
+  { word: "That", className: "font-normal text-[#121317]" },
+  { word: "Matter.", className: "font-normal text-[#121317]" },
 ];
 
 function SplitHeroLine({
@@ -235,7 +235,7 @@ export default function Hero() {
         >
           {/* Antimatter Character-by-Character 3D Kinetic Headline */}
           <h1 data-reveal="lines"
-            aria-label="Web Development, UI/UX & AI Agents for Modern Businesses"
+            aria-label="Building Digital Solutions That Matter."
             className="flex flex-col items-center justify-center text-center tracking-tight text-[#121317] text-4xl sm:text-6xl md:text-[64px] lg:text-[72px] leading-[1.08] select-none mb-7 [perspective:900px]"
           >
             <span
