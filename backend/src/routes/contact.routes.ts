@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { isAllowedOrigin, originFromUrl } from "../config/env";
+import { env, isAllowedOrigin, originFromUrl } from "../config/env";
 import { contactPayloadSchema } from "../schemas/contact.schema";
 import { evaluateAntiSpam } from "../services/antiSpam.service";
 import { processAndDeliverInquiry } from "../services/delivery.service";
@@ -105,6 +105,15 @@ contactRouter.post("/contact", originGuard, contactRateLimiter, async (req, res)
 
     // Step 3: Persist & Deliver Inquiry (PRD FR-API-05)
     const stored = await processAndDeliverInquiry(parsed.data);
+
+    // When email notifications are configured, storage/webhook success alone
+    // must not imply that the email provider accepted the inquiry.
+    if (env.contactNotificationEmail && !stored.deliveryChannels.includes("resend_email")) {
+      res.status(503).json({
+        error: "We could not send your inquiry. Please try again later or email info@axiomslab.com directly.",
+      });
+      return;
+    }
 
     res.status(200).json({
       success: true,

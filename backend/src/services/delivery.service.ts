@@ -68,7 +68,7 @@ export async function processAndDeliverInquiry(
   let downstreamDelivered = false;
 
   // 1. Optional Resend Transactional Email Adapter
-  if (env.resendApiKey) {
+  if (env.resendApiKey && env.contactNotificationEmail) {
     try {
       const res = await fetchWithTimeout("https://api.resend.com/emails", {
         method: "POST",
@@ -77,7 +77,7 @@ export async function processAndDeliverInquiry(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Axioms Lab Engine <onboarding@resend.dev>",
+          from: env.contactFromEmail,
           to: [env.contactNotificationEmail],
           reply_to: payload.email,
           subject: `[Axioms Lab Scoping] ${cleanService} — ${clientName}`,
@@ -97,6 +97,9 @@ export async function processAndDeliverInquiry(
       if (res.ok) {
         downstreamDelivered = true;
         deliveryChannels.push("resend_email");
+      } else {
+        // Do not log response bodies: they may contain submitted personal data.
+        console.error(JSON.stringify({ event: "CONTACT_EMAIL_REJECTED", inquiryId: id, status: res.status }));
       }
     } catch (err) {
       console.error("[DELIVERY] Resend adapter error:", err);
@@ -214,7 +217,7 @@ export function getInquiryMetrics() {
     sessionInquiriesLogged: inquiryCountSession,
     configuredAdapters: {
       localAuditLedger: true,
-      resendEmail: Boolean(env.resendApiKey),
+      resendEmail: Boolean(env.resendApiKey && env.contactNotificationEmail),
       webhook: Boolean(env.contactWebhookUrl),
       supabasePostgres: Boolean(env.supabaseUrl && env.supabaseServiceRoleKey),
     },
