@@ -22,6 +22,9 @@ const nextConfig = {
   poweredByHeader: false,
   async redirects() {
     return [
+      { source: "/services/digital-design", destination: "/services/ui-ux-design", permanent: true },
+      { source: "/services/ai-automation", destination: "/services/ai-agents", permanent: true },
+      { source: "/services/web-designing", destination: "/services/ui-ux-design", permanent: true },
       // Redirect removed competitor-cloned demo/resource routes cleanly
       {
         source: "/demos/:path*",
@@ -96,7 +99,7 @@ const nextConfig = {
       },
       {
         source: "/services/gtm-strategy",
-        destination: "/services/web-designing",
+        destination: "/services/ui-ux-design",
         permanent: true,
       },
       {

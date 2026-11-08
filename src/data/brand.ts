@@ -96,9 +96,9 @@ export const NAV_LINKS = [
     href: "#services",
     items: [
       { label: "Overview", href: "#services" },
-      { label: "Digital Product Design", href: "/services/digital-design" },
+      { label: "UI/UX Web Design", href: "/services/ui-ux-design" },
       { label: "Web Development", href: "/services/web-development" },
-      { label: "UI/UX Design", href: "/services/ui-ux-design" },
+      { label: "AI Agents", href: "/services/ai-agents" },
     ],
   },
   {
@@ -113,26 +113,6 @@ export const NAV_LINKS = [
 ];
 
 export const SERVICES: Service[] = [
-  {
-    slug: "digital-design",
-    title: "Digital Product Design",
-    eyebrow: "Product design",
-    description:
-      "Bespoke digital products, design systems, and interactive interfaces shaped around your users.",
-    subServices: [
-      { title: "Product Design", description: "End-to-end product design from research to high-fidelity screens." },
-      { title: "Design Systems", description: "Tokenized component libraries and documentation for fast, consistent development." },
-      { title: "Prototyping", description: "Clickable prototypes for stakeholder and investor validation before code." },
-      { title: "Design QA", description: "Implementation review and pixel-accurate handoff to engineering." },
-    ],
-    tools: [
-      { name: "Figma", icon: "Layout" },
-      { name: "ProtoPie", icon: "Play" },
-      { name: "Principle", icon: "Maximize" },
-      { name: "FigJam", icon: "Brain" },
-    ],
-    highlightWord: "Design",
-  },
   {
     slug: "web-development",
     title: "Web Development",
@@ -156,10 +136,10 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "ui-ux-design",
-    title: "UI/UX Design",
+    title: "UI/UX Web Design",
     eyebrow: "Experience design",
     description:
-      "User research, wireframes, clickable prototypes, and reusable component libraries for software products.",
+      "Responsive websites, clear user journeys, clickable prototypes, and reusable design systems that help customers understand your offer and navigate confidently.",
     subServices: [
       { title: "UX Audit", description: "Identifying friction, drop-offs, and navigation bottlenecks in existing products." },
       { title: "User Flows", description: "Information architecture and low-fidelity wireframes covering every state." },
@@ -175,8 +155,8 @@ export const SERVICES: Service[] = [
     highlightWord: "Experience",
   },
   {
-    slug: "ai-automation",
-    title: "AI Automation",
+    slug: "ai-agents",
+    title: "AI Agents",
     eyebrow: "Automation",
     description:
       "Intelligent assistants, knowledge copilots, and workflow agents connected to your tools.",
@@ -211,3 +191,5 @@ export const BUDGET_OPTIONS = [
   "$15,000 – $50,000",
   "$50,000+",
 ];
+
+SERVICES.sort((a,b) => ["ui-ux-design", "web-development", "ai-agents"].indexOf(a.slug) - ["ui-ux-design", "web-development", "ai-agents"].indexOf(b.slug));

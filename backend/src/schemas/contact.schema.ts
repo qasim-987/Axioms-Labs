@@ -12,6 +12,7 @@ import { z } from "zod";
  * enum must change in the same commit or the live form starts returning 400.
  */
 const SERVICE_VALUES = [
+  "UI/UX Web Design",
   "Web Development",
   "Web Designing",
   "UI/UX Design",
@@ -64,7 +65,8 @@ export const contactPayloadSchema = z
         errorMap: () => ({ message: "Please select one of the listed services." }),
       })
       .optional()
-      .default("General Scoping"),
+      .default("General Scoping")
+      .transform(value => value === "Web Designing" || value === "UI/UX Design" ? "UI/UX Web Design" : value),
     budget: z
       .enum(BUDGET_VALUES, {
         errorMap: () => ({ message: "Please select one of the listed budget ranges." }),

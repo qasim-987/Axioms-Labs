@@ -19,9 +19,8 @@ import {
 } from "lucide-react";
 
 const projectScopes = [
+  "UI/UX Web Design",
   "Web Development",
-  "Web Designing",
-  "UI/UX Design",
   "AI Agents",
 ];
 

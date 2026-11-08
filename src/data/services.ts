@@ -32,15 +32,136 @@ export interface ServiceItem {
 
 export const servicesData: ServiceItem[] = [
   {
+    id: "ui-ux-design",
+    slug: "ui-ux-design",
+    title: "UI/UX Web Design",
+    badge: "Product Experience",
+    heroHeadline: "Clear, Confident Web Experiences Designed Around Your Customers",
+    shortDesc:
+      "Help visitors understand your offer and find their next step with responsive websites, clear user journeys, accessible interfaces, and developer-ready Figma designs.",
+    longDesc:
+      "We bring website design and product UX together: clear messaging, responsive layouts, intuitive navigation, interactive prototypes, and reusable design systems. Validate the experience before development and give your team a consistent foundation for future updates.",
+    iconName: "Layout",
+    metrics: "WCAG 2.1 AA-focused design & builds",
+    deliverables: [
+      { title: "Responsive Websites & Landing Pages", description: "Clear page layouts, brand-consistent visuals, and purposeful calls to action that help customers understand your offer on any screen." },
+      {
+        title: "UX Audits & User Journey Mapping",
+        description:
+          "Identifying friction points, drop-offs, and navigation bottlenecks across new or existing digital products.",
+      },
+      {
+        title: "Information Architecture & Wireframes",
+        description:
+          "Clear user flows, onboarding sequences, and low-fidelity wireframes covering every state and edge case.",
+      },
+      {
+        title: "Interactive Clickable Prototypes",
+        description:
+          "Realistic Figma prototypes you can test with stakeholders, investors, and real users before writing code.",
+      },
+      {
+        title: "Scalable Design Systems",
+        description:
+          "Reusable buttons, inputs, modals, tables, color tokens, and spacing scales documented for fast development.",
+      },
+      {
+        title: "SaaS & Dashboard UI Craft",
+        description:
+          "Clean data visualization, dark and light themes, clear visual hierarchy, and scannable workspace layouts.",
+      },
+      {
+        title: "Developer Handoff & Design QA",
+        description:
+          "Annotated component specs, auto-layout tokens, and collaborative review with frontend engineers.",
+      },
+    ],
+    processPhases: [
+      {
+        number: "01",
+        title: "Product Discovery & User Flows",
+        duration: "Week 1",
+        description:
+          "Mapping user personas, core tasks, and end-to-end product journeys to eliminate unnecessary clicks.",
+        deliverables: [
+          "User Flow Diagrams",
+          "Information Architecture",
+          "UX Audit Notes",
+        ],
+      },
+      {
+        number: "02",
+        title: "Wireframing & Rapid Iteration",
+        duration: "Week 2",
+        description:
+          "Validating screen layouts, navigation patterns, and empty/loading/error states quickly.",
+        deliverables: [
+          "Low-Fidelity Wireframes",
+          "Core Screen Blueprints",
+          "Navigation Prototype",
+        ],
+      },
+      {
+        number: "03",
+        title: "UI Design System & High-Fi Screens",
+        duration: "Weeks 3-4",
+        description:
+          "Building a cohesive component library and applying polished UI across every product screen.",
+        deliverables: [
+          "Tokenized Figma UI Kit",
+          "High-Fidelity Product Screens",
+          "Clickable User Prototype",
+        ],
+      },
+      {
+        number: "04",
+        title: "Engineering Handoff & Walkthrough",
+        duration: "Week 5",
+        description:
+          "Delivering clean spacing tokens, states, and responsive rules directly aligned with Tailwind/React.",
+        deliverables: [
+          "Component Documentation",
+          "Exported Icons & Tokens",
+          "Implementation Review",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Does this include website design as well as product UX?",
+        answer:
+          "Yes. UI/UX Web Design combines responsive marketing websites and landing pages with user journeys, product interfaces, prototypes, and reusable design systems. We agree the deliverables around your audience and business goals.",
+      },
+      {
+        question: "Can you create a clickable prototype for our MVP or pitch?",
+        answer:
+          "Yes. Interactive Figma prototypes are one of our most popular deliverables for founders validating an MVP with customers or investors prior to full development.",
+      },
+      {
+        question: "How do you hand off UI/UX files to developers?",
+        answer:
+          "Every Figma file uses clean Auto Layout, named color/spacing variables, component variants, and Tailwind-friendly scales so frontend build time is cut dramatically.",
+      },
+    ],
+    tools: [
+      "Figma",
+      "Auto Layout & Variables",
+      "FigJam",
+      "Radix UI",
+      "Tailwind CSS",
+      "Framer Motion",
+    ],
+  },
+  {
     id: "web-development",
     slug: "web-development",
     title: "Web Development",
     badge: "Full-Stack Engineering",
     heroHeadline: "Fast, Scalable Web Applications Engineered for Growth",
     shortDesc:
-      "Custom Next.js and React web applications, SaaS platforms, clean REST APIs, and modern full-stack architectures built for speed and reliability.",
+      "Turn your designs into fast, reliable websites and web applications, with integrations and maintainable code that support your business as it grows.",
     longDesc:
-      "We engineer production-ready web platforms, SaaS dashboards, portals, and custom e-commerce storefronts using modern TypeScript stacks. Every codebase is structured for sub-second load times, SEO authority, security, and effortless future scaling.",
+      "We engineer production-ready web platforms, SaaS dashboards, portals, and custom e-commerce storefronts using modern TypeScript stacks. We focus on performance, accessibility, technical SEO, security, and maintainable code so your team can launch confidently and keep improving the product.",
     iconName: "Code",
     metrics: "99+ Lighthouse Performance",
     deliverables: [
@@ -153,253 +274,13 @@ export const servicesData: ServiceItem[] = [
     ],
   },
   {
-    id: "web-designing",
-    slug: "web-designing",
-    title: "Web Designing",
-    badge: "Brand & Motion",
-    heroHeadline: "High-Converting Websites That Make Your Brand Unforgettable",
-    shortDesc:
-      "Bespoke marketing websites, landing pages, interactive motion storytelling, and responsive visual layouts crafted to turn visitors into clients.",
-    longDesc:
-      "Your website is your first impression. We design modern, visually striking websites that combine strong brand identity, crisp typography, smooth Framer Motion & GSAP animations, and clear conversion architecture—never generic off-the-shelf templates.",
-    iconName: "Globe",
-    metrics: "< 1.2s LCP Load Speed",
-    deliverables: [
-      {
-        title: "Custom Brand Website Design",
-        description:
-          "Tailor-made visual direction, color palettes, typography pairings, and layout composition aligned with your brand.",
-      },
-      {
-        title: "High-Converting Landing Pages",
-        description:
-          "Conversion-focused hero sections, clear value propositions, social-proof blocks, and friction-free CTAs.",
-      },
-      {
-        title: "Interactive Motion & Scroll Effects",
-        description:
-          "Tasteful 60fps animations, smooth Lenis scrolling, subtle 3D/WebGL accents, and hover micro-interactions.",
-      },
-      {
-        title: "Mobile-First Responsive Layouts",
-        description:
-          "Fluid layouts carefully tuned for mobile phones, tablets, laptops, and ultra-wide desktop displays.",
-      },
-      {
-        title: "Visual Assets & Custom Graphics",
-        description:
-          "Bespoke section illustrations, bento cards, glassmorphic UI previews, and crisp SVG iconography.",
-      },
-      {
-        title: "Conversion & Copy Hierarchy",
-        description:
-          "Structured messaging flow that immediately communicates what you do, why it matters, and how to take action.",
-      },
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Brand Discovery & Moodboard",
-        duration: "Days 1-4",
-        description:
-          "Understanding your audience, brand personality, visual references, and conversion goals.",
-        deliverables: [
-          "Visual Direction & Moodboard",
-          "Typography & Color Palette",
-          "Site Sitemap & Page Flow",
-        ],
-      },
-      {
-        number: "02",
-        title: "Wireframing & Content Structure",
-        duration: "Week 2",
-        description:
-          "Structuring every section from Hero to CTA so visitors effortlessly understand your offer.",
-        deliverables: [
-          "Page-by-Page Wireframes",
-          "CTA & Conversion Map",
-          "Responsive Grid Blueprint",
-        ],
-      },
-      {
-        number: "03",
-        title: "High-Fidelity Visual & Motion Design",
-        duration: "Weeks 3-4",
-        description:
-          "Designing polished desktop and mobile screens along with interactive hover and scroll motion concepts.",
-        deliverables: [
-          "Full Desktop & Mobile Mockups",
-          "Interactive Motion Prototype",
-          "Custom Visual Assets",
-        ],
-      },
-      {
-        number: "04",
-        title: "Responsive Polish & Launch Readiness",
-        duration: "Week 5",
-        description:
-          "Final visual QA across devices ensuring pixel-accurate spacing, contrast, and smooth animation timing.",
-        deliverables: [
-          "Organized Figma Master File",
-          "Style Guide & Asset Kit",
-          "Developer-Ready Specs",
-        ],
-      },
-    ],
-    faqs: [
-      {
-        question: "Do you use pre-made themes or design everything from scratch?",
-        answer:
-          "Every website we design is custom-crafted from scratch around your brand positioning, target customers, and business goals—no recycled templates.",
-      },
-      {
-        question: "Can you both design and develop our website end-to-end?",
-        answer:
-          "Yes! Most clients pair our Web Designing and Web Development services so our team takes your site from initial Figma concept all the way to a live Vercel deployment.",
-      },
-      {
-        question: "Will animations slow down our website on mobile?",
-        answer:
-          "No. We use GPU-accelerated transforms and respect reduced-motion preferences so animations stay silky-smooth without hurting mobile speed.",
-      },
-    ],
-    tools: [
-      "Figma",
-      "Tailwind CSS",
-      "Framer Motion",
-      "GSAP",
-      "Lenis",
-      "Three.js",
-    ],
-  },
-  {
-    id: "ui-ux-design",
-    slug: "ui-ux-design",
-    title: "UI/UX Design",
-    badge: "Product Experience",
-    heroHeadline: "Intuitive Product Interfaces & Scalable Design Systems",
-    shortDesc:
-      "User research, wireframes, clickable Figma prototypes, and reusable component libraries for SaaS products, mobile apps, and web platforms.",
-    longDesc:
-      "Great software feels effortless to use. We turn complex workflows into clean, intuitive user experiences backed by structured user flows, interactive Figma prototypes, accessibility standards, and tokenized design systems your developers love.",
-    iconName: "Layout",
-    metrics: "WCAG 2.1 AA-focused design & builds",
-    deliverables: [
-      {
-        title: "UX Audits & User Journey Mapping",
-        description:
-          "Identifying friction points, drop-offs, and navigation bottlenecks across new or existing digital products.",
-      },
-      {
-        title: "Information Architecture & Wireframes",
-        description:
-          "Clear user flows, onboarding sequences, and low-fidelity wireframes covering every state and edge case.",
-      },
-      {
-        title: "Interactive Clickable Prototypes",
-        description:
-          "Realistic Figma prototypes you can test with stakeholders, investors, and real users before writing code.",
-      },
-      {
-        title: "Scalable Design Systems",
-        description:
-          "Reusable buttons, inputs, modals, tables, color tokens, and spacing scales documented for fast development.",
-      },
-      {
-        title: "SaaS & Dashboard UI Craft",
-        description:
-          "Clean data visualization, dark and light themes, clear visual hierarchy, and scannable workspace layouts.",
-      },
-      {
-        title: "Developer Handoff & Design QA",
-        description:
-          "Annotated component specs, auto-layout tokens, and collaborative review with frontend engineers.",
-      },
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Product Discovery & User Flows",
-        duration: "Week 1",
-        description:
-          "Mapping user personas, core tasks, and end-to-end product journeys to eliminate unnecessary clicks.",
-        deliverables: [
-          "User Flow Diagrams",
-          "Information Architecture",
-          "UX Audit Notes",
-        ],
-      },
-      {
-        number: "02",
-        title: "Wireframing & Rapid Iteration",
-        duration: "Week 2",
-        description:
-          "Validating screen layouts, navigation patterns, and empty/loading/error states quickly.",
-        deliverables: [
-          "Low-Fidelity Wireframes",
-          "Core Screen Blueprints",
-          "Navigation Prototype",
-        ],
-      },
-      {
-        number: "03",
-        title: "UI Design System & High-Fi Screens",
-        duration: "Weeks 3-4",
-        description:
-          "Building a cohesive component library and applying polished UI across every product screen.",
-        deliverables: [
-          "Tokenized Figma UI Kit",
-          "High-Fidelity Product Screens",
-          "Clickable User Prototype",
-        ],
-      },
-      {
-        number: "04",
-        title: "Engineering Handoff & Walkthrough",
-        duration: "Week 5",
-        description:
-          "Delivering clean spacing tokens, states, and responsive rules directly aligned with Tailwind/React.",
-        deliverables: [
-          "Component Documentation",
-          "Exported Icons & Tokens",
-          "Implementation Review",
-        ],
-      },
-    ],
-    faqs: [
-      {
-        question: "What is the difference between Web Designing and UI/UX Design?",
-        answer:
-          "Web Designing focuses on brand websites and conversion-driven landing pages, while UI/UX Design focuses on interactive software products—such as SaaS dashboards, web apps, mobile apps, onboarding flows, and reusable component systems.",
-      },
-      {
-        question: "Can you create a clickable prototype for our MVP or pitch?",
-        answer:
-          "Yes. Interactive Figma prototypes are one of our most popular deliverables for founders validating an MVP with customers or investors prior to full development.",
-      },
-      {
-        question: "How do you hand off UI/UX files to developers?",
-        answer:
-          "Every Figma file uses clean Auto Layout, named color/spacing variables, component variants, and Tailwind-friendly scales so frontend build time is cut dramatically.",
-      },
-    ],
-    tools: [
-      "Figma",
-      "Auto Layout & Variables",
-      "FigJam",
-      "Radix UI",
-      "Tailwind CSS",
-      "Framer Motion",
-    ],
-  },
-  {
     id: "ai-agents",
     slug: "ai-agents",
     title: "AI Agents",
     badge: "Autonomous Workflows",
     heroHeadline: "Custom AI Agents That Automate Real Business Operations",
     shortDesc:
-      "Intelligent AI assistants, lead-qualification bots, RAG knowledge copilots, and multi-step workflow agents connected directly to your tools.",
+      "Reduce repetitive work, answer customer questions, and qualify inquiries with AI assistants connected to your business knowledge and tools, with clear guardrails and human handoff.",
     longDesc:
       "We build practical, reliable AI agents tailored to your business workflows—from 24/7 website sales & support concierges and internal knowledge-base assistants (RAG) to automated CRM, email, and operations agents with strict accuracy guardrails.",
     iconName: "Bot",
@@ -511,318 +392,6 @@ export const servicesData: ServiceItem[] = [
       "Supabase pgvector",
       "MCP",
       "TypeScript",
-    ],
-  },
-  {
-    id: "seo-aeo",
-    slug: "seo-aeo",
-    title: "SEO & AEO",
-    badge: "Search & Answer-Engine Optimization",
-    heroHeadline: "Built to Be Found — by Search Engines and AI Answers",
-    shortDesc:
-      "Technical SEO, structured data and answer-engine optimization so your site is crawlable, fast, schema-marked and citable by modern AI assistants.",
-    longDesc:
-      "We make your site technically impeccable for search: server-rendered pages, semantic HTML, correct canonicals and redirects, JSON-LD structured data, and concise answer blocks that AI answer engines can quote verbatim. No ranking promises — measurable hygiene, honest baselines and transparent reporting.",
-    iconName: "Search",
-    metrics: "Search- & AI-Answer-Ready",
-    deliverables: [
-      {
-        title: "Technical SEO Audit & Fixes",
-        description:
-          "Crawlability, canonicals, sitemap, redirect hygiene and Core Web Vitals cleanup on a server-rendered stack.",
-      },
-      {
-        title: "On-Page & Metadata Systems",
-        description:
-          "Title/description frameworks, OpenGraph cards and semantic heading structure per template, not per page.",
-      },
-      {
-        title: "Structured Data (JSON-LD)",
-        description:
-          "Organization, Service, Article and FAQ schema deployed only where the underlying facts are true.",
-      },
-      {
-        title: "AEO Answer Blocks",
-        description:
-          "Concise question-and-answer content sections structured so AI assistants can cite you verbatim.",
-      },
-      {
-        title: "Search Console & Baseline Setup",
-        description:
-          "Google Search Console verification, sitemap submission and an honest recorded baseline before work starts.",
-      },
-      {
-        title: "Transparent Reporting Cadence",
-        description:
-          "Regular reports separating measured metrics from estimates — never guaranteed rankings, never vanity numbers.",
-      },
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Audit & Baseline",
-        duration: "Week 1",
-        description:
-          "Full technical crawl, Search Console connection and a recorded baseline of today's real visibility.",
-        deliverables: ["Technical Audit Report", "GSC Baseline Snapshot", "Prioritized Fix List"],
-      },
-      {
-        number: "02",
-        title: "Fixes & Structured Data",
-        duration: "Weeks 2-3",
-        description:
-          "Shipping crawl fixes, metadata systems and truthful JSON-LD schema through reviewed pull requests.",
-        deliverables: ["Merged SEO Fixes", "JSON-LD Schema Live", "Redirect & Canonical Map"],
-      },
-      {
-        number: "03",
-        title: "Content & AEO Blocks",
-        duration: "Weeks 3-4",
-        description:
-          "Rewriting key pages into clear answer-first sections with question headings and quotable facts.",
-        deliverables: ["Answer-Block Copy", "FAQ Structures", "Internal Linking Plan"],
-      },
-      {
-        number: "04",
-        title: "Measure & Report",
-        duration: "Monthly",
-        description:
-          "Tracking impressions, clicks and coverage in Search Console and reporting what actually moved.",
-        deliverables: ["Monthly GSC Report", "Labeled Metric Notes", "Next Iteration Plan"],
-      },
-    ],
-    faqs: [
-      {
-        question: "Do you guarantee first-page rankings?",
-        answer:
-          "No — and be cautious of anyone who does. We guarantee measurable technical hygiene, correct structured data and transparent reporting; rankings depend on competition and search engines.",
-      },
-      {
-        question: "What is AEO (answer-engine optimization)?",
-        answer:
-          "Structuring content so AI assistants and AI search overviews can quote you accurately: concise answers under clear questions, factual pages and machine-readable schema.",
-      },
-      {
-        question: "How soon will we see movement?",
-        answer:
-          "Technical fixes land immediately; Search Console trends typically need weeks to months of data. We report measured changes and clearly label anything unmeasured.",
-      },
-    ],
-    tools: [
-      "Google Search Console",
-      "Schema.org JSON-LD",
-      "Next.js 14",
-      "Lighthouse",
-      "TypeScript",
-      "Vercel",
-    ],
-  },
-  {
-    id: "video-editing",
-    slug: "video-editing",
-    title: "Video Editing",
-    badge: "Short-Form & Brand Motion",
-    heroHeadline: "Scroll-Stopping Cuts, Clean Motion, On-Brand Sound",
-    shortDesc:
-      "Vertical-first edits for Reels, Shorts and TikTok, flat-vector logo reveals and brand motion packages — delivered in platform-ready exports.",
-    longDesc:
-      "We turn your raw footage and brand assets into tight short-form edits and crisp flat-vector motion: logo reveals, tagline type-on sequences and product teasers with synthesized or licensed sound, captions for sound-off viewing, and exports tuned per platform.",
-    iconName: "Clapperboard",
-    metrics: "Vertical-First Delivery",
-    deliverables: [
-      {
-        title: "Short-Form Cuts (9:16)",
-        description:
-          "Tight 15-60 second edits for Reels, Shorts and TikTok with hook-first structure and clean pacing.",
-      },
-      {
-        title: "Logo Reveals & Brand Motion",
-        description:
-          "Flat-vector reveals built from your real logo assets — no redraws, no stock-template look.",
-      },
-      {
-        title: "Captions & Subtitles",
-        description:
-          "Burned-in or sidecar captions for sound-off viewing and accessibility, styled to your brand type.",
-      },
-      {
-        title: "Audio Cleanup & Mix",
-        description:
-          "Dialogue cleanup, loudness normalization and synthesized or properly licensed music beds.",
-      },
-      {
-        title: "Platform Export Presets",
-        description:
-          "H.264/AAC MP4 masters plus per-platform sizes: 9:16, 1:1 and 16:9 at correct bitrates.",
-      },
-      {
-        title: "Source & Project Handoff",
-        description:
-          "Frames, project scripts and source files delivered with the masters — you own everything.",
-      },
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Footage & Storyboard",
-        duration: "Week 1",
-        description:
-          "Reviewing your raw clips or brand assets and agreeing a shot-by-shot storyboard and duration.",
-        deliverables: ["Storyboard", "Asset Checklist", "Runtime Plan"],
-      },
-      {
-        number: "02",
-        title: "Assembly & Motion",
-        duration: "Week 2",
-        description:
-          "Cutting the edit and building flat-vector motion passes with eased, overshoot-free-by-accident timing.",
-        deliverables: ["First Cut", "Motion Pass v1", "Review Link"],
-      },
-      {
-        number: "03",
-        title: "Captions, Audio & Polish",
-        duration: "Week 3",
-        description:
-          "Adding captions, sound design and color consistency within your brand palette only.",
-        deliverables: ["Captioned Cut", "Mixed Audio", "Color-Passed Master"],
-      },
-      {
-        number: "04",
-        title: "Exports & Handoff",
-        duration: "Week 3-4",
-        description:
-          "Rendering platform presets, QC on real device frames and handing over masters plus sources.",
-        deliverables: ["Platform Exports", "QC Notes", "Source Handoff"],
-      },
-    ],
-    faqs: [
-      {
-        question: "Do you shoot footage too?",
-        answer:
-          "We edit client-provided footage and produce vector motion in-house. If you need a shoot, we scope it separately with a local partner.",
-      },
-      {
-        question: "What do you need from us to start?",
-        answer:
-          "Raw clips or logo/brand assets, one reference video you like, and the single message each cut must deliver.",
-      },
-      {
-        question: "Is the music licensed?",
-        answer:
-          "Yes — we use synthesized sound design or royalty-free licensed tracks only, and the license terms are handed over with the masters.",
-      },
-    ],
-    tools: [
-      "FFmpeg",
-      "Python Motion Pipeline",
-      "Framer Motion",
-      "Figma",
-      "TypeScript",
-      "Vercel",
-    ],
-  },
-  {
-    id: "graphic-design",
-    slug: "graphic-design",
-    title: "Graphic Design",
-    badge: "Brand & Visual Systems",
-    heroHeadline: "One Consistent Visual System Across Every Surface",
-    shortDesc:
-      "Logo and monogram systems, brand kits, social media kits and marketing collateral — flat, crisp and delivered with usage rules.",
-    longDesc:
-      "We design identity systems that survive real use: monograms that stay legible at 16px, palettes with defined light/dark/blue variants, social kits sized per platform, and collateral that your team can reproduce because the rules are written down.",
-    iconName: "Palette",
-    metrics: "Flat-Vector, Print-Ready",
-    deliverables: [
-      {
-        title: "Logo & Monogram Systems",
-        description:
-          "Primary mark, monogram and clear-space rules with light, dark and brand-color variants.",
-      },
-      {
-        title: "Brand Kits & Usage Rules",
-        description:
-          "Palette tokens, type scale, do/don't rules and a one-page guideline your team can actually follow.",
-      },
-      {
-        title: "Social Media Kits",
-        description:
-          "Profile pictures, covers, OG images and story templates sized exactly per platform spec.",
-      },
-      {
-        title: "Marketing Collateral",
-        description:
-          "Decks, one-pagers, banners and email headers built on the same grid as your brand kit.",
-      },
-      {
-        title: "Iconography & Flat Illustration",
-        description:
-          "Monoline icon sets and flat vector illustrations — no gradients, no stock-look clipping.",
-      },
-      {
-        title: "Print-Ready & Web Exports",
-        description:
-          "SVG/PNG/PDF exports with correct color profiles, plus favicon and app-icon sets.",
-      },
-    ],
-    processPhases: [
-      {
-        number: "01",
-        title: "Discovery & Direction",
-        duration: "Week 1",
-        description:
-          "Audience, competitors and taste calibration through moodboards and two distinct directions.",
-        deliverables: ["Moodboards", "Two Directions", "Written Rationale"],
-      },
-      {
-        number: "02",
-        title: "Core Identity",
-        duration: "Weeks 1-2",
-        description:
-          "Refining the chosen direction into logo, monogram, palette and type with variant matrices.",
-        deliverables: ["Logo System", "Variant Matrix", "Type & Color Tokens"],
-      },
-      {
-        number: "03",
-        title: "Kits & Collateral",
-        duration: "Weeks 2-3",
-        description:
-          "Producing social kits, templates and collateral on the approved system, platform by platform.",
-        deliverables: ["Social Kit", "Template Set", "Collateral Pack"],
-      },
-      {
-        number: "04",
-        title: "Guidelines & Handoff",
-        duration: "Week 4",
-        description:
-          "Writing the usage rules and handing over organized source files and export folders.",
-        deliverables: ["Brand Guidelines", "Source Files", "Export Folders"],
-      },
-    ],
-    faqs: [
-      {
-        question: "Who owns the final designs?",
-        answer:
-          "You do — 100%. Source files, exports and guidelines are handed over with full ownership and no license traps.",
-      },
-      {
-        question: "How many revision rounds are included?",
-        answer:
-          "One structured round per phase, with changes tracked in writing. Extra rounds are quoted before they start, never surprise-billed.",
-      },
-      {
-        question: "Can you work with our existing logo?",
-        answer:
-          "Yes. We can clean up, vectorize and systematize an existing mark without redrawing its character, exactly as we did for our own monogram.",
-      },
-    ],
-    tools: [
-      "Figma",
-      "Figma Variables",
-      "SVG Vector Workflow",
-      "ImageMagick",
-      "Tailwind CSS",
-      "Vercel",
     ],
   },
 ];

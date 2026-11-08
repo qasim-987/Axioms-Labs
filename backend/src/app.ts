@@ -6,7 +6,7 @@ import { requestLogger } from "./middleware/requestLogger";
 import { healthRouter } from "./routes/health.routes";
 import { contactRouter } from "./routes/contact.routes";
 import { catalogRouter } from "./routes/catalog.routes";
-import { STUDIO_LOCATIONS } from "./services/catalog.service";
+import { STUDIO_LOCATIONS, STUDIO_SERVICES } from "./services/catalog.service";
 
 export function createBackendApp() {
   const app = express();
@@ -52,12 +52,7 @@ export function createBackendApp() {
       service: "Axioms Lab Standalone API Server",
       version: "2.5.0",
       studios: STUDIO_LOCATIONS.map((l) => `${l.city}, ${l.country}`),
-      capabilities: [
-        "Web Development",
-        "Web Designing",
-        "UI/UX Design",
-        "AI Agents",
-      ],
+      capabilities: STUDIO_SERVICES.map(service => service.title),
       endpoints: [
         "GET  /api/health",
         "GET  /api/services",

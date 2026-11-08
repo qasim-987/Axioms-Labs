@@ -15,28 +15,15 @@ export type ServiceShapeId =
   | "playBadge"
   | "penNib";
 
-/**
- * Data-driven pairing of Axioms Lab's 4 existing services (`src/data/services.ts`)
- * to their 3D particle shapes:
- *   01 UI/UX Design    -> wireframe   (3D hollow UI wireframe / browser outline with two inner panels)
- *   02 Web Development -> brackets    (3D extruded </> code brackets)
- *   03 Web Designing   -> growthChart (ascending 3D conversion/performance bars + rising arrow)
- *   04 AI Agents       -> dnaHelix    (rotating vertical 3D DNA double helix with horizontal rungs)
- *   05 SEO & AEO       -> magnifier   (3D search magnifier: hollow lens ring + angled handle)
- *   06 Video Editing   -> playBadge   (3D circular badge with an inset play-triangle outline)
- *   07 Graphic Design  -> penNib      (3D pen nib: triangle shell, centre slit, breather hole, base bar)
- */
+/** Three active services retain their existing particle identities and palette.
+ * Other shape generators remain internal utilities, not advertised services. */
 export const SERVICE_STAGE_ORDER: {
   slug: string;
   shape: ServiceShapeId;
 }[] = [
   { slug: "ui-ux-design", shape: "wireframe" },
   { slug: "web-development", shape: "brackets" },
-  { slug: "web-designing", shape: "growthChart" },
   { slug: "ai-agents", shape: "dnaHelix" },
-  { slug: "seo-aeo", shape: "magnifier" },
-  { slug: "video-editing", shape: "playBadge" },
-  { slug: "graphic-design", shape: "penNib" },
 ];
 
 function gaussianJitter(rng: () => number, scale: number): number {

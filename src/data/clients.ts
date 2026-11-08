@@ -4,7 +4,7 @@ export interface ClientCaseStudy {
   title: string;
   client: string;
   tagline: string;
-  category: "Web Development" | "Web Designing" | "UI/UX Design" | "AI Agents";
+  category: "Web Development" | "UI/UX Web Design" | "AI Agents";
   impactMetric: string;
   impactLabel: string;
   year: string;
@@ -24,8 +24,7 @@ export interface ClientCaseStudy {
 export const clientCategories = [
   "All",
   "Web Development",
-  "Web Designing",
-  "UI/UX Design",
+  "UI/UX Web Design",
   "AI Agents",
 ] as const;
 
@@ -85,7 +84,7 @@ export const clientsData: ClientCaseStudy[] = [
     client: "Lab Concept • 01",
     tagline:
       "Concept brand website pairing editorial typography, 60fps Framer Motion & GSAP choreography, and conversion-first storytelling.",
-    category: "Web Designing",
+    category: "UI/UX Web Design",
     impactMetric: "Sub-1.1s",
     impactLabel: "first contentful paint target with the full motion suite (lab target, unmeasured)",
     year: "2026",
@@ -134,7 +133,7 @@ export const clientsData: ClientCaseStudy[] = [
     client: "Lab Concept • 02",
     tagline:
       "Comprehensive Figma-to-React product UI/UX concept featuring 120+ tokenized components, user flows, and dark/light parity.",
-    category: "UI/UX Design",
+    category: "UI/UX Web Design",
     impactMetric: "120+",
     impactLabel: "Tokenized Figma & React UI Components",
     year: "2026",

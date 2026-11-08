@@ -204,7 +204,7 @@ export default function Footer() {
             <LiveStudioClock />
           </div>
 
-          {/* Services (Strictly the 4 Core Services) */}
+          {/* Services (The 3 Core Services) */}
           <div className="lg:col-span-3">
             <h4 className="text-xs font-mono uppercase tracking-wider text-[#121317] font-semibold mb-4">
               Services
@@ -223,7 +223,7 @@ export default function Footer() {
                   href="/services/ui-ux-design"
                   className="hover:text-[#121317] transition-colors"
                 >
-                  UI/UX Design
+                  UI/UX Web Design
                 </Link>
               </li>
               <li>
@@ -232,14 +232,6 @@ export default function Footer() {
                   className="hover:text-[#121317] transition-colors"
                 >
                   Web Development
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/services/web-designing"
-                  className="hover:text-[#121317] transition-colors"
-                >
-                  Web Designing
                 </Link>
               </li>
               <li>

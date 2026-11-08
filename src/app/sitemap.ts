@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { retiredServicePages } from "@/data/retiredServices";
 import { servicesData } from "@/data/services";
 import { clientCaseStudies } from "@/data/clients";
 import { blogPosts } from "@/data/blog";
@@ -50,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const serviceRoutes: MetadataRoute.Sitemap = servicesData.map((s) => ({
+  const serviceRoutes: MetadataRoute.Sitemap = [...servicesData, ...retiredServicePages].map((s) => ({
     url: `${baseUrl}/services/${s.slug}`,
     lastModified: STATIC_CONTENT_LASTMOD,
   }));

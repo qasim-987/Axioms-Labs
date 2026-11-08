@@ -34,7 +34,7 @@ const studioHubs = [
     city: "Lahore, Pakistan",
     region: "Engineering & Design Lab",
     timezone: "PKT / UTC+5",
-    focus: "Full-Stack Web Development, Web Designing & AI Agent Engineering",
+    focus: "UI/UX Web Design, Web Development & AI Agents",
     dotColor: "text-[#00B95C]",
   },
 ];

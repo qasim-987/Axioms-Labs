@@ -111,7 +111,7 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
   },[progress,unlock]);
   useEffect(()=>{
     const el=section.current;if(!el)return;
-    const st=ScrollTrigger.create({trigger:el,start:()=>`top top+=${nav}`,end:()=>`+=${innerHeight*3.2}`,pin:true,pinSpacing:true,anticipatePin:1,invalidateOnRefresh:true,
+    const st=ScrollTrigger.create({trigger:el,start:()=>`top top+=${nav}`,end:()=>`+=${innerHeight*entries.length*.8}`,pin:true,pinSpacing:true,anticipatePin:1,invalidateOnRefresh:true,
       onUpdate:self=>{
         if(gesture.current?.direction==="x" || locked.current==="track" || locked.current==="control")return;
         progress.current=self.progress;
@@ -120,7 +120,7 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
       }});
     trigger.current=st;
     return()=>{st.kill();trigger.current=null;};
-  },[nav,lock,progress,setActive]);
+  },[nav,lock,progress,setActive,entries.length]);
   useEffect(()=>{
     const el=track.current;if(!el)return;
     const finish=()=>{
@@ -185,6 +185,6 @@ export default function MobileServices({entries,progress,bridge,onWebGLUnavailab
         </div>
         <div ref={transitionHost} className="mobile-card-transition" aria-hidden="true" />
       </div></div>
-    <div className="mobile-service-controls"><button type="button" onClick={()=>seek(index-1)} disabled={index===0} aria-label="Previous service">←</button><p aria-live="polite" aria-atomic="true">{index+1} of 4 · {entries[index].service.title}</p><button type="button" onClick={()=>seek(index+1)} disabled={index===3} aria-label="Next service">→</button></div>
+    <div className="mobile-service-controls"><button type="button" onClick={()=>seek(index-1)} disabled={index===0} aria-label="Previous service">←</button><p aria-live="polite" aria-atomic="true">{index+1} of {entries.length} · {entries[index].service.title}</p><button type="button" onClick={()=>seek(index+1)} disabled={index===entries.length-1} aria-label="Next service">→</button></div>
   </section>;
 }

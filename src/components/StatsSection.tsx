@@ -8,9 +8,9 @@ import { MOTION_EASE } from "@/lib/motionTokens";
 
 const stats = [
   {
-    value: "04",
+    value: "03",
     label: "Core Disciplines",
-    detail: "Web Dev • Web Design • UI/UX • AI Agents",
+    detail: "UI/UX Web Design • Web Development • AI Agents",
     accent: "#3186FF",
   },
   {

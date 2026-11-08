@@ -59,7 +59,7 @@ export const SERVICES_SECTION_TUNING = {
   ACTIVE_CARD_TOP: SERVICE_CARD_COLOR,
   ACTIVE_CARD_BOTTOM: SERVICE_CARD_COLOR,
   INACTIVE_CARD_BG: "#F8F9FC",
-  SCROLL_VH_PER_STEP: 82, // Desktop: 328vh smooth pinned travel across 4 services (unchanged)
+  SCROLL_VH_PER_STEP: 82, // Desktop: preserve 82vh of pinned travel per service
   MOBILE_SCROLL_SVH_PER_STEP: 80, // Mobile/Tablet (<1024px): 80svh per step (target: 70-90svh)
   COMPACT_VIEWPORT_MAX_HEIGHT_PX: 720,
   LANDSCAPE_SHORT_MAX_HEIGHT_PX: 500, // Landscape phone (<500px height): 2-column stage
@@ -1031,8 +1031,8 @@ export default function ServicesGrid() {
                       : "text-[clamp(28px,3.9dvh,40px)] font-bold tracking-[-0.025em] leading-[1.06] text-[#121317]"
                   }
                 />
-                <div className="flex items-center gap-2 text-[11px] font-mono" aria-label={`Service ${scrollIndex + 1} of 4`}>
-                  <span className="text-[#3186FF]">0{scrollIndex + 1} / 04</span>
+                <div className="flex items-center gap-2 text-[11px] font-mono" aria-label={`Service ${scrollIndex + 1} of ${entries.length}`}>
+                  <span className="text-[#3186FF]">0{scrollIndex + 1} / {String(entries.length).padStart(2, "0")}</span>
                   {entries.map((_, index) => <span key={index} aria-hidden="true" style={{transition:`width ${CARD_TRANSITION.DOT_MS}ms ease-out`}} className={`h-1 rounded-full ${index === scrollIndex ? "w-5 bg-[#121317]" : "w-1 bg-[#C8CED8]"}`} />)}
                 </div>
                 </div>

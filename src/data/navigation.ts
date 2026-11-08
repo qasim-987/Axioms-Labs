@@ -28,9 +28,8 @@ export const clientLogos = [
 
 export const footerLinks = {
   services: [
+    { label: "UI/UX Web Design", href: "/services/ui-ux-design" },
     { label: "Web Development", href: "/services/web-development" },
-    { label: "Web Designing", href: "/services/web-designing" },
-    { label: "UI/UX Design", href: "/services/ui-ux-design" },
     { label: "AI Agents", href: "/services/ai-agents" },
   ],
   work: [
