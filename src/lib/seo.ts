@@ -66,7 +66,7 @@ export function blogPostingJsonLd(opts: {
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
-      logo: { "@type": "ImageObject", url: `${SITE_URL}/icon.png` },
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/axl-monogram-512.png` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": opts.canonicalUrl },
   };

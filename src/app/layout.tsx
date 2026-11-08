@@ -18,6 +18,14 @@ import jakarta800 from "@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-la
 import jakarta800i from "@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-800-italic.woff2";
 
 export const metadata: Metadata = {
+  icons: {
+    // STABLE URL RULE: favicon lives at /favicon.ico forever — swap bytes, never the path.
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16 24x24 32x32 48x48", type: "image/x-icon" },
+      { url: "/brand/axl-monogram-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/brand/axl-monogram-512.png", type: "image/png", sizes: "512x512" }],
+  },
   metadataBase: new URL(SITE_URL),
   title: "Axioms Lab — UI/UX Web Design, Web Development & AI Agents",
   description:

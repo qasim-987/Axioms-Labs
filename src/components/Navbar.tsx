@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { usePageTransition } from "@/components/transitions/context";
 import Link from "next/link";
-import axlMonogram from "@/assets/axl-monogram.png";
+import axlLockupLight from "@/assets/axl-lockup-light.png";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -207,16 +207,13 @@ export default function Navbar() {
               className="inline-flex items-center gap-2.5 min-h-[44px] lg:min-h-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3186FF] rounded-lg"
             >
               <Image
-                src={axlMonogram}
-                alt=""
-                aria-hidden="true"
-                width={24}
-                height={24}
-                className="h-6 w-6 shrink-0"
+                src={axlLockupLight}
+                alt="Axioms Lab"
+                width={1324}
+                height={300}
+                className="h-6 sm:h-7 w-auto shrink-0"
+                priority
               />
-              <span className="font-bold text-base sm:text-lg tracking-tight text-[#202124]">
-                Axioms Lab
-              </span>
             </Link>
 
             {/* Desktop (>= 1024px) Minimal Center Pill Navigation — Unchanged */}

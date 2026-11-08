@@ -25,6 +25,8 @@ const nextConfig = {
       { source: "/services/digital-design", destination: "/services/ui-ux-design", permanent: true },
       { source: "/services/ai-automation", destination: "/services/ai-agents", permanent: true },
       { source: "/services/web-designing", destination: "/services/ui-ux-design", permanent: true },
+      // Legacy icon URL from the old file-convention setup; stable URL is /favicon.ico.
+      { source: "/icon.png", destination: "/favicon.ico", permanent: true },
       // Redirect removed competitor-cloned demo/resource routes cleanly
       {
         source: "/demos/:path*",

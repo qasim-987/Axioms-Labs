@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SplitTextReveal from "./SplitTextReveal";
 import { submitContactInquiry } from "@/lib/apiClient";
+import { servicesData } from "@/data/services";
 import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
 import { PricingTrustCopy } from "./LaunchPricing";
 import { MOTION_EASE } from "@/lib/motionTokens";
@@ -18,11 +19,8 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const projectScopes = [
-  "UI/UX Web Design",
-  "Web Development",
-  "AI Agents",
-];
+// Derive current service choices from the shared catalog.
+const projectScopes = servicesData.map((s) => s.title);
 
 const budgetRanges = pricing.budgetBands;
 

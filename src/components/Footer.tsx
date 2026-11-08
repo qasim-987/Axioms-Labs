@@ -3,7 +3,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Sparkles, Mail, MapPin, Clock } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Clock } from "lucide-react";
+import Image from "next/image";
+import axlLockupLight from "@/assets/axl-lockup-light.png";
 import { MOTION_EASE } from "@/lib/motionTokens";
 import { SITE_EMAIL, SITE_NAME } from "@/config/site";
 
@@ -173,12 +175,13 @@ export default function Footer() {
           {/* Brand Column + Live Studio Clocks */}
           <div className="lg:col-span-5">
             <Link href="/" className="inline-flex items-center gap-3 mb-5">
-              <div className="w-9 h-9 rounded-xl bg-[#121317] flex items-center justify-center shadow-[0_4px_12px_rgba(18,19,23,0.16)]">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-[#121317]">
-                Axioms <span className="text-[#3186FF]">Lab</span>
-              </span>
+              <Image
+                src={axlLockupLight}
+                alt="Axioms Lab"
+                width={1324}
+                height={300}
+                className="h-8 w-auto shrink-0"
+              />
             </Link>
             <p className="text-sm text-[#45474D] max-w-sm leading-relaxed mb-6">
               Boutique digital product &amp; AI lab crafting fast web
@@ -306,7 +309,11 @@ export default function Footer() {
 
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#6A6A71]">
           <p>
-            © {new Date().getFullYear()} {SITE_NAME}. Kuopio, Finland &amp;
+            © {new Date().getFullYear()}{" "}
+            <span className="font-semibold tracking-wide text-[#121317]">
+              AXIOMS <span className="text-[#0061FD]">LAB</span>
+            </span>
+            . Kuopio, Finland &amp;
             Lahore, Pakistan.
           </p>
           <div className="flex items-center gap-6">
