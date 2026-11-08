@@ -11,6 +11,7 @@ export interface BackendEnv {
   corsAllowedOrigins: string[];
   resendApiKey: string;
   contactNotificationEmail: string;
+  contactFromEmail: string;
   contactWebhookUrl: string;
   supabaseUrl: string;
   supabaseServiceRoleKey: string;
@@ -74,6 +75,7 @@ export const env: BackendEnv = {
   corsAllowedOrigins: buildAllowedOrigins(),
   resendApiKey: process.env.RESEND_API_KEY || "",
   contactNotificationEmail: process.env.CONTACT_NOTIFICATION_EMAIL || "",
+  contactFromEmail: process.env.CONTACT_FROM_EMAIL || "Axioms Lab <info@axiomslab.com>",
   contactWebhookUrl: process.env.CONTACT_WEBHOOK_URL || "",
   supabaseUrl: process.env.SUPABASE_URL || "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
