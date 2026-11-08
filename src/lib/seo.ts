@@ -75,7 +75,8 @@ export function blogPostingJsonLd(opts: {
 /** Blog category label -> live service route slug (verified against src/data/services.ts). */
 export const SERVICE_SLUG_BY_CATEGORY: Record<string, string> = {
   "Web Development": "web-development",
-  "Web Designing": "web-designing",
+  "Web Designing": "ui-ux-design",
   "UI/UX Design": "ui-ux-design",
+  "UI/UX Web Design": "ui-ux-design",
   "AI Agents": "ai-agents",
 };

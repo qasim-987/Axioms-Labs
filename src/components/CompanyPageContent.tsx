@@ -40,7 +40,7 @@ const coreBeliefs = [
     num: "01",
     title: "Craft Over Complexity",
     description:
-      "We focus strictly on 7 disciplines—UI/UX Design, Web Development, Web Designing, AI Agents, SEO & AEO, Video Editing, and Graphic Design—so every interface and codebase ships with obsessive care.",
+      "We focus on three core services—UI/UX Web Design, Web Development, and AI Agents—so every experience and codebase receives focused care.",
     icon: <Layers className="w-5 h-5 text-[#3186FF]" />,
   },
   {

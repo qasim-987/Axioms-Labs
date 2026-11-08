@@ -12,8 +12,7 @@ import { ArrowUpRight, Sparkles } from "lucide-react";
 const CATEGORIES = [
   "All Concepts",
   "Web Development",
-  "Web Designing",
-  "UI/UX Design",
+    "UI/UX Web Design",
   "AI Agents",
 ] as const;
 
@@ -123,8 +122,7 @@ export default function WorkPageContent() {
             className="text-lg text-[#45474D] leading-relaxed max-w-2xl"
           >
             Explore our internally engineered Lab Concept Builds—crafted to
-            demonstrate how Axioms Lab approaches Web Development, Web
-            Designing, UI/UX Design Systems, and Autonomous AI Agents.
+            demonstrate how Axioms Lab approaches UI/UX Web Design, Web Development, and AI Agents.
           </motion.p>
         </div>
 

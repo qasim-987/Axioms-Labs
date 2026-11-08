@@ -8,7 +8,7 @@ import { SITE_URL } from "@/config/site";
 export const metadata = {
   title: "Concept Work | Axioms Lab",
   description:
-    "Explore Axioms Lab's production-grade concept builds in Web Development, Web Designing, UI/UX Design, and AI Agents.",
+    "Explore Axioms Lab's production-grade concept builds in UI/UX Web Design, Web Development, and AI Agents.",
   alternates: { canonical: `${SITE_URL}/work` },
 };
 

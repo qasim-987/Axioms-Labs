@@ -2,7 +2,7 @@ export interface BlogPost {
   slug: string;
   title: string;
   excerpt: string;
-  category: "Web Development" | "Web Designing" | "UI/UX Design" | "AI Agents";
+  category: "Web Development" | "UI/UX Web Design" | "AI Agents";
   author: {
     name: string;
     role: string;
@@ -150,7 +150,7 @@ export const blogPosts: BlogPost[] = [
     title: "Web Designing for Trust: Visual Hierarchy That Turns Visitors Into Leads",
     excerpt:
       "Great web designing isn't decoration—it guides the eye, builds immediate brand credibility, and makes taking the next step effortless.",
-    category: "Web Designing",
+    category: "UI/UX Web Design",
     author: {
       name: "Axioms Lab Team",
       role: "Brand & Web Design",
@@ -194,14 +194,14 @@ export const blogPosts: BlogPost[] = [
       conclusion:
         "Thoughtful web designing turns your website into your hardest-working salesperson around the clock.",
     },
-    relatedService: { slug: "web-designing", label: "Web Designing" },
+    relatedService: { slug: "ui-ux-design", label: "UI/UX Web Design" },
   },
   {
     slug: "figma-to-code-ui-ux-design-systems-that-scale",
     title: "From Figma Tokens to Production React: Building Scalable UI/UX Systems",
     excerpt:
       "How structured Figma variables, reusable component kits, and interactive user flows cut development rework in half.",
-    category: "UI/UX Design",
+    category: "UI/UX Web Design",
     author: {
       name: "Axioms Lab Team",
       role: "Product UI/UX Design",
@@ -245,14 +245,13 @@ export const blogPosts: BlogPost[] = [
       conclusion:
         "A cohesive UI/UX system gives your product an unmistakable sense of quality today while letting your team ship new features twice as fast tomorrow.",
     },
-    relatedService: { slug: "ui-ux-design", label: "UI/UX Design" },
+    relatedService: { slug: "ui-ux-design", label: "UI/UX Web Design" },
   },
 ];
 
 export const blogCategories = [
   "All",
   "Web Development",
-  "Web Designing",
-  "UI/UX Design",
+  "UI/UX Web Design",
   "AI Agents",
 ] as const;

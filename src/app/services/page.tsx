@@ -10,9 +10,9 @@ import { servicesData } from "@/data/services";
 import { SITE_URL } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Services — Web Development, Web Designing, UI/UX & AI Agents | Axioms Lab",
+  title: "Services — UI/UX Web Design, Web Development & AI Agents | Axioms Lab",
   description:
-    "All seven Axioms Lab services in one place: web development, web designing, UI/UX design, AI agents, SEO & AEO, video editing, and graphic design — each with deliverables, process and pricing context.",
+    "Explore UI/UX Web Design, Web Development, and AI Agents: clear customer experiences, reliable digital products, and practical automation tailored to your business.",
   alternates: { canonical: `${SITE_URL}/services` },
 };
 
@@ -48,7 +48,7 @@ export default function ServicesIndexPage() {
             Our Services
           </h1>
           <p className="max-w-2xl text-base sm:text-lg text-[#45474D] leading-relaxed mb-12">
-            Axioms Lab works across seven connected services. Every engagement
+            Axioms Lab works across three connected services. Every engagement
             is scoped in clear weekly milestones, priced with published starting
             estimates, and delivered with full source ownership.
           </p>

@@ -29,7 +29,7 @@ export const STUDIO_SERVICES: StudioServiceCatalogItem[] = [
     title: "Web Development",
     badge: "Next.js & Full-Stack",
     summary:
-      "Custom web applications, SaaS platforms, headless e-commerce, and scalable APIs built with Next.js 14, React, and TypeScript.",
+      "Launch reliable websites and web applications with maintainable code, useful integrations, and performance built around your business needs.",
     stack: [
       "Next.js 14",
       "React 18",
@@ -41,28 +41,12 @@ export const STUDIO_SERVICES: StudioServiceCatalogItem[] = [
     ],
   },
   {
-    id: "web-designing",
-    slug: "web-designing",
-    title: "Web Designing",
-    badge: "Brand & Conversion",
-    summary:
-      "Modern, responsive, high-converting marketing websites and landing pages with distinct visual identity and 60fps motion.",
-    stack: [
-      "Figma",
-      "Tailwind CSS",
-      "Framer Motion",
-      "GSAP",
-      "Responsive Grids",
-      "Technical SEO",
-    ],
-  },
-  {
     id: "ui-ux-design",
     slug: "ui-ux-design",
-    title: "UI/UX Design",
+    title: "UI/UX Web Design",
     badge: "Figma & Design Systems",
     summary:
-      "User flows, wireframes, interactive clickable prototypes, and tokenized Figma component libraries for web and mobile products.",
+      "Help customers understand your offer and navigate confidently with responsive website layouts, accessible user journeys, and developer-ready prototypes.",
     stack: [
       "Figma Variables",
       "Auto-Layout",
@@ -77,7 +61,7 @@ export const STUDIO_SERVICES: StudioServiceCatalogItem[] = [
     title: "AI Agents",
     badge: "24/7 AI Automation",
     summary:
-      "Custom AI support, lead-qualification, RAG knowledge retrieval, and tool-calling workflow agents grounded in your real business data.",
+      "Reduce repetitive work and improve response times with AI support, lead qualification, and knowledge assistants grounded in your business data.",
     stack: [
       "OpenAI",
       "Anthropic Claude",
@@ -88,3 +72,6 @@ export const STUDIO_SERVICES: StudioServiceCatalogItem[] = [
     ],
   },
 ];
+
+const SERVICE_ORDER = ["ui-ux-design", "web-development", "ai-agents"];
+STUDIO_SERVICES.sort((a,b)=>SERVICE_ORDER.indexOf(a.slug)-SERVICE_ORDER.indexOf(b.slug));

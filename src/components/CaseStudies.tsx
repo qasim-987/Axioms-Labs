@@ -253,7 +253,7 @@ export default function CaseStudies() {
             const categoryTags =
               idx === 0
                 ? "Web Development  |  UI/UX"
-                : "Web Designing  |  Motion";
+                : "UI/UX Web Design  |  Motion";
 
             return (
               <motion.div

@@ -3,7 +3,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import { z } from "zod";
 import { submitContactInquiry } from "@/lib/apiClient";
-import { COUNTRY_CODES, BUDGET_OPTIONS } from "@/data/brand";
+import { COUNTRY_CODES, BUDGET_OPTIONS, SERVICES } from "@/data/brand";
 import { BRAND } from "@/lib/landingConfig";
 
 const contactSchema = z.object({
@@ -111,7 +111,7 @@ export default function ContactForm({ serviceSlug }: ContactFormProps) {
           lastName: parsed.data.lastName || undefined,
           email: parsed.data.email,
           phone: `${parsed.data.countryCode} ${parsed.data.phone}`,
-          service: parsed.data.service,
+          service: SERVICES.find(s => s.slug === parsed.data.service)?.title || "General Scoping",
           budget: parsed.data.budget,
           message: parsed.data.message,
           source: "website",
@@ -138,10 +138,9 @@ export default function ContactForm({ serviceSlug }: ContactFormProps) {
   );
 
   const serviceOptions = [
-    { label: "Digital Product Design", value: "digital-design" },
     { label: "Web Development", value: "web-development" },
-    { label: "UI/UX Design", value: "ui-ux-design" },
-    { label: "AI Automation", value: "ai-automation" },
+    { label: "UI/UX Web Design", value: "ui-ux-design" },
+    { label: "AI Agents", value: "ai-agents" },
   ];
 
   if (status === "success") {

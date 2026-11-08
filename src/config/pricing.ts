@@ -7,10 +7,6 @@ export const pricing = {
       startingPrice: 300, // TODO(owner): confirm
       typicalRange: [300, 1500], // TODO(owner): confirm
     },
-    "web-designing": {
-      startingPrice: 250, // TODO(owner): confirm
-      typicalRange: [250, 1200], // TODO(owner): confirm
-    },
     "web-development": {
       startingPrice: 600, // TODO(owner): confirm
       typicalRange: [600, 3500], // TODO(owner): confirm

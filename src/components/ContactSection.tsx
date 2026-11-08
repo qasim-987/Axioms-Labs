@@ -19,8 +19,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-// Derived from the single services source of truth so the hub form's
-// scope list can never drift from the live service pages again.
+// Derive current service choices from the shared catalog.
 const projectScopes = servicesData.map((s) => s.title);
 
 const budgetRanges = pricing.budgetBands;
