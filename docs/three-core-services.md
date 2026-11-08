@@ -53,4 +53,10 @@ Not certified: physical mobile touch behavior, Safari, FPS/performance budgets, 
 
 ## Release notes (only after approval)
 
-Backend and frontend must be released together, with backend accepting the new `UI/UX Web Design` label before the frontend is activated. Creating a PR may trigger automatic Vercel preview builds on connected projects; get explicit permission for that before pushing/opening it. Keep unrelated favicon work out of the service PR. After production approval, verify redirects, all form paths, service catalog endpoint, sitemap, canonical/schema and retained resource pages on the actual domain. Update sitemap revision timestamps to the actual approved publication date rather than inventing a build-time content date.
+Release both backend and frontend to complete the catalog update. The compatibility transport described below keeps forms valid if the frontend arrives first. Creating a PR may trigger automatic Vercel preview builds on connected projects; get explicit permission for that before pushing/opening it. Keep unrelated favicon work out of the service PR. After production approval, verify redirects, all form paths, service catalog endpoint, sitemap, canonical/schema and retained resource pages on the actual domain. Update sitemap revision timestamps to the actual approved publication date rather than inventing a build-time content date.
+
+## Authorized release preparation
+
+The user subsequently approved push, merge and deployment. Current main branding changes were integrated, preserving `public/favicon.ico` and the `/icon.png` redirect. The unrelated legacy untracked favicon was preserved at `/home/user/unrelated-favicon.ico`, outside the build, to avoid conflicting with main's stable asset rule.
+
+Vercel connector team enumeration still returns Access denied. Git integration deployments will be checked separately; backend deployment cannot be claimed from frontend deployment checks. Contact transport now sends the historical design label while the UI displays UI/UX Web Design; both old and updated backend validators accept it, and updated backends normalize it to the new label. This removes a frontend/backend deployment-order dependency.

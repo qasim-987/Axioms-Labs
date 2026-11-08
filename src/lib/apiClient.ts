@@ -65,7 +65,9 @@ export async function submitContactInquiry(
   const res = await fetch("/api/contact", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    // Rollout compatibility: existing backend deployments accept the historical
+    // design label; updated backends normalize it to UI/UX Web Design.
+    body: JSON.stringify({ ...payload, service: payload.service === "UI/UX Web Design" ? "UI/UX Design" : payload.service }),
   });
 
   const data = (await res.json()) as ContactSubmissionResponse;
