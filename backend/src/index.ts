@@ -1,7 +1,6 @@
-import { createBackendApp } from "./app";
+import app from "./app";
 import { env } from "./config/env";
 
-const app = createBackendApp();
 
 if (!process.env.VERCEL) {
   const server = app.listen(env.port, env.host, () => {

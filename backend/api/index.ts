@@ -1,40 +1,7 @@
-import type { Express, Request, Response } from "express";
-import { createBackendApp } from "../src/app";
-
 /**
- * Vercel serverless entrypoint for the standalone Express API.
- *
- * This project is deployed with its Vercel root directory set to `backend/`, so
- * Vercel discovers this file as the `/api` function. `backend/vercel.json`
- * rewrites every incoming path to it, which lets Express keep owning its own
- * routing (`app.use("/api", healthRouter)` and friends in `src/app.ts`) instead
- * of requiring one serverless function per route.
- *
- * `createBackendApp()` is called at module scope so a warm instance reuses a
- * single configured app across invocations rather than rebuilding middleware on
- * every request.
- *
- * `src/index.ts` stays the entrypoint for long-lived hosts (Render, Railway, a
- * VPS): it calls `listen()` only when `process.env.VERCEL` is absent, so the two
- * paths never interfere. This file deliberately imports the factory from
- * `src/app` rather than `src/index`, so the serverless bundle carries no
- * `listen()` call at all and does not depend on that guard.
+ * Legacy Vercel function entrypoint. Reuse the same callable app exported for
+ * Express auto-discovery; neither entrypoint opens a listening socket.
+ * App initialization errors are left to server-side runtime logs, never echoed
+ * to an unauthenticated client.
  */
-let handler: Express;
-try {
-  handler = createBackendApp();
-} catch (err) {
-  /**
-   * A throw during boot would otherwise surface as Vercel's opaque
-   * FUNCTION_INVOCATION_FAILED page with no body and no log line we control.
-   * Log the real error and answer with a readable JSON 500 so any future boot
-   * failure is diagnosable over plain HTTP.
-   */
-  console.error("[BOOT] createBackendApp failed:", err);
-  const fallback = (_req: Request, res: Response): void => {
-    res.status(500).json({ error: "Backend boot failed", detail: String(err) });
-  };
-  handler = fallback as unknown as Express;
-}
-
-export default handler;
+export { default } from "../src/app";

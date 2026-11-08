@@ -110,3 +110,8 @@ export function createBackendApp() {
 
   return app;
 }
+
+// Vercel Express auto-discovery can select src/app.ts directly. Export a
+// callable app (not the factory) without opening a listening socket.
+const app = createBackendApp();
+export default app;
