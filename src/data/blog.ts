@@ -190,6 +190,24 @@ export const blogPosts: BlogPost[] = [
           "Label every metric as target, lab result, or field data.",
         ],
       },
+      {
+        heading: "Above the Fold: Promise, Proof, Path",
+        body: "The first viewport carries one job: make the right visitor feel understood. We structure it as promise (what you do and for whom), proof (one concrete artifact — a live product, a benchmark labelled as a target, a real screenshot), and path (the single next action). Anything else — award shelves, logo carousels, abstract taglines — competes with that job and usually loses.",
+        takeaways: [
+          "Write the promise as one sentence a buyer could repeat to a colleague.",
+          "Show one piece of proof you can stand behind; label targets as targets.",
+          "Give exactly one path forward in the first viewport.",
+        ],
+      },
+      {
+        heading: "A Type and Spacing System You Can Defend",
+        body: "Hierarchy collapses when every size is a one-off decision. We keep a small scale — one display size, one heading size, one body size, one caption size — and a spacing rhythm built from a single base unit, so sections breathe consistently without per-section tweaks. When a page needs a new size, that is a signal to edit the scale, not the page. The result is a layout that stays calm as content grows, and a design review that argues about messages instead of pixels.",
+        takeaways: [
+          "Limit yourself to four type sizes and one spacing base unit.",
+          "Treat a needed new size as a scale change, not a page hack.",
+          "Review hierarchy in greyscale first; colour hides weak structure.",
+        ],
+      },
       ],
       conclusion:
         "Thoughtful web designing turns your website into your hardest-working salesperson around the clock.",
