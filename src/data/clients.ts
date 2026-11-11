@@ -228,3 +228,13 @@ export const clientsData: ClientCaseStudy[] = [
 
 export const clientCaseStudies = clientsData;
 
+/** Service -> concept builds that demonstrate it (internal authority links). */
+export const SERVICE_RELATED_BUILDS: Record<string, string[]> = {
+  "web-development": ["kuopio-bites", "finflow-design-system"],
+  "ui-ux-design": ["finflow-design-system", "aura-web-experience"],
+  "web-designing": ["aura-web-experience"],
+  "ai-agents": ["atlas-ai-agent"],
+  "seo-aeo": ["kuopio-bites"],
+  "graphic-design": ["aura-web-experience"],
+  "video-editing": ["aura-web-experience"],
+};

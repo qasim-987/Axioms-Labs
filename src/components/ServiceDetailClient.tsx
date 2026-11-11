@@ -26,6 +26,7 @@ import {
   AlertCircle,
   Loader2,
   Wrench,Search, Clapperboard, Palette, } from "lucide-react";
+import { clientsData, SERVICE_RELATED_BUILDS } from "@/data/clients";
 
 const iconMap: Record<string, React.ReactNode> = {
   Code: <Code className="w-8 h-8 text-[#3186FF]" />,
@@ -537,6 +538,26 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             <h3 className="text-xs font-mono uppercase tracking-widest text-[#6A6A71] mb-6">
               Explore Our Other Services
             </h3>
+            {(SERVICE_RELATED_BUILDS[service.slug] || [])
+              .map((slug) => clientsData.find((c) => c.slug === slug))
+              .filter(Boolean)
+              .slice(0, 2).length > 0 && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                {(SERVICE_RELATED_BUILDS[service.slug] || [])
+                  .map((slug) => clientsData.find((c) => c.slug === slug))
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((c) => (
+                    <Link
+                      key={c!.slug}
+                      href={`/work/${c!.slug}`}
+                      className="px-3 py-1.5 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-xs font-mono text-[#45474D] hover:border-[#3186FF]/35 hover:text-[#3186FF] transition-colors"
+                    >
+                      See it in a build: {c!.title.split("—")[0].trim()}
+                    </Link>
+                  ))}
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {otherServices.map((other) => (
                 <Link

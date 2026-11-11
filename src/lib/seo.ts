@@ -30,6 +30,21 @@ export interface BreadcrumbTrailItem {
   url: string;
 }
 
+/** FAQPage structured data built ONLY from FAQs already visible on the page. */
+export function faqPage(
+  faqs: { question: string; answer: string }[]
+): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+}
+
 export function breadcrumbList(trail: BreadcrumbTrailItem[]) {
   return {
     "@context": "https://schema.org",

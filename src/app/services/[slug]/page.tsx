@@ -3,7 +3,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { SITE_URL } from "@/config/site";
 import JsonLd from "@/components/JsonLd";
-import { breadcrumbList } from "@/lib/seo";
+import { breadcrumbList, faqPage } from "@/lib/seo";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { retiredServicePages } from "@/data/retiredServices";
@@ -68,5 +68,5 @@ export default function ServicePage({ params }: ServicePageProps) {
   const otherServices = servicesData.filter((s) => s.slug !== params.slug);
   const rate=getServicePricing(service.slug);
   const jsonLd={"@context":"https://schema.org","@type":"Service",name:service.title,description:`${service.shortDesc} ${pricingDescription(service.slug)}`,provider:{"@type":"Organization",name:"Axioms Lab"},...(rate?{offers:{"@type":"AggregateOffer",priceCurrency:pricing.currency,lowPrice:rate.typicalRange[0],highPrice:rate.typicalRange[1],description:pricingDescription(service.slug)}}:{})};
-  return <><JsonLd data={breadcrumbList([{ name: "Home", url: SITE_URL }, { name: service.title, url: `${SITE_URL}/services/${service.slug}` }])} /><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(jsonLd).replace(/</g,"\\u003c")}} /><ServiceDetailClient service={service} otherServices={otherServices} /></>;
+  return <><JsonLd data={breadcrumbList([{ name: "Home", url: SITE_URL }, { name: service.title, url: `${SITE_URL}/services/${service.slug}` }])} /><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(jsonLd).replace(/</g,"\\u003c")}} /><JsonLd data={faqPage(service.faqs)} /><ServiceDetailClient service={service} otherServices={otherServices} /></>;
 }
