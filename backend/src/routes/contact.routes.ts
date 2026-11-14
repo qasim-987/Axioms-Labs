@@ -44,7 +44,7 @@ function requestOriginAllowed(req: Request): boolean {
   return true;
 }
 
-function originGuard(req: Request, res: Response, next: () => void): void {
+export function originGuard(req: Request, res: Response, next: () => void): void {
   if (requestOriginAllowed(req)) {
     next();
     return;

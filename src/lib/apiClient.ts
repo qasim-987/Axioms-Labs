@@ -186,3 +186,32 @@ export async function fetchThreatTelemetryViaApi(): Promise<ThreatTelemetryApiRe
     return null;
   }
 }
+
+/* ── Portfolio Assistant ─────────────────────────────────────────────── */
+
+export interface AssistantChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface AssistantChatInput {
+  messages: AssistantChatMessage[];
+}
+
+export interface AssistantChatResponse {
+  success: boolean;
+  reply?: string;
+  error?: string;
+}
+
+/** Stateless chat turn: the visible transcript goes up, one reply comes back. */
+export async function chatWithAssistant(
+  input: AssistantChatInput
+): Promise<AssistantChatResponse> {
+  const res = await fetch("/api/assistant/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  return (await res.json()) as AssistantChatResponse;
+}

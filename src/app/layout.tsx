@@ -10,6 +10,7 @@ import "./globals.css";
 import TransitionErrorBoundary from "@/components/transitions/TransitionErrorBoundary";
 import PageTransitionProvider from "@/components/transitions/PageTransitionProvider";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import AssistantWidget from "@/components/AssistantWidget";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 import { SITE_EMAIL, SITE_NAME, SITE_URL } from "@/config/site";
 import jakarta400 from "@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-400-normal.woff2";
@@ -149,6 +150,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <ScrollProgressBar />
+        <AssistantWidget />
         <SmoothScrollProvider><TransitionErrorBoundary fallback={children}><PageTransitionProvider>{children}</PageTransitionProvider></TransitionErrorBoundary></SmoothScrollProvider>
       </body>
     </html>
