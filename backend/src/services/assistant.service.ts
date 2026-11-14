@@ -61,7 +61,7 @@ interface GeminiResponse {
   error?: { message?: string };
 }
 
-export type AssistantFailureKind = "config" | "quota" | "upstream";
+export type AssistantFailureKind = "config" | "quota" | "upstream" | "timeout";
 
 export class AssistantUnavailableError extends Error {
   kind: AssistantFailureKind;
@@ -101,36 +101,49 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
     ...MODEL_FALLBACKS.filter((m) => m !== env.geminiModel),
   ];
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 20000);
+  const timer = setTimeout(() => controller.abort(), 30000);
 
   /**
    * Gemini 3.8 migration notes (official docs, Nov 2026):
    *  - temperature/top_p/top_k are deprecated for Gemini 3.6+ and ignored with
    *    deprecation warning headers -> removed from generationConfig entirely.
-   *  - max_output_tokens counts THINKING tokens too on thinking models; a small
-   *    cap truncates reasoning and yields empty replies -> raised to 2048 so a
-   *    medium-thinking flash model never starves mid-thought.
+   *  - HYPOTHESIS (docs-plausible, runtime evidence pending): max_output_tokens
+   *    counts THINKING tokens on thinking models, so a small cap could truncate
+   *    reasoning and yield empty replies; raised to 2048 as a precaution. The
+   *    smoke test and runtime logs are the evidence that confirms or retires this.
    *  - stateless multi-turn with thinking models may reject history that lacks
    *    thought signatures (400); on 400 we retry once with only the newest user
    *    message so a signature policy change degrades to single-turn, not outage.
    */
-  const post = (model: string, contents: GeminiContent[]) =>
-    fetch(
-      `${env.geminiBaseUrl}/v1beta/models/${model}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": env.geminiApiKey,
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
-          contents,
-          generationConfig: { maxOutputTokens: 2048 },
-        }),
+  const post = async (model: string, contents: GeminiContent[]): Promise<Response> => {
+    try {
+      return await fetch(
+        `${env.geminiBaseUrl}/v1beta/models/${model}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": env.geminiApiKey,
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
+            contents,
+            generationConfig: { maxOutputTokens: 2048 },
+          }),
+        }
+      );
+    } catch (e) {
+      // AbortError = our 30s guard fired; anything else is a transport failure.
+      if (e instanceof Error && e.name === "AbortError") {
+        throw new AssistantUnavailableError("timeout", "Gemini request timed out");
       }
-    );
+      throw new AssistantUnavailableError(
+        "upstream",
+        `Gemini unreachable: ${e instanceof Error ? `${e.name}: ${e.message}` : "network error"}`
+      );
+    }
+  };
 
   try {
     let lastError = "Gemini request failed";
@@ -139,15 +152,28 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
       let res = await post(candidates[i], contents);
 
       if (res.status === 400 && contents.length > 1) {
-        console.warn(
-          JSON.stringify({
-            event: "ASSISTANT_HISTORY_REJECTED",
-            model: candidates[i],
-            timestamp: new Date().toISOString(),
-          })
-        );
-        contents = toGeminiContents(messages.slice(-1));
-        res = await post(candidates[i], contents);
+        // Narrowed retry: ONLY confirmed history/signature rejections fall back
+        // to single-turn (the visitor's newest question is always preserved).
+        // Any other 400 is a real request bug and must surface verbatim.
+        const badBody = (await res.json().catch(() => null)) as GeminiResponse | null;
+        const badMsg = badBody?.error?.message || "";
+        if (/signature|thought|history/i.test(badMsg)) {
+          console.warn(
+            JSON.stringify({
+              event: "ASSISTANT_HISTORY_REJECTED",
+              model: candidates[i],
+              geminiMessage: badMsg,
+              timestamp: new Date().toISOString(),
+            })
+          );
+          contents = toGeminiContents(messages.slice(-1));
+          res = await post(candidates[i], contents);
+        } else {
+          throw new AssistantUnavailableError(
+            "upstream",
+            badMsg || "Gemini HTTP 400"
+          );
+        }
       }
 
       if (res.status === 404 && i < candidates.length - 1) {
@@ -165,7 +191,12 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
         );
       }
 
-      const body = (await res.json()) as GeminiResponse;
+      let body: GeminiResponse;
+      try {
+        body = (await res.json()) as GeminiResponse;
+      } catch {
+        throw new AssistantUnavailableError("upstream", "Malformed Gemini response body");
+      }
       const text = (body.candidates?.[0]?.content?.parts || [])
         .map((p) => p.text || "")
         .join("")
