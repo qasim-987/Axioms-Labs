@@ -1,9 +1,15 @@
 name: Assistant Smoke Test
 
 # Manual end-to-end proof that the live chat endpoint returns a real Gemini
-# answer. Runs from GitHub (which has outbound internet) because the dev
-# sandbox cannot reach external hosts. No secrets live in this repo: the
-# endpoint is public and rate-limited, and the Gemini key stays in Vercel.
+# answer AND keeps conversation context. Runs from GitHub (which has outbound
+# internet) because the dev sandbox cannot reach external hosts. No secrets
+# live in this repo: the endpoint is public and rate-limited, and the Gemini
+# key stays in Vercel.
+#
+# Assertions (all must pass or the run fails):
+#   turn 1: HTTP 200 + success:true + non-empty reply string
+#   turn 2: with turn-1 reply echoed back as history, the assistant must
+#           remember the visitor's company name ("Bluebird Bakery")
 on:
   workflow_dispatch:
 
@@ -11,11 +17,32 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - name: POST live chat endpoint
+      - name: Turn 1 - services question
+        id: t1
         run: |
-          RESP="$(curl -s -m 90 -w '\nHTTP:%{http_code}' -X POST https://www.axiomslab.com/api/assistant/chat \
+          RESP="$(curl -s -m 120 -w '\nHTTP:%{http_code}' -X POST https://www.axiomslab.com/api/assistant/chat \
             -H 'Content-Type: application/json' \
-            -d '{"messages":[{"role":"user","content":"What services does Axioms Lab offer? Answer in one sentence."}]}')"
+            -d '{"messages":[{"role":"user","content":"Remember this for my project brief: my company is called Bluebird Bakery. Now answer in one sentence: what services does Axioms Lab offer?"}]}')"
           echo "$RESP"
-          echo "$RESP" | grep -q 'HTTP:200' || { echo "FAIL: chat endpoint did not return 200"; exit 1; }
-          echo "PASS: HTTP 200 with assistant reply"
+          HTTP1="$(echo "$RESP" | tail -n1 | tr -d 'HTTP:')"
+          BODY1="$(echo "$RESP" | head -n -1)"
+          test "$HTTP1" = "200" || { echo "FAIL: turn 1 HTTP $HTTP1"; exit 1; }
+          echo "$BODY1" | jq -e '.success == true and (.reply | type == "string" and length > 0)' \
+            || { echo "FAIL: turn 1 success/reply"; exit 1; }
+          echo "reply1=$(echo "$BODY1" | jq -c .reply)" >> "$GITHUB_OUTPUT"
+          echo "PASS: turn 1 (200 + success + non-empty reply)"
+
+      - name: Turn 2 - memory check with history
+        run: |
+          REPLY1=$(echo '${{ steps.t1.outputs.reply1 }}' | jq -r .)
+          PAYLOAD=$(jq -n --arg r1 "$REPLY1" '{messages:[{role:"user",content:"Remember this for my project brief: my company is called Bluebird Bakery."},{role:"assistant",content:$r1},{role:"user",content:"What is my company name? Answer with just the company name."}]}')
+          RESP="$(curl -s -m 120 -w '\nHTTP:%{http_code}' -X POST https://www.axiomslab.com/api/assistant/chat \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD")"
+          echo "$RESP"
+          HTTP2="$(echo "$RESP" | tail -n1 | tr -d 'HTTP:')"
+          BODY2="$(echo "$RESP" | head -n -1)"
+          test "$HTTP2" = "200" || { echo "FAIL: turn 2 HTTP $HTTP2"; exit 1; }
+          echo "$BODY2" | jq -e '.success == true and (.reply | test("Bluebird Bakery"; "i"))' \
+            || { echo "FAIL: turn 2 did not remember the company name"; exit 1; }
+          echo "PASS: turn 2 (200 + memory of earlier detail)"

@@ -79,17 +79,22 @@ function toGeminiContents(messages: AssistantMessage[]): GeminiContent[] {
 }
 
 /**
- * Channel-neutral assistant contract: a transcript goes in, one reply text comes
- * out. No HTTP framework types touch this function, so any channel — the web
- * widget route today, a WhatsApp bridge tomorrow — calls getAssistantReply()
- * with the same {role, content} message shape and handles AssistantUnavailableError.
+ * Try the configured model first, then fall over to free-tier alternatives
+ * when a model is unavailable (404) or too slow even for a single-turn retry.
+ * All three are confirmed "Free of charge" in the official pricing docs;
+ * gemini-3.1-flash-lite defaults to minimal thinking (fastest).
  */
-/**
- * Try the configured model first, followed by supported alternatives when
- * Google reports that a model is unavailable.
- */
-const MODEL_FALLBACKS = ["gemini-3.8-flash", "gemini-4-hydrogen"];
+const MODEL_FALLBACKS = [
+  "gemini-3.8-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-4-hydrogen",
+];
 
+/**
+ * Channel-neutral assistant contract: a transcript goes in, one reply text
+ * comes out. The web widget route uses it today; a WhatsApp bridge can call
+ * the same {role, content} shape tomorrow.
+ */
 export async function getAssistantReply(messages: AssistantMessage[]): Promise<string> {
   if (!env.geminiApiKey) {
     throw new AssistantUnavailableError("config", "GEMINI_API_KEY is not configured");
@@ -99,97 +104,155 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
     env.geminiModel,
     ...MODEL_FALLBACKS.filter((m) => m !== env.geminiModel),
   ];
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 45000);
 
   /**
    * Gemini 3.8 migration notes (official docs, Nov 2026):
-   *  - temperature/top_p/top_k are deprecated for Gemini 3.6+ and ignored with
-   *    deprecation warning headers -> removed from generationConfig entirely.
-   *  - Keep output headroom and use LOW thinking for this short website chat.
-   *    Older configured models retain their existing generation settings.
-   *  - stateless multi-turn with thinking models may reject history that lacks
-   *    thought signatures (400); on 400 we retry once with only the newest user
-   *    message so a signature policy change degrades to single-turn, not outage.
+   *  - temperature/top_p/top_k are deprecated for Gemini 3.6+ (ignored with
+   *    deprecation warning headers) -> removed entirely.
+   *  - LOW thinking for Gemini 3/4 models keeps this short website chat fast
+   *    on the free tier; max_output_tokens keeps 2048 of headroom because it
+   *    also counts thinking tokens. HYPOTHESIS (docs-plausible, runtime
+   *    evidence pending): a smaller cap could truncate reasoning into an
+   *    empty reply.
+   *  - Stateless multi-turn can 400 when history lacks thought signatures;
+   *    ONLY those confirmed rejections degrade to a single-turn retry.
+   *  - Every attempt owns its 45s abort budget so retries and model failover
+   *    get fresh timers. The old shared 20s timer produced blind AbortErrors,
+   *    confirmed by the 20.02s request->failure delta in production logs.
    */
-  const post = (model: string, contents: GeminiContent[]) =>
-    fetch(
-      `${env.geminiBaseUrl}/v1beta/models/${model}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": env.geminiApiKey,
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
-          contents,
-          generationConfig: {
-            maxOutputTokens: 2048,
-            ...(/^gemini-[34][.-]/.test(model)
-              ? { thinkingConfig: { thinkingLevel: "LOW" } }
-              : {}),
+  const post = async (model: string, contents: GeminiContent[]): Promise<Response> => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 45000);
+    try {
+      return await fetch(
+        `${env.geminiBaseUrl}/v1beta/models/${model}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": env.geminiApiKey,
           },
-        }),
+          signal: controller.signal,
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
+            contents,
+            generationConfig: {
+              maxOutputTokens: 2048,
+              ...(/^gemini-[34][.-]/.test(model)
+                ? { thinkingConfig: { thinkingLevel: "LOW" } }
+                : {}),
+            },
+          }),
+        }
+      );
+    } catch (err) {
+      if (controller.signal.aborted) {
+        throw new AssistantUnavailableError(
+          "timeout",
+          "Gemini request timed out after 45 seconds"
+        );
       }
-    );
+      // Keep transport diagnostics useful without logging the request or key.
+      const failure = err as { name?: string; cause?: { code?: string } };
+      const transportCode = failure?.cause?.code || failure?.name || "unknown";
+      throw new AssistantUnavailableError(
+        "upstream",
+        `Gemini transport failed (${transportCode})`
+      );
+    } finally {
+      clearTimeout(timer);
+    }
+  };
 
-  try {
-    let lastError = "Gemini request failed";
-    for (let i = 0; i < candidates.length; i++) {
-      let contents = toGeminiContents(messages);
-      let res = await post(candidates[i], contents);
-
-      if (res.status === 400 && contents.length > 1) {
+  let lastError = "Gemini request failed";
+  for (let i = 0; i < candidates.length; i++) {
+    let contents = toGeminiContents(messages);
+    let res: Response;
+    try {
+      res = await post(candidates[i], contents);
+    } catch (e) {
+      if (
+        e instanceof AssistantUnavailableError &&
+        e.kind === "timeout" &&
+        contents.length > 1
+      ) {
         console.warn(
           JSON.stringify({
-            event: "ASSISTANT_HISTORY_REJECTED",
+            event: "ASSISTANT_TIMEOUT_RETRY_SINGLE_TURN",
             model: candidates[i],
             timestamp: new Date().toISOString(),
           })
         );
         contents = toGeminiContents(messages.slice(-1));
-        res = await post(candidates[i], contents);
+        try {
+          res = await post(candidates[i], contents);
+        } catch (e2) {
+          if (e2 instanceof AssistantUnavailableError && e2.kind === "timeout") {
+            console.warn(
+              JSON.stringify({
+                event: "ASSISTANT_MODEL_FAILOVER",
+                from: candidates[i],
+                timestamp: new Date().toISOString(),
+              })
+            );
+            lastError = e2.message;
+            continue;
+          }
+          throw e2;
+        }
+      } else {
+        throw e;
       }
+    }
 
-      if (res.status === 404 && i < candidates.length - 1) {
-        lastError = `model ${candidates[i]} unavailable, fallback tried`;
-        continue;
-      }
-      if (res.status === 429) {
-        throw new AssistantUnavailableError("quota", "Gemini quota exceeded (429)");
-      }
-      if (!res.ok) {
-        const errBody = (await res.json().catch(() => null)) as GeminiResponse | null;
-        throw new AssistantUnavailableError(
-          "upstream",
-          errBody?.error?.message || `Gemini HTTP ${res.status}`
+    if (res.status === 400 && contents.length > 1) {
+      const badBody = (await res.json().catch(() => null)) as GeminiResponse | null;
+      const badMsg = badBody?.error?.message || "";
+      if (/signature|thought|history/i.test(badMsg)) {
+        console.warn(
+          JSON.stringify({
+            event: "ASSISTANT_HISTORY_REJECTED",
+            model: candidates[i],
+            geminiMessage: badMsg,
+            timestamp: new Date().toISOString(),
+          })
         );
+        contents = toGeminiContents(messages.slice(-1));
+        res = await post(candidates[i], contents);
+      } else {
+        throw new AssistantUnavailableError("upstream", badMsg || "Gemini HTTP 400");
       }
-
-      const body = (await res.json()) as GeminiResponse;
-      const text = (body.candidates?.[0]?.content?.parts || [])
-        .map((p) => p.text || "")
-        .join("")
-        .trim();
-      if (!text) {
-        throw new AssistantUnavailableError("upstream", "Empty Gemini response");
-      }
-      return text;
-    }
-    throw new AssistantUnavailableError("upstream", lastError);
-  } catch (err) {
-    if (err instanceof AssistantUnavailableError) throw err;
-    if (controller.signal.aborted) {
-      throw new AssistantUnavailableError("timeout", "Gemini request timed out after 45 seconds");
     }
 
-    // Keep transport diagnostics useful without logging the request or its API key.
-    const failure = err as { name?: string; cause?: { code?: string } };
-    const transportCode = failure?.cause?.code || failure?.name || "unknown";
-    throw new AssistantUnavailableError("upstream", `Gemini transport failed (${transportCode})`);
-  } finally {
-    clearTimeout(timer);
+    if (res.status === 404) {
+      lastError = `model ${candidates[i]} unavailable, fallback tried`;
+      continue;
+    }
+    if (res.status === 429) {
+      throw new AssistantUnavailableError("quota", "Gemini quota exceeded (429)");
+    }
+    if (!res.ok) {
+      const errBody = (await res.json().catch(() => null)) as GeminiResponse | null;
+      throw new AssistantUnavailableError(
+        "upstream",
+        errBody?.error?.message || `Gemini HTTP ${res.status}`
+      );
+    }
+
+    let body: GeminiResponse;
+    try {
+      body = (await res.json()) as GeminiResponse;
+    } catch {
+      throw new AssistantUnavailableError("upstream", "Malformed Gemini response body");
+    }
+    const text = (body.candidates?.[0]?.content?.parts || [])
+      .map((p) => p.text || "")
+      .join("")
+      .trim();
+    if (!text) {
+      throw new AssistantUnavailableError("upstream", "Empty Gemini response");
+    }
+    return text;
   }
+  throw new AssistantUnavailableError("upstream", lastError);
 }

@@ -40,8 +40,13 @@ assistantRouter.post(
       res.json({ success: true, reply });
     } catch (err) {
       const kind = err instanceof AssistantUnavailableError ? err.kind : "upstream";
+      // Never log a blind "unexpected error" again: real name+message always.
       const reason =
-        err instanceof AssistantUnavailableError ? err.message : "unexpected error";
+        err instanceof AssistantUnavailableError
+          ? err.message
+          : err instanceof Error
+            ? `${err.name}: ${err.message}`
+            : String(err);
       console.error(
         JSON.stringify({
           event: "ASSISTANT_CHAT_FAILED",
@@ -52,7 +57,7 @@ assistantRouter.post(
       const userMessage =
         kind === "quota"
           ? `The assistant has used today's free quota. Please try again a little later. ${CONTACT_HINT}`
-          : kind === "config"
+            : kind === "config"
             ? `The assistant is still being configured. ${CONTACT_HINT}`
             : kind === "timeout"
               ? `The AI took too long to reply. Please try again. ${CONTACT_HINT}`
