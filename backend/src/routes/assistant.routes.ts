@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { assistantChatSchema } from "../schemas/assistant.schema";
 import {
   AssistantUnavailableError,
-  chatWithGemini,
+  getAssistantReply,
 } from "../services/assistant.service";
 import { createRateLimiter } from "../middleware/rateLimiter";
 import { originGuard } from "./contact.routes";
@@ -34,10 +34,12 @@ assistantRouter.post(
       return;
     }
 
+    const CONTACT_HINT = "The project brief form at /contact always works.";
     try {
-      const reply = await chatWithGemini(parsed.data.messages);
+      const reply = await getAssistantReply(parsed.data.messages);
       res.json({ success: true, reply });
     } catch (err) {
+      const kind = err instanceof AssistantUnavailableError ? err.kind : "upstream";
       const reason =
         err instanceof AssistantUnavailableError ? err.message : "unexpected error";
       console.error(
@@ -47,11 +49,13 @@ assistantRouter.post(
           timestamp: new Date().toISOString(),
         })
       );
-      res.status(503).json({
-        success: false,
-        error:
-          "The assistant is unavailable right now. The project brief form at /contact always works.",
-      });
+      const userMessage =
+        kind === "quota"
+          ? `The assistant has used today's free quota. Please try again a little later. ${CONTACT_HINT}`
+          : kind === "config"
+            ? `The assistant is still being configured. ${CONTACT_HINT}`
+            : `The assistant is unavailable right now. ${CONTACT_HINT}`;
+      res.status(503).json({ success: false, error: userMessage, code: kind });
     }
   }
 );

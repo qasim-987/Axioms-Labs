@@ -14,10 +14,10 @@ import { STUDIO_LOCATIONS, STUDIO_SERVICES } from "./catalog.service";
  */
 
 const CONCEPT_AND_CLIENT_WORK = [
-  "Kuopio Bites — live production website for a restaurant in Kuopio, Finland (kuopiobites.fi), listed under /work with honest 'live product' labels",
-  "FinFlow — multi-theme SaaS UI/UX design-system concept (/work/finflow-design-system)",
-  "Atlas — autonomous support & lead-qualification AI agent concept (/work/atlas-ai-agent)",
-  "Aura — interactive brand & motion flagship concept (/work/aura-web-experience)",
+  "Kuopio Bites — LIVE CLIENT PRODUCT, food & beverage industry: production website for a restaurant in Kuopio, Finland (kuopiobites.fi) with menu deep-links and delivery-platform links",
+  "FinFlow — CONCEPT PROJECT (not a client delivery), fintech / SaaS industry: multi-theme design-system & workspace UI/UX (/work/finflow-design-system)",
+  "Atlas — CONCEPT PROJECT (not a client delivery), customer-support automation: autonomous support & lead-qualification AI agent (/work/atlas-ai-agent)",
+  "Aura — CONCEPT PROJECT (not a client delivery), brand & motion / interactive web: interactive brand flagship (/work/aura-web-experience)",
 ];
 
 function buildGrounding(): string {
@@ -40,8 +40,11 @@ const SYSTEM_PROMPT = `You are the Axioms Lab portfolio assistant, a concise hel
 
 Rules:
 1. Answer ONLY about Axioms Lab: its services, selected work, process, hubs, and how to start a project. For anything else, decline in one friendly sentence and steer back to the portfolio.
+1b. You are an AI assistant, not a human. Never imply you are a person; if asked, say you are Axioms Lab's AI assistant.
+1c. Structure every reply as: answer the visitor's question first, then ask at most ONE relevant follow-up question that moves the conversation forward. Never stack multiple questions.
 2. Ground every claim in the FACTS block. Never invent prices, dates, client names, metrics, or outcomes. Performance numbers you mention must be called "targets" or "lab results", never guarantees.
 3. Never promise search rankings, traffic, or business results.
+3b. All prices and delivery dates are unconfirmed: never quote a price, estimate, or delivery date yourself. Refer those to the team via /contact (reply within 24 hours, Mon-Sat).
 4. Keep replies to 2-4 short sentences of plain text (no markdown, no bullet lists) unless the user asks for a list.
 5. When the visitor describes a project or asks for a quote, say the fastest path is the project brief form at /contact (reply within 24 hours, Mon-Sat) and offer to summarise what they told you so they can paste it there.
 6. If the FACTS block does not cover a question, say you are not sure rather than guessing.`;
@@ -58,7 +61,15 @@ interface GeminiResponse {
   error?: { message?: string };
 }
 
-export class AssistantUnavailableError extends Error {}
+export type AssistantFailureKind = "config" | "quota" | "upstream";
+
+export class AssistantUnavailableError extends Error {
+  kind: AssistantFailureKind;
+  constructor(kind: AssistantFailureKind, message: string) {
+    super(message);
+    this.kind = kind;
+  }
+}
 
 function toGeminiContents(messages: AssistantMessage[]): GeminiContent[] {
   return messages.map((m) => ({
@@ -67,17 +78,45 @@ function toGeminiContents(messages: AssistantMessage[]): GeminiContent[] {
   }));
 }
 
-/** One stateless Gemini generateContent call with a hard timeout. */
-export async function chatWithGemini(messages: AssistantMessage[]): Promise<string> {
+/**
+ * Channel-neutral assistant contract: a transcript goes in, one reply text comes
+ * out. No HTTP framework types touch this function, so any channel — the web
+ * widget route today, a WhatsApp bridge tomorrow — calls getAssistantReply()
+ * with the same {role, content} message shape and handles AssistantUnavailableError.
+ */
+/**
+ * Model candidates in order. Gemini retires model generations over time (the
+ * 2.5 line is gone as of late 2026); if the configured model 404s we retry the
+ * next free-tier candidate so a retirement never silently kills the widget.
+ */
+const MODEL_FALLBACKS = ["gemini-3.8-flash", "gemini-4-hydrogen"];
+
+export async function getAssistantReply(messages: AssistantMessage[]): Promise<string> {
   if (!env.geminiApiKey) {
-    throw new AssistantUnavailableError("GEMINI_API_KEY is not configured");
+    throw new AssistantUnavailableError("config", "GEMINI_API_KEY is not configured");
   }
 
+  const candidates = [
+    env.geminiModel,
+    ...MODEL_FALLBACKS.filter((m) => m !== env.geminiModel),
+  ];
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${env.geminiModel}:generateContent`,
+  const timer = setTimeout(() => controller.abort(), 20000);
+
+  /**
+   * Gemini 3.8 migration notes (official docs, Nov 2026):
+   *  - temperature/top_p/top_k are deprecated for Gemini 3.6+ and ignored with
+   *    deprecation warning headers -> removed from generationConfig entirely.
+   *  - max_output_tokens counts THINKING tokens too on thinking models; a small
+   *    cap truncates reasoning and yields empty replies -> raised to 2048 so a
+   *    medium-thinking flash model never starves mid-thought.
+   *  - stateless multi-turn with thinking models may reject history that lacks
+   *    thought signatures (400); on 400 we retry once with only the newest user
+   *    message so a signature policy change degrades to single-turn, not outage.
+   */
+  const post = (model: string, contents: GeminiContent[]) =>
+    fetch(
+      `${env.geminiBaseUrl}/v1beta/models/${model}:generateContent`,
       {
         method: "POST",
         headers: {
@@ -87,29 +126,56 @@ export async function chatWithGemini(messages: AssistantMessage[]): Promise<stri
         signal: controller.signal,
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
-          contents: toGeminiContents(messages),
-          generationConfig: { temperature: 0.4, maxOutputTokens: 512 },
+          contents,
+          generationConfig: { maxOutputTokens: 2048 },
         }),
       }
     );
 
-    if (res.status === 429) {
-      throw new AssistantUnavailableError("Gemini quota exceeded (429)");
-    }
-    if (!res.ok) {
-      const body = (await res.json().catch(() => null)) as GeminiResponse | null;
-      throw new AssistantUnavailableError(body?.error?.message || `Gemini HTTP ${res.status}`);
-    }
+  try {
+    let lastError = "Gemini request failed";
+    for (let i = 0; i < candidates.length; i++) {
+      let contents = toGeminiContents(messages);
+      let res = await post(candidates[i], contents);
 
-    const body = (await res.json()) as GeminiResponse;
-    const text = (body.candidates?.[0]?.content?.parts || [])
-      .map((p) => p.text || "")
-      .join("")
-      .trim();
-    if (!text) {
-      throw new AssistantUnavailableError("Empty Gemini response");
+      if (res.status === 400 && contents.length > 1) {
+        console.warn(
+          JSON.stringify({
+            event: "ASSISTANT_HISTORY_REJECTED",
+            model: candidates[i],
+            timestamp: new Date().toISOString(),
+          })
+        );
+        contents = toGeminiContents(messages.slice(-1));
+        res = await post(candidates[i], contents);
+      }
+
+      if (res.status === 404 && i < candidates.length - 1) {
+        lastError = `model ${candidates[i]} unavailable, fallback tried`;
+        continue;
+      }
+      if (res.status === 429) {
+        throw new AssistantUnavailableError("quota", "Gemini quota exceeded (429)");
+      }
+      if (!res.ok) {
+        const errBody = (await res.json().catch(() => null)) as GeminiResponse | null;
+        throw new AssistantUnavailableError(
+          "upstream",
+          errBody?.error?.message || `Gemini HTTP ${res.status}`
+        );
+      }
+
+      const body = (await res.json()) as GeminiResponse;
+      const text = (body.candidates?.[0]?.content?.parts || [])
+        .map((p) => p.text || "")
+        .join("")
+        .trim();
+      if (!text) {
+        throw new AssistantUnavailableError("upstream", "Empty Gemini response");
+      }
+      return text;
     }
-    return text;
+    throw new AssistantUnavailableError("upstream", lastError);
   } finally {
     clearTimeout(timer);
   }
