@@ -12,7 +12,7 @@ export const assistantRouter = Router();
 /**
  * Chat is conversational, so the window is tighter but slightly more generous than
  * the contact form: 12 turns per minute per client keeps a widget loop (or a script)
- * from burning the Gemini free-tier quota.
+ * from burning the Groq free-tier quota.
  */
 const assistantRateLimiter = createRateLimiter({
   windowMs: 60 * 1000,

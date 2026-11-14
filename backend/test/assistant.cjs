@@ -1,5 +1,4 @@
-process.env.GEMINI_API_KEY = "assistant-regression-key";
-process.env.GEMINI_MODEL = "gemini-3.8-flash";
+process.env.GROQ_API_KEY = "assistant-regression-key";
 
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
@@ -7,19 +6,29 @@ const { getAssistantReply, AssistantUnavailableError } = require("../dist/servic
 
 const messages = [{ role: "user", content: "What services do you offer?" }];
 
-test("website chat requests low thinking while retaining the output budget", async (t) => {
+test("website chat sends the grounded system turn and a bounded completion request", async (t) => {
   let request;
-  t.mock.method(global, "fetch", async (_url, options) => {
+  let url;
+  let headers;
+  t.mock.method(global, "fetch", async (fetchUrl, options) => {
+    url = String(fetchUrl);
+    headers = options.headers;
     request = JSON.parse(options.body);
     return new Response(JSON.stringify({
-      candidates: [{ content: { parts: [{ text: "We offer design, development, and AI agents." }] } }],
+      choices: [{ message: { content: "We offer design, development, and AI agents." } }],
     }));
   });
 
   assert.equal(await getAssistantReply(messages), "We offer design, development, and AI agents.");
-  assert.equal(request.generationConfig.thinkingConfig.thinkingLevel, "LOW");
-  assert.equal(request.generationConfig.maxOutputTokens, 2048);
-  assert.equal(request.contents[0].parts[0].text, messages[0].content);
+  assert.equal(url, "https://api.groq.com/openai/v1/chat/completions");
+  assert.equal(headers.Authorization, "Bearer assistant-regression-key");
+  assert.equal(request.model, "llama-3.3-70b-versatile");
+  assert.equal(request.max_tokens, 1024);
+  assert.equal(request.messages[0].role, "system");
+  assert.match(request.messages[0].content, /Axioms Lab portfolio assistant/);
+  assert.match(request.messages[0].content, /kuopiobites\.fi/);
+  assert.equal(request.messages[1].role, "user");
+  assert.equal(request.messages[1].content, messages[0].content);
 });
 
 test("aborted provider requests produce a timeout response and actionable runtime log", async (t) => {
@@ -30,7 +39,7 @@ test("aborted provider requests produce a timeout response and actionable runtim
     originalTimeout(callback, delay === 45000 ? 1 : delay, ...args)
   );
   t.mock.method(global, "fetch", (url, options) => {
-    if (String(url).startsWith("https://generativelanguage.googleapis.com/")) {
+    if (String(url).startsWith("https://api.groq.com/")) {
       return new Promise((_resolve, reject) => {
         options.signal.addEventListener("abort", () => {
           reject(new DOMException("The operation was aborted.", "AbortError"));
@@ -56,7 +65,7 @@ test("aborted provider requests produce a timeout response and actionable runtim
   assert.match(body.error, /took too long/);
   const event = JSON.parse(errors.mock.calls[0].arguments[0]);
   assert.equal(event.event, "ASSISTANT_CHAT_FAILED");
-  assert.equal(event.reason, "Gemini request timed out after 45 seconds");
+  assert.equal(event.reason, "Groq request timed out after 45 seconds");
   assert.doesNotMatch(JSON.stringify(body) + JSON.stringify(event), /assistant-regression-key/);
 });
 
@@ -78,4 +87,21 @@ test("provider quota failures keep their existing classification", async (t) => 
     assert.equal(error.kind, "quota");
     return true;
   });
+});
+
+test("a retired model 404s into the next free-tier candidate", async (t) => {
+  const seenModels = [];
+  t.mock.method(global, "fetch", async (_url, options) => {
+    const request = JSON.parse(options.body);
+    seenModels.push(request.model);
+    if (request.model === "llama-3.3-70b-versatile") {
+      return new Response(JSON.stringify({ error: { message: "model not found" } }), { status: 404 });
+    }
+    return new Response(JSON.stringify({
+      choices: [{ message: { content: "Answered by the fallback model." } }],
+    }));
+  });
+
+  assert.equal(await getAssistantReply(messages), "Answered by the fallback model.");
+  assert.deepEqual(seenModels, ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]);
 });

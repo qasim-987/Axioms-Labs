@@ -15,9 +15,9 @@ export interface BackendEnv {
   contactWebhookUrl: string;
   supabaseUrl: string;
   supabaseServiceRoleKey: string;
-  geminiApiKey: string;
-  geminiModel: string;
-  geminiBaseUrl: string;
+  groqApiKey: string;
+  groqModel: string;
+  groqBaseUrl: string;
   /** Optional distributed rate-limit store. Both must be set to activate; no extra dependency is used. */
   upstashRedisRestUrl: string;
   upstashRedisRestToken: string;
@@ -82,10 +82,9 @@ export const env: BackendEnv = {
   contactWebhookUrl: process.env.CONTACT_WEBHOOK_URL || "",
   supabaseUrl: process.env.SUPABASE_URL || "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
-  geminiApiKey: process.env.GEMINI_API_KEY || "",
-  geminiModel: process.env.GEMINI_MODEL || "gemini-3.8-flash",
-  geminiBaseUrl:
-    process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com",
+  groqApiKey: process.env.GROQ_API_KEY || "",
+  groqModel: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+  groqBaseUrl: process.env.GROQ_BASE_URL || "https://api.groq.com/openai",
   upstashRedisRestUrl: process.env.UPSTASH_REDIS_REST_URL || "",
   upstashRedisRestToken: process.env.UPSTASH_REDIS_REST_TOKEN || "",
 };

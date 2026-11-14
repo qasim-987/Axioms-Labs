@@ -3,14 +3,19 @@ import type { AssistantMessage } from "../schemas/assistant.schema";
 import { STUDIO_LOCATIONS, STUDIO_SERVICES } from "./catalog.service";
 
 /**
- * Portfolio assistant grounding + Google Gemini transport.
+ * Portfolio assistant grounding + Groq transport.
  *
  * Design rules:
  *  - The model sees ONLY the facts below (live catalog, hubs, public URLs) plus the
  *    visible transcript. No database, no secrets, no browsing.
  *  - Honesty policy is enforced in the system prompt: never promise rankings or
  *    guarantees, label targets as targets, quote nothing that is not published.
- *  - The API key lives only in backend env (GEMINI_API_KEY); the browser never sees it.
+ *  - The API key lives only in backend env (GROQ_API_KEY); the browser never sees it.
+ *
+ * Provider history: the assistant launched on Google Gemini (free tier). Production
+ * logs showed repeated blind 503s whose root cause stayed unconfirmed even after two
+ * hardening passes, so the owner switched the provider to Groq (OpenAI-compatible
+ * chat completions, fast inference, free tier with per-model rate limits).
  */
 
 const CONCEPT_AND_CLIENT_WORK = [
@@ -49,16 +54,13 @@ Rules:
 5. When the visitor describes a project or asks for a quote, say the fastest path is the project brief form at /contact (reply within 24 hours, Mon-Sat) and offer to summarise what they told you so they can paste it there.
 6. If the FACTS block does not cover a question, say you are not sure rather than guessing.`;
 
-interface GeminiPart {
-  text?: string;
+interface GroqMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
 }
-interface GeminiContent {
-  role: "user" | "model";
-  parts: GeminiPart[];
-}
-interface GeminiResponse {
-  candidates?: { content?: { parts?: GeminiPart[] } }[];
-  error?: { message?: string };
+interface GroqChatResponse {
+  choices?: { message?: { content?: string } }[];
+  error?: { message?: string; type?: string; code?: string };
 }
 
 export type AssistantFailureKind = "config" | "quota" | "timeout" | "upstream";
@@ -71,23 +73,26 @@ export class AssistantUnavailableError extends Error {
   }
 }
 
-function toGeminiContents(messages: AssistantMessage[]): GeminiContent[] {
+function toGroqMessages(messages: AssistantMessage[]): GroqMessage[] {
   return messages.map((m) => ({
-    role: m.role === "assistant" ? "model" : "user",
-    parts: [{ text: m.content }],
+    role: m.role === "assistant" ? "assistant" : "user",
+    content: m.content,
   }));
 }
 
 /**
- * Try the configured model first, then fall over to free-tier alternatives
- * when a model is unavailable (404) or too slow even for a single-turn retry.
- * All three are confirmed "Free of charge" in the official pricing docs;
- * gemini-3.1-flash-lite defaults to minimal thinking (fastest).
+ * Free-tier Groq catalog (verified against Groq's published free model list,
+ * Oct 2026): all three below are free with per-model rate limits.
+ *  - llama-3.3-70b-versatile: best quality, 30 rpm / 1,000 req-day
+ *  - llama-3.1-8b-instant:    fastest + most generous, 30 rpm / 14,400 req-day
+ *  - openai/gpt-oss-20b:      different model family, diversifies the chain
+ * Groq adjusts the free catalog without notice, so a 404 simply advances the
+ * chain instead of failing the visitor's turn.
  */
 const MODEL_FALLBACKS = [
-  "gemini-3.8-flash",
-  "gemini-3.1-flash-lite",
-  "gemini-4-hydrogen",
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
+  "openai/gpt-oss-20b",
 ];
 
 /**
@@ -96,60 +101,45 @@ const MODEL_FALLBACKS = [
  * the same {role, content} shape tomorrow.
  */
 export async function getAssistantReply(messages: AssistantMessage[]): Promise<string> {
-  if (!env.geminiApiKey) {
-    throw new AssistantUnavailableError("config", "GEMINI_API_KEY is not configured");
+  if (!env.groqApiKey) {
+    throw new AssistantUnavailableError("config", "GROQ_API_KEY is not configured");
   }
 
   const candidates = [
-    env.geminiModel,
-    ...MODEL_FALLBACKS.filter((m) => m !== env.geminiModel),
+    env.groqModel,
+    ...MODEL_FALLBACKS.filter((m) => m !== env.groqModel),
   ];
 
   /**
-   * Gemini 3.8 migration notes (official docs, Nov 2026):
-   *  - temperature/top_p/top_k are deprecated for Gemini 3.6+ (ignored with
-   *    deprecation warning headers) -> removed entirely.
-   *  - LOW thinking for Gemini 3/4 models keeps this short website chat fast
-   *    on the free tier; max_output_tokens keeps 2048 of headroom because it
-   *    also counts thinking tokens. HYPOTHESIS (docs-plausible, runtime
-   *    evidence pending): a smaller cap could truncate reasoning into an
-   *    empty reply.
-   *  - Stateless multi-turn can 400 when history lacks thought signatures;
-   *    ONLY those confirmed rejections degrade to a single-turn retry.
-   *  - Every attempt owns its 45s abort budget so retries and model failover
-   *    get fresh timers. The old shared 20s timer produced blind AbortErrors,
-   *    confirmed by the 20.02s request->failure delta in production logs.
+   * Every attempt owns its 45s abort budget so retries and model failover get
+   * fresh timers. The original shared 20s timer produced blind AbortErrors,
+   * confirmed by the 20.02s request->failure delta in production logs.
+   * max_tokens keeps replies short (the widget UX wants 2-4 sentences) and
+   * temperature stays mild so grounding facts are not paraphrased away.
    */
-  const post = async (model: string, contents: GeminiContent[]): Promise<Response> => {
+  const post = async (model: string, chat: GroqMessage[]): Promise<Response> => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 45000);
     try {
-      return await fetch(
-        `${env.geminiBaseUrl}/v1beta/models/${model}:generateContent`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": env.geminiApiKey,
-          },
-          signal: controller.signal,
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
-            contents,
-            generationConfig: {
-              maxOutputTokens: 2048,
-              ...(/^gemini-[34][.-]/.test(model)
-                ? { thinkingConfig: { thinkingLevel: "LOW" } }
-                : {}),
-            },
-          }),
-        }
-      );
+      return await fetch(`${env.groqBaseUrl}/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${env.groqApiKey}`,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model,
+          messages: chat,
+          max_tokens: 1024,
+          temperature: 0.7,
+        }),
+      });
     } catch (err) {
       if (controller.signal.aborted) {
         throw new AssistantUnavailableError(
           "timeout",
-          "Gemini request timed out after 45 seconds"
+          "Groq request timed out after 45 seconds"
         );
       }
       // Keep transport diagnostics useful without logging the request or key.
@@ -157,25 +147,31 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
       const transportCode = failure?.cause?.code || failure?.name || "unknown";
       throw new AssistantUnavailableError(
         "upstream",
-        `Gemini transport failed (${transportCode})`
+        `Groq transport failed (${transportCode})`
       );
     } finally {
       clearTimeout(timer);
     }
   };
 
-  let lastError = "Gemini request failed";
+  let lastError = "Groq request failed";
+  let quotaSeen = false;
   for (let i = 0; i < candidates.length; i++) {
-    let contents = toGeminiContents(messages);
+    let chat: GroqMessage[] = [
+      { role: "system", content: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` },
+      ...toGroqMessages(messages),
+    ];
     let res: Response;
     try {
-      res = await post(candidates[i], contents);
+      res = await post(candidates[i], chat);
     } catch (e) {
       if (
         e instanceof AssistantUnavailableError &&
         e.kind === "timeout" &&
-        contents.length > 1
+        messages.length > 1
       ) {
+        // A slow multi-turn call gets one fresh-timer retry with only the
+        // latest user message before we give up on this model.
         console.warn(
           JSON.stringify({
             event: "ASSISTANT_TIMEOUT_RETRY_SINGLE_TURN",
@@ -183,15 +179,16 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
             timestamp: new Date().toISOString(),
           })
         );
-        contents = toGeminiContents(messages.slice(-1));
+        chat = [chat[0], ...toGroqMessages(messages.slice(-1))];
         try {
-          res = await post(candidates[i], contents);
+          res = await post(candidates[i], chat);
         } catch (e2) {
           if (e2 instanceof AssistantUnavailableError && e2.kind === "timeout") {
             console.warn(
               JSON.stringify({
                 event: "ASSISTANT_MODEL_FAILOVER",
                 from: candidates[i],
+                reason: "timeout",
                 timestamp: new Date().toISOString(),
               })
             );
@@ -205,54 +202,61 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
       }
     }
 
-    if (res.status === 400 && contents.length > 1) {
-      const badBody = (await res.json().catch(() => null)) as GeminiResponse | null;
-      const badMsg = badBody?.error?.message || "";
-      if (/signature|thought|history/i.test(badMsg)) {
-        console.warn(
-          JSON.stringify({
-            event: "ASSISTANT_HISTORY_REJECTED",
-            model: candidates[i],
-            geminiMessage: badMsg,
-            timestamp: new Date().toISOString(),
-          })
-        );
-        contents = toGeminiContents(messages.slice(-1));
-        res = await post(candidates[i], contents);
-      } else {
-        throw new AssistantUnavailableError("upstream", badMsg || "Gemini HTTP 400");
-      }
+    if (res.status === 401 || res.status === 403) {
+      // A rejected key fails every model, so fail fast with a config kind.
+      throw new AssistantUnavailableError(
+        "config",
+        `Groq API key rejected (HTTP ${res.status})`
+      );
     }
-
     if (res.status === 404) {
+      console.warn(
+        JSON.stringify({
+          event: "ASSISTANT_MODEL_FAILOVER",
+          from: candidates[i],
+          reason: "model_not_found",
+          timestamp: new Date().toISOString(),
+        })
+      );
       lastError = `model ${candidates[i]} unavailable, fallback tried`;
       continue;
     }
     if (res.status === 429) {
-      throw new AssistantUnavailableError("quota", "Gemini quota exceeded (429)");
+      // Groq rate limits are per model: another free model may still answer.
+      quotaSeen = true;
+      console.warn(
+        JSON.stringify({
+          event: "ASSISTANT_MODEL_FAILOVER",
+          from: candidates[i],
+          reason: "rate_limited",
+          timestamp: new Date().toISOString(),
+        })
+      );
+      lastError = `model ${candidates[i]} rate limited (429)`;
+      continue;
     }
     if (!res.ok) {
-      const errBody = (await res.json().catch(() => null)) as GeminiResponse | null;
+      const errBody = (await res.json().catch(() => null)) as GroqChatResponse | null;
       throw new AssistantUnavailableError(
         "upstream",
-        errBody?.error?.message || `Gemini HTTP ${res.status}`
+        errBody?.error?.message || `Groq HTTP ${res.status}`
       );
     }
 
-    let body: GeminiResponse;
+    let body: GroqChatResponse;
     try {
-      body = (await res.json()) as GeminiResponse;
+      body = (await res.json()) as GroqChatResponse;
     } catch {
-      throw new AssistantUnavailableError("upstream", "Malformed Gemini response body");
+      throw new AssistantUnavailableError("upstream", "Malformed Groq response body");
     }
-    const text = (body.candidates?.[0]?.content?.parts || [])
-      .map((p) => p.text || "")
-      .join("")
-      .trim();
+    const text = (body.choices?.[0]?.message?.content || "").trim();
     if (!text) {
-      throw new AssistantUnavailableError("upstream", "Empty Gemini response");
+      throw new AssistantUnavailableError("upstream", "Empty Groq response");
     }
     return text;
+  }
+  if (quotaSeen) {
+    throw new AssistantUnavailableError("quota", "Groq quota exceeded (429)");
   }
   throw new AssistantUnavailableError("upstream", lastError);
 }
