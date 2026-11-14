@@ -9,7 +9,7 @@ import {
 } from "@/lib/apiClient";
 
 const GREETING =
-  "Hi! I'm an AI assistant for Axioms Lab. Ask me about our services, selected work, or how to start a project - for prices and dates I'll point you to our team.";
+  "Hi! I'm the Axioms Lab assistant. Ask me about our services, selected work, or how to start a project.";
 const FALLBACK =
   "The assistant is unavailable right now. The project brief form at /contact always works.";
 
@@ -67,7 +67,7 @@ export default function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close the Axioms Lab assistant" : "Chat with the Axioms Lab assistant"}
         aria-expanded={open}
-        className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-[#121317] text-white shadow-lg transition-colors hover:bg-[#3186FF] focus:outline-none focus:ring-2 focus:ring-[#3186FF] motion-reduce:transition-none"
+        className="fixed bottom-5 right-5 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-[#121317] text-white shadow-lg transition-colors hover:bg-[#3186FF] focus:outline-none focus:ring-2 focus:ring-[#3186FF] motion-reduce:transition-none"
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
@@ -75,12 +75,12 @@ export default function AssistantWidget() {
       {open && (
         <section
           aria-label="Axioms Lab assistant chat"
-          className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-5 z-[60] flex h-[min(70vh,32rem)] w-[min(calc(100vw-2.5rem),24rem)] flex-col overflow-hidden rounded-2xl border border-[#212226]/10 bg-white shadow-2xl"
+          className="fixed bottom-24 right-5 z-[60] flex h-[min(70vh,32rem)] w-[min(calc(100vw-2.5rem),24rem)] flex-col overflow-hidden rounded-2xl border border-[#212226]/10 bg-white shadow-2xl"
         >
           <header className="bg-[#121317] px-4 py-3 text-white">
             <p className="text-sm font-semibold">Axioms Lab Assistant</p>
             <p className="font-mono text-[11px] text-white/60">
-              AI assistant — grounded in our live service catalog
+              Answers from our live service catalog
             </p>
           </header>
 
@@ -117,7 +117,7 @@ export default function AssistantWidget() {
                 maxLength={1500}
                 placeholder="Ask about services, work, pricing approach…"
                 aria-label="Message the Axioms Lab assistant"
-                className="min-w-0 flex-1 rounded-xl border border-[#212226]/15 bg-[#F8F9FC] px-3 py-2 text-base text-[#121317] placeholder:text-[#6A6A71] focus:border-[#3186FF] focus:outline-none"
+                className="min-w-0 flex-1 rounded-xl border border-[#212226]/15 bg-[#F8F9FC] px-3 py-2 text-sm text-[#121317] placeholder:text-[#6A6A71] focus:border-[#3186FF] focus:outline-none"
               />
               <button
                 type="submit"

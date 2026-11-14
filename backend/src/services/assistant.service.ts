@@ -84,48 +84,70 @@ function toGeminiContents(messages: AssistantMessage[]): GeminiContent[] {
  * widget route today, a WhatsApp bridge tomorrow — calls getAssistantReply()
  * with the same {role, content} message shape and handles AssistantUnavailableError.
  */
+/**
+ * Model candidates in order. Gemini retires model generations over time (the
+ * 2.5 line is gone as of late 2026); if the configured model 404s we retry the
+ * next free-tier candidate so a retirement never silently kills the widget.
+ */
+const MODEL_FALLBACKS = ["gemini-3.8-flash", "gemini-4-hydrogen"];
+
 export async function getAssistantReply(messages: AssistantMessage[]): Promise<string> {
   if (!env.geminiApiKey) {
     throw new AssistantUnavailableError("config", "GEMINI_API_KEY is not configured");
   }
 
+  const candidates = [
+    env.geminiModel,
+    ...MODEL_FALLBACKS.filter((m) => m !== env.geminiModel),
+  ];
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${env.geminiModel}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": env.geminiApiKey,
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
-          contents: toGeminiContents(messages),
-          generationConfig: { temperature: 0.4, maxOutputTokens: 512 },
-        }),
+    let lastError = "Gemini request failed";
+    for (let i = 0; i < candidates.length; i++) {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${candidates[i]}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": env.geminiApiKey,
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
+            contents: toGeminiContents(messages),
+            generationConfig: { temperature: 0.4, maxOutputTokens: 512 },
+          }),
+        }
+      );
+
+      if (res.status === 404 && i < candidates.length - 1) {
+        lastError = `model ${candidates[i]} unavailable, fallback tried`;
+        continue;
       }
-    );
+      if (res.status === 429) {
+        throw new AssistantUnavailableError("quota", "Gemini quota exceeded (429)");
+      }
+      if (!res.ok) {
+        const errBody = (await res.json().catch(() => null)) as GeminiResponse | null;
+        throw new AssistantUnavailableError(
+          "upstream",
+          errBody?.error?.message || `Gemini HTTP ${res.status}`
+        );
+      }
 
-    if (res.status === 429) {
-      throw new AssistantUnavailableError("quota", "Gemini quota exceeded (429)");
+      const body = (await res.json()) as GeminiResponse;
+      const text = (body.candidates?.[0]?.content?.parts || [])
+        .map((p) => p.text || "")
+        .join("")
+        .trim();
+      if (!text) {
+        throw new AssistantUnavailableError("upstream", "Empty Gemini response");
+      }
+      return text;
     }
-    if (!res.ok) {
-      const body = (await res.json().catch(() => null)) as GeminiResponse | null;
-      throw new AssistantUnavailableError("upstream", body?.error?.message || `Gemini HTTP ${res.status}`);
-    }
-
-    const body = (await res.json()) as GeminiResponse;
-    const text = (body.candidates?.[0]?.content?.parts || [])
-      .map((p) => p.text || "")
-      .join("")
-      .trim();
-    if (!text) {
-      throw new AssistantUnavailableError("upstream", "Empty Gemini response");
-    }
-    return text;
+    throw new AssistantUnavailableError("upstream", lastError);
   } finally {
     clearTimeout(timer);
   }
