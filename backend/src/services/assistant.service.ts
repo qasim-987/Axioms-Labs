@@ -89,7 +89,11 @@ function toGeminiContents(messages: AssistantMessage[]): GeminiContent[] {
  * 2.5 line is gone as of late 2026); if the configured model 404s we retry the
  * next free-tier candidate so a retirement never silently kills the widget.
  */
-const MODEL_FALLBACKS = ["gemini-3.8-flash", "gemini-4-hydrogen"];
+const MODEL_FALLBACKS = [
+  "gemini-3.8-flash", // free tier, medium default thinking
+  "gemini-3.1-flash-lite", // free tier, minimal default thinking = fastest
+  "gemini-4-hydrogen", // free tier, last resort
+];
 
 export async function getAssistantReply(messages: AssistantMessage[]): Promise<string> {
   if (!env.geminiApiKey) {
@@ -172,7 +176,24 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
             })
           );
           contents = toGeminiContents(messages.slice(-1));
-          res = await post(candidates[i], contents);
+          try {
+            res = await post(candidates[i], contents);
+          } catch (e2) {
+            if (e2 instanceof AssistantUnavailableError && e2.kind === "timeout") {
+              // Single-turn still too slow on this model: fail over to the
+              // next free-tier candidate instead of burning the visitor's wait.
+              console.warn(
+                JSON.stringify({
+                  event: "ASSISTANT_MODEL_FAILOVER",
+                  from: candidates[i],
+                  timestamp: new Date().toISOString(),
+                })
+              );
+              lastError = e2.message;
+              continue;
+            }
+            throw e2;
+          }
         } else {
           throw e;
         }
@@ -203,7 +224,7 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
         }
       }
 
-      if (res.status === 404 && i < candidates.length - 1) {
+      if (res.status === 404) {
         lastError = `model ${candidates[i]} unavailable, fallback tried`;
         continue;
       }
