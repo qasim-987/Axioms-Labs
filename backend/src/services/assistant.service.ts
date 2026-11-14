@@ -100,9 +100,6 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
     env.geminiModel,
     ...MODEL_FALLBACKS.filter((m) => m !== env.geminiModel),
   ];
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 30000);
-
   /**
    * Gemini 3.8 migration notes (official docs, Nov 2026):
    *  - temperature/top_p/top_k are deprecated for Gemini 3.6+ and ignored with
@@ -116,6 +113,9 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
    *    message so a signature policy change degrades to single-turn, not outage.
    */
   const post = async (model: string, contents: GeminiContent[]): Promise<Response> => {
+    // One abort guard PER attempt so a timeout retry gets a fresh budget.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
     try {
       return await fetch(
         `${env.geminiBaseUrl}/v1beta/models/${model}:generateContent`,
@@ -142,14 +142,41 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
         "upstream",
         `Gemini unreachable: ${e instanceof Error ? `${e.name}: ${e.message}` : "network error"}`
       );
+    } finally {
+      clearTimeout(timer);
     }
   };
 
-  try {
     let lastError = "Gemini request failed";
     for (let i = 0; i < candidates.length; i++) {
       let contents = toGeminiContents(messages);
-      let res = await post(candidates[i], contents);
+      let res: Response;
+      try {
+        res = await post(candidates[i], contents);
+      } catch (e) {
+        // CONFIRMED by production runtime logs (2026-11-14): a thinking-model
+        // call on the free tier can exceed the abort guard; the old shared
+        // 20s timer produced blind "unexpected error" AbortErrors. On timeout
+        // we retry once with only the newest user message (smaller prompt =
+        // faster answer); the visitor's question is always preserved.
+        if (
+          e instanceof AssistantUnavailableError &&
+          e.kind === "timeout" &&
+          contents.length > 1
+        ) {
+          console.warn(
+            JSON.stringify({
+              event: "ASSISTANT_TIMEOUT_RETRY_SINGLE_TURN",
+              model: candidates[i],
+              timestamp: new Date().toISOString(),
+            })
+          );
+          contents = toGeminiContents(messages.slice(-1));
+          res = await post(candidates[i], contents);
+        } else {
+          throw e;
+        }
+      }
 
       if (res.status === 400 && contents.length > 1) {
         // Narrowed retry: ONLY confirmed history/signature rejections fall back
@@ -207,7 +234,4 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
       return text;
     }
     throw new AssistantUnavailableError("upstream", lastError);
-  } finally {
-    clearTimeout(timer);
-  }
 }
