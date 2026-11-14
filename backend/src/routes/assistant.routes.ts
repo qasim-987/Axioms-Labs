@@ -54,7 +54,9 @@ assistantRouter.post(
           ? `The assistant has used today's free quota. Please try again a little later. ${CONTACT_HINT}`
           : kind === "config"
             ? `The assistant is still being configured. ${CONTACT_HINT}`
-            : `The assistant is unavailable right now. ${CONTACT_HINT}`;
+            : kind === "timeout"
+              ? `The AI took too long to reply. Please try again. ${CONTACT_HINT}`
+              : `The assistant is unavailable right now. ${CONTACT_HINT}`;
       res.status(503).json({ success: false, error: userMessage, code: kind });
     }
   }

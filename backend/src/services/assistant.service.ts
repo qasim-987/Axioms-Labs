@@ -61,7 +61,7 @@ interface GeminiResponse {
   error?: { message?: string };
 }
 
-export type AssistantFailureKind = "config" | "quota" | "upstream";
+export type AssistantFailureKind = "config" | "quota" | "timeout" | "upstream";
 
 export class AssistantUnavailableError extends Error {
   kind: AssistantFailureKind;
@@ -85,9 +85,8 @@ function toGeminiContents(messages: AssistantMessage[]): GeminiContent[] {
  * with the same {role, content} message shape and handles AssistantUnavailableError.
  */
 /**
- * Model candidates in order. Gemini retires model generations over time (the
- * 2.5 line is gone as of late 2026); if the configured model 404s we retry the
- * next free-tier candidate so a retirement never silently kills the widget.
+ * Try the configured model first, followed by supported alternatives when
+ * Google reports that a model is unavailable.
  */
 const MODEL_FALLBACKS = ["gemini-3.8-flash", "gemini-4-hydrogen"];
 
@@ -101,15 +100,14 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
     ...MODEL_FALLBACKS.filter((m) => m !== env.geminiModel),
   ];
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 20000);
+  const timer = setTimeout(() => controller.abort(), 45000);
 
   /**
    * Gemini 3.8 migration notes (official docs, Nov 2026):
    *  - temperature/top_p/top_k are deprecated for Gemini 3.6+ and ignored with
    *    deprecation warning headers -> removed from generationConfig entirely.
-   *  - max_output_tokens counts THINKING tokens too on thinking models; a small
-   *    cap truncates reasoning and yields empty replies -> raised to 2048 so a
-   *    medium-thinking flash model never starves mid-thought.
+   *  - Keep output headroom and use LOW thinking for this short website chat.
+   *    Older configured models retain their existing generation settings.
    *  - stateless multi-turn with thinking models may reject history that lacks
    *    thought signatures (400); on 400 we retry once with only the newest user
    *    message so a signature policy change degrades to single-turn, not outage.
@@ -127,7 +125,12 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
           contents,
-          generationConfig: { maxOutputTokens: 2048 },
+          generationConfig: {
+            maxOutputTokens: 2048,
+            ...(/^gemini-[34][.-]/.test(model)
+              ? { thinkingConfig: { thinkingLevel: "LOW" } }
+              : {}),
+          },
         }),
       }
     );
@@ -176,6 +179,16 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
       return text;
     }
     throw new AssistantUnavailableError("upstream", lastError);
+  } catch (err) {
+    if (err instanceof AssistantUnavailableError) throw err;
+    if (controller.signal.aborted) {
+      throw new AssistantUnavailableError("timeout", "Gemini request timed out after 45 seconds");
+    }
+
+    // Keep transport diagnostics useful without logging the request or its API key.
+    const failure = err as { name?: string; cause?: { code?: string } };
+    const transportCode = failure?.cause?.code || failure?.name || "unknown";
+    throw new AssistantUnavailableError("upstream", `Gemini transport failed (${transportCode})`);
   } finally {
     clearTimeout(timer);
   }
