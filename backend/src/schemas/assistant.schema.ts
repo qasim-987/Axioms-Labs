@@ -5,7 +5,7 @@ import { z } from "zod";
  *
  * The widget is stateless: it echoes back the visible transcript so the server can
  * rebuild context on every turn. Caps keep a hostile client from inflating the
- * prompt (and therefore the Gemini free-tier token spend) arbitrarily.
+ * prompt (and therefore the Groq free-tier token spend) arbitrarily.
  */
 const MAX_MESSAGE_CHARS = 1500;
 const MAX_MESSAGES = 12;
