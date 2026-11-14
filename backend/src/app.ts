@@ -6,6 +6,7 @@ import { requestLogger } from "./middleware/requestLogger";
 import { healthRouter } from "./routes/health.routes";
 import { contactRouter } from "./routes/contact.routes";
 import { catalogRouter } from "./routes/catalog.routes";
+import { assistantRouter } from "./routes/assistant.routes";
 import { STUDIO_LOCATIONS, STUDIO_SERVICES } from "./services/catalog.service";
 
 export function createBackendApp() {
@@ -66,6 +67,7 @@ export function createBackendApp() {
   app.use("/api", healthRouter);
   app.use("/api", contactRouter);
   app.use("/api", catalogRouter);
+  app.use("/api", assistantRouter);
 
   // 404 JSON Handler
   app.use((_req: Request, res: Response) => {
