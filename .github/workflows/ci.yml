@@ -33,8 +33,8 @@ jobs:
       - name: Compile Production Back-End
         run: npm run build
 
-      - name: Serverless Entrypoint and Email Regression Tests
-        run: node --test test/entrypoint.cjs test/contact-email.cjs
+      - name: Serverless Entrypoint, Email and Assistant Regression Tests
+        run: node --test test/entrypoint.cjs test/contact-email.cjs test/assistant.cjs
 
   frontend-verify:
     name: Front-End Web Application (Next.js 14 + Motion Stack)
