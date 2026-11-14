@@ -1,0 +1,21 @@
+name: Assistant Smoke Test
+
+# Manual end-to-end proof that the live chat endpoint returns a real Gemini
+# answer. Runs from GitHub (which has outbound internet) because the dev
+# sandbox cannot reach external hosts. No secrets live in this repo: the
+# endpoint is public and rate-limited, and the Gemini key stays in Vercel.
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: POST live chat endpoint
+        run: |
+          RESP="$(curl -s -m 90 -w '\nHTTP:%{http_code}' -X POST https://www.axiomslab.com/api/assistant/chat \
+            -H 'Content-Type: application/json' \
+            -d '{"messages":[{"role":"user","content":"What services does Axioms Lab offer? Answer in one sentence."}]}')"
+          echo "$RESP"
+          echo "$RESP" | grep -q 'HTTP:200' || { echo "FAIL: chat endpoint did not return 200"; exit 1; }
+          echo "PASS: HTTP 200 with assistant reply"

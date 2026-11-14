@@ -55,7 +55,7 @@ assistantRouter.post(
           : kind === "config"
             ? `The assistant is still being configured. ${CONTACT_HINT}`
             : `The assistant is unavailable right now. ${CONTACT_HINT}`;
-      res.status(503).json({ success: false, error: userMessage });
+      res.status(503).json({ success: false, error: userMessage, code: kind });
     }
   }
 );

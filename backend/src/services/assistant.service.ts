@@ -101,26 +101,54 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
     ...MODEL_FALLBACKS.filter((m) => m !== env.geminiModel),
   ];
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
+  const timer = setTimeout(() => controller.abort(), 20000);
+
+  /**
+   * Gemini 3.8 migration notes (official docs, Nov 2026):
+   *  - temperature/top_p/top_k are deprecated for Gemini 3.6+ and ignored with
+   *    deprecation warning headers -> removed from generationConfig entirely.
+   *  - max_output_tokens counts THINKING tokens too on thinking models; a small
+   *    cap truncates reasoning and yields empty replies -> raised to 2048 so a
+   *    medium-thinking flash model never starves mid-thought.
+   *  - stateless multi-turn with thinking models may reject history that lacks
+   *    thought signatures (400); on 400 we retry once with only the newest user
+   *    message so a signature policy change degrades to single-turn, not outage.
+   */
+  const post = (model: string, contents: GeminiContent[]) =>
+    fetch(
+      `${env.geminiBaseUrl}/v1beta/models/${model}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": env.geminiApiKey,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
+          contents,
+          generationConfig: { maxOutputTokens: 2048 },
+        }),
+      }
+    );
+
   try {
     let lastError = "Gemini request failed";
     for (let i = 0; i < candidates.length; i++) {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${candidates[i]}:generateContent`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": env.geminiApiKey,
-          },
-          signal: controller.signal,
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` }] },
-            contents: toGeminiContents(messages),
-            generationConfig: { temperature: 0.4, maxOutputTokens: 512 },
-          }),
-        }
-      );
+      let contents = toGeminiContents(messages);
+      let res = await post(candidates[i], contents);
+
+      if (res.status === 400 && contents.length > 1) {
+        console.warn(
+          JSON.stringify({
+            event: "ASSISTANT_HISTORY_REJECTED",
+            model: candidates[i],
+            timestamp: new Date().toISOString(),
+          })
+        );
+        contents = toGeminiContents(messages.slice(-1));
+        res = await post(candidates[i], contents);
+      }
 
       if (res.status === 404 && i < candidates.length - 1) {
         lastError = `model ${candidates[i]} unavailable, fallback tried`;
