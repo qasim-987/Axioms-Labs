@@ -34,7 +34,7 @@ jobs:
         run: npm run build
 
       - name: Serverless Entrypoint, Email and Assistant Regression Tests
-        run: node --test test/entrypoint.cjs test/contact-email.cjs test/assistant.cjs
+        run: node --test test/entrypoint.cjs test/contact-email.cjs test/assistant.cjs test/brief.cjs test/brief-storage.cjs
 
   frontend-verify:
     name: Front-End Web Application (Next.js 14 + Motion Stack)

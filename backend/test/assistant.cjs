@@ -15,11 +15,14 @@ test("website chat sends the grounded system turn and a bounded completion reque
     headers = options.headers;
     request = JSON.parse(options.body);
     return new Response(JSON.stringify({
-      choices: [{ message: { content: "We offer design, development, and AI agents." } }],
+      choices: [{ message: { content: "We offer design, development, and AI agents.\n```json\n{\"business\":\"Bluebird Bakery\",\"service\":\"website\",\"requirements\":\"\",\"timeline\":\"\",\"budget\":\"\",\"contactName\":\"\",\"email\":\"\"}\n```" } }],
     }));
   });
 
-  assert.equal(await getAssistantReply(messages), "We offer design, development, and AI agents.");
+  const result = await getAssistantReply(messages);
+  assert.equal(result.reply, "We offer design, development, and AI agents.");
+  assert.equal(result.brief.business, "Bluebird Bakery");
+  assert.equal(result.brief.service, "website");
   assert.equal(url, "https://api.groq.com/openai/v1/chat/completions");
   assert.equal(headers.Authorization, "Bearer assistant-regression-key");
   assert.equal(request.model, "llama-3.3-70b-versatile");
@@ -102,6 +105,7 @@ test("a retired model 404s into the next free-tier candidate", async (t) => {
     }));
   });
 
-  assert.equal(await getAssistantReply(messages), "Answered by the fallback model.");
+  const failover = await getAssistantReply(messages);
+  assert.equal(failover.reply, "Answered by the fallback model.");
   assert.deepEqual(seenModels, ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]);
 });

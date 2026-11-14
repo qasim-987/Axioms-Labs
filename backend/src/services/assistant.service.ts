@@ -1,5 +1,6 @@
 import { env } from "../config/env";
 import type { AssistantMessage } from "../schemas/assistant.schema";
+import { briefDraftSchema, type BriefDraft } from "../schemas/brief.schema";
 import { STUDIO_LOCATIONS, STUDIO_SERVICES } from "./catalog.service";
 
 /**
@@ -96,11 +97,58 @@ const MODEL_FALLBACKS = [
 ];
 
 /**
- * Channel-neutral assistant contract: a transcript goes in, one reply text
- * comes out. The web widget route uses it today; a WhatsApp bridge can call
- * the same {role, content} shape tomorrow.
+ * Brief-collection addendum: the model keeps a running structured draft of the
+ * visitor's project brief and re-emits it every turn inside a fenced json
+ * block. The widget stores that draft and sends it back with the next turn,
+ * which is what lets the assistant remember details after older messages drop
+ * out of the 12-message transcript window.
  */
-export async function getAssistantReply(messages: AssistantMessage[]): Promise<string> {
+const BRIEF_INSTRUCTIONS = `When the visitor shares project details (business name, wanted service, requirements, timeline, budget, their name or email), keep the conversation natural and ALSO maintain a structured project brief. End EVERY reply with one fenced json block, nothing after it, shaped exactly like:
+\`\`\`json
+{"business":"","service":"","requirements":"","timeline":"","budget":"","contactName":"","email":""}
+\`\`\`
+Fill only what the visitor has actually stated; copy forward every value from the provided brief draft; leave unknown slots as empty strings. Never invent values, and never mention the json block in the visible reply.`;
+
+function mergeBrief(previous: BriefDraft, raw: unknown): BriefDraft {
+  const parsed = briefDraftSchema.safeParse(raw);
+  if (!parsed.success) return previous;
+  const next: BriefDraft = { ...previous };
+  for (const key of Object.keys(parsed.data) as (keyof BriefDraft)[]) {
+    const value = parsed.data[key];
+    if (typeof value === "string" && value.trim() !== "") next[key] = value.trim();
+  }
+  return next;
+}
+
+const BRIEF_FENCE = /```json\s*([\s\S]*?)```/g;
+
+function extractBrief(text: string): { reply: string; raw: unknown } {
+  let raw: unknown = null;
+  let last: RegExpExecArray | null = null;
+  BRIEF_FENCE.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = BRIEF_FENCE.exec(text)) !== null) last = match;
+  if (last) {
+    try {
+      raw = JSON.parse(last[1]);
+    } catch {
+      raw = null;
+    }
+  }
+  BRIEF_FENCE.lastIndex = 0;
+  const reply = text.replace(BRIEF_FENCE, "").trim();
+  return { reply, raw };
+}
+
+/**
+ * Channel-neutral assistant contract: a transcript goes in, one reply text and
+ * the running brief draft come out. The web widget route uses it today; a
+ * WhatsApp bridge can call the same {role, content} shape tomorrow.
+ */
+export async function getAssistantReply(
+  messages: AssistantMessage[],
+  briefSoFar: BriefDraft = {}
+): Promise<{ reply: string; brief: BriefDraft }> {
   if (!env.groqApiKey) {
     throw new AssistantUnavailableError("config", "GROQ_API_KEY is not configured");
   }
@@ -157,8 +205,14 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
   let lastError = "Groq request failed";
   let quotaSeen = false;
   for (let i = 0; i < candidates.length; i++) {
+    const systemContent = [
+      SYSTEM_PROMPT,
+      buildGrounding(),
+      `PROJECT BRIEF DRAFT SO FAR: ${JSON.stringify(briefSoFar)}`,
+      BRIEF_INSTRUCTIONS,
+    ].join("\n\n");
     let chat: GroqMessage[] = [
-      { role: "system", content: `${SYSTEM_PROMPT}\n\n${buildGrounding()}` },
+      { role: "system", content: systemContent },
       ...toGroqMessages(messages),
     ];
     let res: Response;
@@ -253,7 +307,11 @@ export async function getAssistantReply(messages: AssistantMessage[]): Promise<s
     if (!text) {
       throw new AssistantUnavailableError("upstream", "Empty Groq response");
     }
-    return text;
+    const { reply, raw } = extractBrief(text);
+    if (!reply) {
+      throw new AssistantUnavailableError("upstream", "Empty Groq response");
+    }
+    return { reply, brief: mergeBrief(briefSoFar, raw) };
   }
   if (quotaSeen) {
     throw new AssistantUnavailableError("quota", "Groq quota exceeded (429)");

@@ -194,13 +194,46 @@ export interface AssistantChatMessage {
   content: string;
 }
 
+/** Structured project-brief slots collected conversationally by the assistant. */
+export interface BriefDraft {
+  business?: string;
+  service?: string;
+  requirements?: string;
+  timeline?: string;
+  /** Optional by product decision. */
+  budget?: string;
+  contactName?: string;
+  email?: string;
+}
+
 export interface AssistantChatInput {
   messages: AssistantChatMessage[];
+  brief?: BriefDraft;
 }
 
 export interface AssistantChatResponse {
   success: boolean;
   reply?: string;
+  error?: string;
+  brief?: BriefDraft;
+}
+
+export interface ProjectBriefSubmission extends BriefDraft {
+  idempotencyKey: string;
+  business: string;
+  service: string;
+  requirements: string;
+  timeline: string;
+  contactName: string;
+  email: string;
+}
+
+export interface BriefSubmitResponse {
+  success: boolean;
+  status?: "delivered" | "already_delivered";
+  code?: string;
+  stored?: boolean;
+  inquiryId?: string;
   error?: string;
 }
 
@@ -214,4 +247,19 @@ export async function chatWithAssistant(
     body: JSON.stringify(input),
   });
   return (await res.json()) as AssistantChatResponse;
+}
+
+/**
+ * Confirmed project-brief submission. The idempotency key makes retries safe:
+ * the backend resumes the same stored row instead of duplicating it.
+ */
+export async function submitProjectBrief(
+  input: ProjectBriefSubmission
+): Promise<BriefSubmitResponse> {
+  const res = await fetch("/api/assistant/brief", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  return (await res.json()) as BriefSubmitResponse;
 }
