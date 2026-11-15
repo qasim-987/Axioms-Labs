@@ -30,12 +30,26 @@ async function requireStaff(req: Request, res: Response): Promise<StaffIdentity 
     res.status(401).json({ success: false, code: "unauthorized", error: "Staff sign-in required." });
     return null;
   }
-  const identity = await verifyStaffToken(token);
-  if (!identity) {
-    res.status(401).json({ success: false, code: "unauthorized", error: "Staff sign-in required." });
+  const result = await verifyStaffToken(token);
+  if (result.ok) return result.identity;
+  if (result.code === "forbidden") {
+    res.status(403).json({
+      success: false,
+      code: "forbidden",
+      error: "This account is not on the staff allowlist.",
+    });
     return null;
   }
-  return identity;
+  if (result.code === "auth_unavailable") {
+    res.status(503).json({
+      success: false,
+      code: "auth_unavailable",
+      error: "Staff authentication service is unreachable. Please retry shortly.",
+    });
+    return null;
+  }
+  res.status(401).json({ success: false, code: "unauthorized", error: "Staff sign-in required." });
+  return null;
 }
 
 const noteSchema = z.object({ body: z.string().trim().min(1).max(2000) });

@@ -27,9 +27,23 @@ interface JwtPayload {
   iss?: string;
   aud?: string | string[];
   exp?: number;
+  iat?: number;
   sub?: string;
   email?: string;
 }
+
+/**
+ * Supabase issues staff JWTs with a short lifetime (jwt_exp, 15 min in
+ * production). A token claiming a longer window was not minted by this
+ * project's auth config and is rejected even when the signature verifies.
+ */
+const MAX_TOKEN_LIFETIME_SECONDS = 7200;
+
+/** How long a positive introspection result may be reused (deleted/banned-user check). */
+const INTROSPECTION_TTL_MS = 60_000;
+const INTROSPECTION_CACHE_MAX = 500;
+
+const introspectionCache = new Map<string, { email: string; sub: string; expiresAt: number }>();
 
 let jwksCache: { keys: Jwk[]; fetchedAt: number } | null = null;
 
@@ -53,24 +67,82 @@ export interface StaffIdentity {
   sub: string;
 }
 
-/** Verify signature + issuer + audience + expiry + staff allowlist. */
-export async function verifyStaffToken(token: string): Promise<StaffIdentity | null> {
+export type StaffAuthResult =
+  | { ok: true; identity: StaffIdentity }
+  | { ok: false; code: "unauthorized" | "forbidden" | "auth_unavailable" };
+
+const DENIED: StaffAuthResult = { ok: false, code: "unauthorized" };
+
+/**
+ * Ask GoTrue whether this access token still belongs to a live user. JWKS
+ * verification is stateless, so it cannot see server-side revocation of the
+ * *user* (deleted/banned accounts keep a valid signature until exp). The
+ * result is cached briefly, keyed by the token hash, to bound GoTrue load.
+ */
+async function introspectToken(
+  token: string
+): Promise<{ email: string; sub: string } | "unauthorized" | "unavailable"> {
+  const cacheKey = crypto.createHash("sha256").update(token).digest("hex");
+  const cached = introspectionCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return { email: cached.email, sub: cached.sub };
+  }
+  let res: Response;
+  try {
+    res = await fetch(`${env.supabaseUrl.replace(/\/$/, "")}/auth/v1/user`, {
+      headers: {
+        apikey: env.supabaseServiceRoleKey,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch {
+    return "unavailable";
+  }
+  if (res.status === 401 || res.status === 403 || res.status === 404) return "unauthorized";
+  if (!res.ok) return "unavailable";
+  const user = (await res.json().catch(() => null)) as { id?: string; email?: string } | null;
+  const email = (user?.email || "").toLowerCase();
+  if (!email) return "unauthorized";
+  const entry = { email, sub: user?.id || "", expiresAt: Date.now() + INTROSPECTION_TTL_MS };
+  if (introspectionCache.size >= INTROSPECTION_CACHE_MAX) {
+    // Evict expired entries first, then oldest-inserted.
+    for (const [k, v] of introspectionCache) {
+      if (v.expiresAt <= Date.now()) introspectionCache.delete(k);
+    }
+    while (introspectionCache.size >= INTROSPECTION_CACHE_MAX) {
+      const oldest = introspectionCache.keys().next();
+      if (oldest.done) break;
+      introspectionCache.delete(oldest.value);
+    }
+  }
+  introspectionCache.set(cacheKey, entry);
+  return { email: entry.email, sub: entry.sub };
+}
+
+/**
+ * Verify signature + issuer + audience + expiry + live-user introspection +
+ * staff allowlist. "forbidden" means the token is genuine but the (server-
+ * confirmed) account is not on STAFF_EMAILS; "auth_unavailable" means GoTrue
+ * could not be reached and access is denied fail-closed.
+ */
+export async function verifyStaffToken(token: string): Promise<StaffAuthResult> {
   const parts = token.split(".");
-  if (parts.length !== 3) return null;
+  if (parts.length !== 3) return DENIED;
   let header: { alg?: string; kid?: string };
   let payload: JwtPayload;
   try {
     header = JSON.parse(b64url(parts[0]).toString("utf8")) as { alg?: string; kid?: string };
     payload = JSON.parse(b64url(parts[1]).toString("utf8")) as JwtPayload;
   } catch {
-    return null;
+    return DENIED;
   }
-  if (header.alg !== "RS256" && header.alg !== "ES256") return null;
+  if (header.alg !== "RS256" && header.alg !== "ES256") return DENIED;
   const expectedIss = `${env.supabaseUrl.replace(/\/$/, "")}/auth/v1`;
-  if (payload.iss !== expectedIss) return null;
+  if (payload.iss !== expectedIss) return DENIED;
   const aud = Array.isArray(payload.aud) ? payload.aud : [payload.aud || ""];
-  if (!aud.includes("authenticated")) return null;
-  if (!payload.exp || payload.exp * 1000 < Date.now()) return null;
+  if (!aud.includes("authenticated")) return DENIED;
+  if (!payload.exp || payload.exp * 1000 < Date.now()) return DENIED;
+  if (!payload.iat || payload.exp - payload.iat > MAX_TOKEN_LIFETIME_SECONDS) return DENIED;
 
   const signed = Buffer.from(`${parts[0]}.${parts[1]}`);
   const signature = b64url(parts[2]);
@@ -104,23 +176,33 @@ export async function verifyStaffToken(token: string): Promise<StaffIdentity | n
   try {
     keys = await getJwks();
   } catch {
-    return null;
+    return DENIED;
   }
   if (!checkAgainst(keys)) {
     // The signing key may have rotated since the JWKS was cached; refresh once.
     try {
       keys = await getJwks(true);
     } catch {
-      return null;
+      return DENIED;
     }
-    if (!checkAgainst(keys)) return null;
+    if (!checkAgainst(keys)) return DENIED;
   }
 
-  const email = (payload.email || "").toLowerCase();
-  if (!email) return null;
+  // Signature is valid; confirm the account still exists and is live.
+  const introspection = await introspectToken(token);
+  if (introspection === "unavailable") {
+    console.error(JSON.stringify({ event: "STAFF_INTROSPECTION_UNAVAILABLE" }));
+    return { ok: false, code: "auth_unavailable" };
+  }
+  if (introspection === "unauthorized") return DENIED;
+
+  // The allowlist is checked against the server-confirmed email, not the
+  // (possibly stale) JWT claim.
   const allowed = env.staffEmails.map((e) => e.toLowerCase());
-  if (allowed.length === 0 || !allowed.includes(email)) return null;
-  return { email, sub: payload.sub || "" };
+  if (allowed.length === 0 || !allowed.includes(introspection.email)) {
+    return { ok: false, code: "forbidden" };
+  }
+  return { ok: true, identity: { email: introspection.email, sub: introspection.sub } };
 }
 
 /* ── Storage helpers (service role; RLS-protected tables) ─────────────── */
