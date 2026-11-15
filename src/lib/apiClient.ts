@@ -220,6 +220,9 @@ export interface AssistantChatResponse {
 
 export interface ProjectBriefSubmission extends BriefDraft {
   idempotencyKey: string;
+  /** Only true when the visitor explicitly consented in the widget. */
+  includeContext?: boolean;
+  context?: AssistantChatMessage[];
   business: string;
   service: string;
   requirements: string;

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, MessageCircle, Send, X } from "lucide-react";
+import { CheckCircle2, MessageCircle, Plus, Send, X } from "lucide-react";
 import {
   AssistantChatMessage,
   BriefDraft,
@@ -16,30 +16,38 @@ const FALLBACK =
   "The assistant is unavailable right now. The project brief form at /contact always works.";
 const SUBMITTED_NOTE =
   "Your project brief is submitted. The team will reply within 24 hours (Mon-Sat) - thank you!";
+const NEW_PROJECT_NOTE =
+  "Fresh start! Tell me about your next project and I'll draft a new brief as we talk.";
 
-function newBriefKey(): string {
+function freshKey(): string {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function loadBriefKey(): string {
   try {
     const stored = window.sessionStorage.getItem("axl_brief_key");
     if (stored) return stored;
-    const key =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const key = freshKey();
     window.sessionStorage.setItem("axl_brief_key", key);
     return key;
   } catch {
-    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    return freshKey();
   }
 }
 
 /**
  * Floating portfolio assistant. The visible transcript is echoed to
- * POST /api/assistant/chat (Express -> Groq, grounded in the live catalog) and
- * one reply comes back. The assistant also maintains a structured project
- * brief: the draft survives in widget state and is re-sent every turn, so
- * details stay remembered even after older messages leave the transcript.
- * When the draft is substantive, an editable brief card appears; submission
- * only happens after the visitor explicitly confirms it.
+ * POST /api/assistant/chat (Express -> Groq structured output, grounded in the
+ * live catalog) and one clean reply plus the running brief draft come back.
+ * The widget stores the brief and re-sends it every turn, so details stay
+ * remembered even after older messages leave the transcript.
+ *
+ * Scrolling: one vertical region holds messages + brief card. Auto-scroll is
+ * sticky-bottom only, so reading older messages is never interrupted, and
+ * data-lenis-prevent keeps the site's Lenis smooth-scroll from hijacking
+ * wheel/trackpad gestures inside the panel.
  */
 export default function AssistantWidget() {
   const [open, setOpen] = useState(false);
@@ -52,18 +60,32 @@ export default function AssistantWidget() {
   const [briefKey, setBriefKey] = useState("");
   const [showBrief, setShowBrief] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedId, setSubmittedId] = useState("");
   const [sendingBrief, setSendingBrief] = useState(false);
+  const [includeContext, setIncludeContext] = useState(false);
   const [briefError, setBriefError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const atBottomRef = useRef(true);
+  const forceScrollRef = useRef(false);
 
   useEffect(() => {
-    setBriefKey(newBriefKey());
+    setBriefKey(loadBriefKey());
   }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, busy, open, showBrief]);
+    if (!el) return;
+    if (forceScrollRef.current || atBottomRef.current) {
+      el.scrollTop = el.scrollHeight;
+    }
+    forceScrollRef.current = false;
+  }, [messages, busy, open, showBrief, submitted]);
+
+  function onScroll() {
+    const el = scrollRef.current;
+    if (!el) return;
+    atBottomRef.current = el.scrollTop + el.clientHeight >= el.scrollHeight - 48;
+  }
 
   const briefReady =
     !submitted &&
@@ -81,6 +103,7 @@ export default function AssistantWidget() {
     setMessages(next);
     setInput("");
     setBusy(true);
+    forceScrollRef.current = true;
     try {
       const res = await chatWithAssistant({ messages: next.slice(-12), brief });
       if (res.brief) {
@@ -131,6 +154,8 @@ export default function AssistantWidget() {
     try {
       const res = await submitProjectBrief({
         idempotencyKey: briefKey,
+        includeContext,
+        context: includeContext ? messages.slice(-12) : undefined,
         business: brief.business || "",
         service: brief.service || "",
         requirements: brief.requirements || "",
@@ -139,9 +164,12 @@ export default function AssistantWidget() {
         contactName: brief.contactName || "",
         email: brief.email || "",
       });
-      if (res.success) {
+      // Success is shown only for the inquiry the backend confirmed by id.
+      if (res.success && res.inquiryId) {
         setSubmitted(true);
+        setSubmittedId(res.inquiryId);
         setShowBrief(false);
+        forceScrollRef.current = true;
         setMessages((prev) => [
           ...prev,
           { role: "assistant", content: SUBMITTED_NOTE },
@@ -158,8 +186,29 @@ export default function AssistantWidget() {
     }
   }
 
+  function startNewProject() {
+    const key = freshKey();
+    try {
+      window.sessionStorage.setItem("axl_brief_key", key);
+    } catch {
+      // private mode: the in-memory key below still keeps retries safe
+    }
+    setBriefKey(key);
+    setBrief({});
+    setIncludeContext(false);
+    setSubmitted(false);
+    setSubmittedId("");
+    setShowBrief(false);
+    setBriefError("");
+    setMessages([
+      { role: "assistant", content: GREETING },
+      { role: "assistant", content: NEW_PROJECT_NOTE },
+    ]);
+    forceScrollRef.current = true;
+  }
+
   const fieldClass =
-    "w-full rounded-lg border border-[#212226]/15 bg-white px-2.5 py-1.5 text-sm text-[#121317] focus:border-[#3186FF] focus:outline-none";
+    "w-full rounded-lg border border-[#212226]/15 bg-white px-2.5 py-2 text-sm text-[#121317] focus:border-[#0061FD] focus:outline-none";
   const labelClass = "mb-1 block text-[11px] font-semibold text-[#6A6A71]";
 
   return (
@@ -169,7 +218,7 @@ export default function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close the Axioms Lab assistant" : "Chat with the Axioms Lab assistant"}
         aria-expanded={open}
-        className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-[#121317] text-white shadow-lg transition-colors hover:bg-[#3186FF] focus:outline-none focus:ring-2 focus:ring-[#3186FF] motion-reduce:transition-none"
+        className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-[#121317] text-white shadow-lg ring-1 ring-white/10 transition-colors hover:bg-[#0061FD] focus:outline-none focus:ring-2 focus:ring-[#0061FD] motion-reduce:transition-none"
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
@@ -179,26 +228,49 @@ export default function AssistantWidget() {
           aria-label="Axioms Lab assistant chat"
           className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-5 z-[60] flex h-[min(70vh,32rem)] w-[min(calc(100vw-2.5rem),24rem)] flex-col overflow-hidden rounded-2xl border border-[#212226]/10 bg-white shadow-2xl"
         >
-          <header className="bg-[#121317] px-4 py-3 text-white">
-            <p className="text-sm font-semibold">Axioms Lab Assistant</p>
-            <p className="font-mono text-[11px] text-white/60">
-              AI assistant — grounded in our live service catalog
-            </p>
+          <header className="flex items-center gap-3 bg-[#121317] px-4 py-3 text-white">
+            {/* Stable asset URL rule: the monogram path never changes. */}
+            <img
+              src="/brand/axl-monogram-512.png"
+              alt=""
+              aria-hidden="true"
+              className="h-9 w-9 shrink-0 rounded-lg bg-white/95 p-1"
+              width={36}
+              height={36}
+            />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold tracking-tight">
+                Axioms Lab Assistant
+              </p>
+              <p className="truncate font-mono text-[11px] text-white/60">
+                AI assistant — grounded in our live catalog
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close the assistant"
+              className="-mr-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white/70 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#0061FD] motion-reduce:transition-none"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </header>
 
           <div
             ref={scrollRef}
+            onScroll={onScroll}
             role="log"
             aria-live="polite"
-            className="flex-1 space-y-3 overflow-y-auto px-4 py-3"
+            data-lenis-prevent
+            className="flex-1 space-y-3 overflow-x-hidden overflow-y-auto overscroll-contain px-4 py-3 [scroll-behavior:auto]"
           >
             {messages.map((m, i) => (
               <p
                 key={i}
                 className={
                   m.role === "user"
-                    ? "ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-[#3186FF] px-3 py-2 text-sm leading-relaxed text-white"
-                    : "w-fit max-w-[85%] rounded-2xl rounded-bl-sm border border-[#212226]/10 bg-[#F8F9FC] px-3 py-2 text-sm leading-relaxed text-[#121317]"
+                    ? "ml-auto w-fit max-w-[85%] min-w-0 break-words rounded-2xl rounded-br-sm bg-[#0061FD] px-3 py-2 text-sm leading-relaxed text-white [overflow-wrap:anywhere] whitespace-pre-wrap"
+                    : "w-fit max-w-[85%] min-w-0 break-words rounded-2xl rounded-bl-sm border border-[#212226]/10 bg-[#F8F9FC] px-3 py-2 text-sm leading-relaxed text-[#121317] [overflow-wrap:anywhere] whitespace-pre-wrap"
                 }
               >
                 {m.content}
@@ -213,7 +285,7 @@ export default function AssistantWidget() {
             {showBrief && briefReady && (
               <div
                 aria-label="Editable project brief"
-                className="rounded-xl border border-[#3186FF]/30 bg-[#F4F8FF] p-3"
+                className="min-w-0 rounded-xl border border-[#0061FD]/30 bg-[#F4F8FF] p-3"
               >
                 <p className="mb-2 text-xs font-semibold text-[#121317]">
                   Your project brief so far — edit anything, then confirm:
@@ -296,16 +368,28 @@ export default function AssistantWidget() {
                   </div>
                 </div>
                 {briefError && (
-                  <p role="alert" className="mt-2 text-[11px] font-semibold text-[#B42318]">
+                  <p role="alert" className="mt-2 break-words text-[11px] font-semibold text-[#B42318]">
                     {briefError}
                   </p>
                 )}
-                <div className="mt-3 flex gap-2">
+                <label className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-[#6A6A71]">
+                  <input
+                    type="checkbox"
+                    checked={includeContext}
+                    onChange={(e) => setIncludeContext(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-[#0061FD]"
+                  />
+                  <span>
+                    Include our chat conversation with this brief so the team
+                    sees the full context (optional).
+                  </span>
+                </label>
+                <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={confirmBrief}
                     disabled={!canConfirm}
-                    className="flex items-center gap-1.5 rounded-lg bg-[#0061FD] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#3186FF] disabled:opacity-40 motion-reduce:transition-none"
+                    className="flex min-h-[2.75rem] items-center gap-1.5 rounded-lg bg-[#0061FD] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#3186FF] disabled:opacity-40 motion-reduce:transition-none"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     {sendingBrief ? "Submitting…" : "Confirm & submit"}
@@ -313,22 +397,42 @@ export default function AssistantWidget() {
                   <button
                     type="button"
                     onClick={() => setShowBrief(false)}
-                    className="rounded-lg px-3 py-1.5 text-xs font-semibold text-[#6A6A71] hover:text-[#121317]"
+                    className="min-h-[2.75rem] rounded-lg px-3 py-2 text-xs font-semibold text-[#6A6A71] hover:text-[#121317]"
                   >
                     Keep chatting
                   </button>
+                  <button
+                    type="button"
+                    onClick={startNewProject}
+                    className="min-h-[2.75rem] rounded-lg px-3 py-2 text-xs font-semibold text-[#0061FD] hover:underline"
+                  >
+                    New project
+                  </button>
                 </div>
                 <p className="mt-2 text-[10px] leading-relaxed text-[#6A6A71]">
-                  Nothing is sent until you confirm. You can keep chatting and
-                  return to this card any time.
+                  Nothing is sent until you confirm. “New project” clears this
+                  draft and starts a fresh submission.
                 </p>
               </div>
             )}
 
-            {submitted && (
-              <p className="flex items-center gap-1.5 rounded-xl border border-[#12B76A]/30 bg-[#F0FBF5] px-3 py-2 text-xs font-semibold text-[#027A48]">
-                <CheckCircle2 className="h-4 w-4" /> Brief submitted — thank you!
-              </p>
+            {submitted && submittedId && (
+              <div className="min-w-0 rounded-xl border border-[#12B76A]/30 bg-[#F0FBF5] px-3 py-2">
+                <p className="flex items-center gap-1.5 text-xs font-semibold text-[#027A48]">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <span className="min-w-0 break-words [overflow-wrap:anywhere]">
+                    Brief submitted (ref {submittedId}) — thank you!
+                  </span>
+                </p>
+                <button
+                  type="button"
+                  onClick={startNewProject}
+                  className="mt-2 flex min-h-[2.75rem] items-center gap-1.5 rounded-lg border border-[#027A48]/30 px-3 py-2 text-xs font-semibold text-[#027A48] transition-colors hover:bg-[#027A48]/10 motion-reduce:transition-none"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  New project
+                </button>
+              </div>
             )}
           </div>
 
@@ -340,13 +444,13 @@ export default function AssistantWidget() {
                 maxLength={1500}
                 placeholder="Ask about services, work, pricing approach…"
                 aria-label="Message the Axioms Lab assistant"
-                className="min-w-0 flex-1 rounded-xl border border-[#212226]/15 bg-[#F8F9FC] px-3 py-2 text-base text-[#121317] placeholder:text-[#6A6A71] focus:border-[#3186FF] focus:outline-none"
+                className="min-w-0 flex-1 rounded-xl border border-[#212226]/15 bg-[#F8F9FC] px-3 py-2 text-base text-[#121317] placeholder:text-[#6A6A71] focus:border-[#0061FD] focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={busy || !input.trim()}
                 aria-label="Send message"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#121317] text-white transition-colors hover:bg-[#3186FF] disabled:opacity-40 motion-reduce:transition-none"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#121317] text-white transition-colors hover:bg-[#0061FD] disabled:opacity-40 motion-reduce:transition-none"
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -355,7 +459,7 @@ export default function AssistantWidget() {
               Need a quote? Describe your project here or use{" "}
               <Link
                 href="/contact"
-                className="font-semibold text-[#3186FF] underline underline-offset-2"
+                className="font-semibold text-[#0061FD] underline underline-offset-2"
               >
                 the project brief form
               </Link>{" "}
