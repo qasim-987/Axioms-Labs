@@ -49,17 +49,48 @@ function signToken(payload, { es256 = false } = {}) {
 const validPayload = (over = {}) => ({
   iss: "http://127.0.0.1:4399/auth/v1",
   aud: "authenticated",
+  iat: Math.floor(Date.now() / 1000),
   exp: Math.floor(Date.now() / 1000) + 3600,
-  sub: "user-1",
+  // Unique per mint so the backend introspection cache (keyed by token)
+  // cannot bleed results between tests signed in the same second.
+  sub: `user-${Math.random().toString(36).slice(2)}`,
   email: "staff@axiomslab.com",
   ...over,
 });
 
-const scenario = { rows: [], patches: [], notes: [], es256: false };
+const scenario = {
+  rows: [],
+  patches: [],
+  notes: [],
+  es256: false,
+  // Introspection (GoTrue /auth/v1/user) behaviour for this test.
+  introspectStatus: 200,
+  introspectEmail: null, // null = echo the bearer token's email claim
+};
 
 function mockFetch(t) {
   global.fetch = async (url, options = {}) => {
     const target = String(url);
+    if (target.endsWith("/auth/v1/user")) {
+      if (scenario.introspectStatus !== 200) {
+        return new Response(JSON.stringify({ message: "introspection down" }), {
+          status: scenario.introspectStatus,
+        });
+      }
+      const bearer = (options.headers && options.headers.Authorization) || "";
+      let claimEmail = "";
+      try {
+        claimEmail = JSON.parse(
+          Buffer.from(bearer.replace("Bearer ", "").split(".")[1], "base64url").toString()
+        ).email;
+      } catch {
+        claimEmail = "";
+      }
+      return new Response(
+        JSON.stringify({ id: "user-1", email: scenario.introspectEmail || claimEmail }),
+        { status: 200 }
+      );
+    }
     if (target.includes(".well-known/jwks.json")) {
       return new Response(
         JSON.stringify({ keys: scenario.es256 ? [ecPubJwk] : [pubJwk] }),
@@ -154,8 +185,11 @@ test("staff endpoints reject tampered or expired tokens", async (t) => {
   const expired = signToken(validPayload({ exp: Math.floor(Date.now() / 1000) - 60 }));
   assert.equal((await call("/api/staff/inquiries", { token: expired })).status, 401);
 
+  // Genuine signature, live account, but not on the allowlist -> 403.
   const outsider = signToken(validPayload({ email: "friend@example.com" }));
-  assert.equal((await call("/api/staff/inquiries", { token: outsider })).status, 401);
+  const outsiderRes = await call("/api/staff/inquiries", { token: outsider });
+  assert.equal(outsiderRes.status, 403);
+  assert.equal(outsiderRes.body.code, "forbidden");
 });
 
 test("verified staff can list and inspect inquiries", async (t) => {
@@ -203,6 +237,51 @@ test("status changes are validated and persisted", async (t) => {
   assert.equal(ok.status, 200);
   assert.equal(ok.body.status, "under_discussion");
   assert.deepEqual(scenario.patches.at(-1), { status: "under_discussion" });
+});
+
+test("tokens claiming an over-long lifetime are rejected", async (t) => {
+  mockFetch(t);
+  const now = Math.floor(Date.now() / 1000);
+  const longLived = signToken(validPayload({ iat: now - 10_000, exp: now + 3600 }));
+  assert.equal((await call("/api/staff/inquiries", { token: longLived })).status, 401);
+});
+
+test("deleted or banned accounts are rejected via introspection", async (t) => {
+  mockFetch(t);
+  scenario.introspectStatus = 401;
+  t.after(() => {
+    scenario.introspectStatus = 200;
+  });
+  const token = signToken(validPayload());
+  assert.equal((await call("/api/staff/inquiries", { token: token })).status, 401);
+});
+
+test("unreachable auth service fails closed with 503", async (t) => {
+  mockFetch(t);
+  scenario.introspectStatus = 500;
+  t.after(() => {
+    scenario.introspectStatus = 200;
+  });
+  const token = signToken(validPayload());
+  const res = await call("/api/staff/inquiries", { token });
+  assert.equal(res.status, 503);
+  assert.equal(res.body.code, "auth_unavailable");
+});
+
+test("allowlist is enforced against the server-confirmed email", async (t) => {
+  mockFetch(t);
+  scenario.rows = [];
+  // JWT says staff, GoTrue says intruder -> forbidden.
+  scenario.introspectEmail = "intruder@example.com";
+  const mismatched = signToken(validPayload());
+  assert.equal((await call("/api/staff/inquiries", { token: mismatched })).status, 403);
+
+  // Stale JWT claim, server confirms a staff email -> allowed.
+  scenario.introspectEmail = "staff@axiomslab.com";
+  const staleClaim = signToken(validPayload({ email: "old@axiomslab.com" }));
+  const ok = await call("/api/staff/inquiries", { token: staleClaim });
+  assert.equal(ok.status, 200);
+  scenario.introspectEmail = null;
 });
 
 test("ES256 tokens (Supabase production algorithm) are accepted", async (t) => {

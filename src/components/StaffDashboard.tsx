@@ -7,6 +7,9 @@ import {
   staffLogin,
   staffLogout,
   staffSessionActive,
+  staffSessionPolicyViolation,
+  staffTouchSession,
+  type SessionExpiryReason,
 } from "@/lib/staffClient";
 
 interface InquirySummary {
@@ -59,6 +62,18 @@ export default function StaffDashboard() {
   const [detail, setDetail] = useState<InquiryDetail | null>(null);
   const [note, setNote] = useState("");
   const [actionError, setActionError] = useState("");
+  const [sessionNotice, setSessionNotice] = useState<SessionExpiryReason>(null);
+  const [forbidden, setForbidden] = useState(false);
+
+  /** End the session locally + server-side and return to the login screen. */
+  const expireSession = useCallback(async (reason: SessionExpiryReason) => {
+    await staffLogout();
+    setSessionNotice(reason);
+    setAuthed(false);
+    setInquiries([]);
+    setDetail(null);
+    setSelectedId("");
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -69,7 +84,15 @@ export default function StaffDashboard() {
       }
       const active = await staffSessionActive();
       if (alive) {
-        setAuthed(active);
+        // A restored session must still satisfy the idle/absolute policy.
+        const violation = active ? staffSessionPolicyViolation() : null;
+        if (active && violation) {
+          await staffLogout();
+          setSessionNotice(violation);
+          setAuthed(false);
+        } else {
+          setAuthed(active);
+        }
         setChecking(false);
       }
     })();
@@ -86,6 +109,8 @@ export default function StaffDashboard() {
       setInquiries(body.inquiries || []);
     } else if (status === 401) {
       setAuthed(false);
+    } else if (status === 403) {
+      setForbidden(true);
     }
   }, []);
 
@@ -100,6 +125,33 @@ export default function StaffDashboard() {
     if (authed) void loadList();
   }, [authed, loadList]);
 
+  /**
+   * Client-side session policy: inactivity and absolute ceilings. The server
+   * still caps token lifetime and revokes on logout; this only makes the UX
+   * end promptly instead of waiting for the next failed call.
+   */
+  useEffect(() => {
+    if (!authed) return;
+    let lastTouch = Date.now();
+    const touch = () => {
+      const now = Date.now();
+      if (now - lastTouch > 15_000) {
+        lastTouch = now;
+        staffTouchSession();
+      }
+    };
+    const events: (keyof WindowEventMap)[] = ["pointerdown", "keydown", "wheel"];
+    events.forEach((e) => window.addEventListener(e, touch, { passive: true }));
+    const timer = window.setInterval(() => {
+      const violation = staffSessionPolicyViolation();
+      if (violation) void expireSession(violation);
+    }, 30_000);
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, touch));
+      window.clearInterval(timer);
+    };
+  }, [authed, expireSession]);
+
   useEffect(() => {
     if (authed && selectedId) void loadDetail(selectedId);
   }, [authed, selectedId, loadDetail]);
@@ -108,6 +160,8 @@ export default function StaffDashboard() {
     e.preventDefault();
     setBusy(true);
     setLoginError("");
+    setSessionNotice(null);
+    setForbidden(false);
     const res = await staffLogin(email.trim(), password);
     setBusy(false);
     if (res.ok) {
@@ -191,6 +245,16 @@ export default function StaffDashboard() {
               <p className="text-xs text-[#6A6A71]">Private inquiry dashboard — Axioms Lab</p>
             </div>
           </div>
+          {sessionNotice && (
+            <p
+              role="status"
+              className="mb-3 rounded-lg border border-[#B42318]/30 bg-[#FEF3F2] px-3 py-2 text-xs font-semibold text-[#B42318]"
+            >
+              {sessionNotice === "idle"
+                ? "You were signed out after 30 minutes of inactivity."
+                : "You were signed out after reaching the 12-hour session limit."}
+            </p>
+          )}
           <form onSubmit={onLogin} className="space-y-3">
             <div>
               <label className="mb-1 block text-xs font-semibold text-[#6A6A71]" htmlFor="staff-email">Work email</label>
@@ -262,6 +326,15 @@ export default function StaffDashboard() {
         </button>
       </header>
 
+      {forbidden && (
+        <p
+          role="alert"
+          className="mb-4 rounded-lg border border-[#B42318]/30 bg-[#FEF3F2] px-3 py-2 text-xs font-semibold text-[#B42318]"
+        >
+          This account is signed in but is not on the staff allowlist. Ask the
+          studio owner to add its email to STAFF_EMAILS, then sign out and in again.
+        </p>
+      )}
       {actionError && (
         <p role="alert" className="mb-4 rounded-lg border border-[#B42318]/30 bg-[#FEF3F2] px-3 py-2 text-xs font-semibold text-[#B42318]">
           {actionError}

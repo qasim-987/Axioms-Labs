@@ -33,6 +33,22 @@ briefs, adding follow-up notes, and moving each inquiry through
 | POST | `/api/staff/inquiries/:id/notes` | Add a follow-up note (`{ body }`, ≤ 2000 chars; author = verified staff email) |
 | PATCH | `/api/staff/inquiries/:id` | Set status (`{ status }` ∈ new/contacted/under_discussion/closed) |
 
+## Session policy (staff-grade)
+
+| Layer | Rule |
+| --- | --- |
+| Storage | Session lives in **sessionStorage** — a reload/F5 keeps it, closing the tab or browser ends it |
+| Idle limit | 30 minutes of no pointer/key/wheel activity ends the session (client-enforced, notice shown) |
+| Absolute limit | 12 hours from sign-in, however active the tab (client-enforced) |
+| Access token | Supabase `jwt_exp = 900` (15 min); supabase-js refreshes silently via rotation |
+| Logout | `signOut()` global scope — GoTrue revokes the refresh token server-side |
+| Server checks | JWKS signature (ES256/RS256) + iss/aud/exp + `exp − iat ≤ 2 h` + GoTrue `/auth/v1/user` introspection (deleted/banned accounts rejected; 60 s cached, fail-closed 503 `auth_unavailable` if GoTrue is unreachable) + `STAFF_EMAILS` allowlist against the **server-confirmed** email |
+| Status codes | 401 = missing/invalid/expired token · 403 = genuine token, account not on allowlist (no auto-sign-out; banner explains) · 503 = auth service unreachable |
+
+Optional extra hardening (Supabase Dashboard → Authentication → Sessions,
+not exposed through the management API): set a **timebox** and **inactivity
+timeout** server-side if defence-in-depth beyond the client policy is wanted.
+
 ## Conversation context (visitor consent)
 
 The widget's confirm screen has an explicit opt-in checkbox ("Include our
