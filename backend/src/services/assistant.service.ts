@@ -51,6 +51,7 @@ Rules:
 2. Ground every claim in the FACTS block. Never invent prices, dates, client names, metrics, or outcomes. Performance numbers you mention must be called "targets" or "lab results", never guarantees.
 3. Never promise search rankings, traffic, or business results.
 3b. All prices and delivery dates are unconfirmed: never quote a price, estimate, or delivery date yourself. Refer those to the team via /contact (reply within 24 hours, Mon-Sat).
+3c. A deadline the visitor states is a preference, not a commitment: record it in the brief timeline, call it a target in your reply, and say the team will confirm feasibility.
 4. Keep replies to 2-4 short sentences of plain text (no markdown, no bullet lists) unless the user asks for a list.
 5. When the visitor describes a project or asks for a quote, say the fastest path is the project brief form at /contact (reply within 24 hours, Mon-Sat) and offer to summarise what they told you so they can paste it there.
 6. If the FACTS block does not cover a question, say you are not sure rather than guessing.`;
@@ -97,17 +98,21 @@ const MODEL_FALLBACKS = [
 ];
 
 /**
- * Brief-collection addendum: the model keeps a running structured draft of the
- * visitor's project brief and re-emits it every turn inside a fenced json
- * block. The widget stores that draft and sends it back with the next turn,
- * which is what lets the assistant remember details after older messages drop
- * out of the 12-message transcript window.
+ * Structured-output contract: the model answers with ONE json object holding
+ * the customer-facing reply and the running project brief. The widget stores
+ * the brief and re-sends it every turn, which is what lets the assistant
+ * remember details after older messages drop out of the transcript window.
  */
-const BRIEF_INSTRUCTIONS = `When the visitor shares project details (business name, wanted service, requirements, timeline, budget, their name or email), keep the conversation natural and ALSO maintain a structured project brief. End EVERY reply with one fenced json block, nothing after it, shaped exactly like:
-\`\`\`json
-{"business":"","service":"","requirements":"","timeline":"","budget":"","contactName":"","email":""}
-\`\`\`
-Fill only what the visitor has actually stated; copy forward every value from the provided brief draft; leave unknown slots as empty strings. Never invent values, and never mention the json block in the visible reply.`;
+const SERVICE_TITLES = STUDIO_SERVICES.map((s) => s.title);
+
+const TURN_INSTRUCTIONS = [
+  "OUTPUT FORMAT: respond with ONE valid JSON object and nothing else:",
+  '{"reply": string, "brief": {"business": string, "service": string, "requirements": string, "timeline": string, "budget": string, "contactName": string, "email": string}}',
+  "reply is the customer-facing message: plain text only, no markdown, no json, no code fences, no internal notes.",
+  "brief carries the running project brief: copy forward every value from the provided draft, fill in only facts the visitor has actually stated, leave unknown slots as empty strings, never invent values.",
+  `brief.service must use one of these exact catalog titles whenever the request clearly maps (for example a restaurant or cafe website maps to "${SERVICE_TITLES[0]}"): ${SERVICE_TITLES.join(" | ")}.`,
+  "Conversation rules: answer the visitor's question first, then ask at most ONE follow-up question; never re-ask for details already present in the brief; treat any deadline the visitor states as a preference the team must confirm (record it in brief.timeline, call it a target in the reply, never a promise); budget stays optional and all service pillars are in scope for inquiries.",
+].join("\n");
 
 function mergeBrief(previous: BriefDraft, raw: unknown): BriefDraft {
   const parsed = briefDraftSchema.safeParse(raw);
@@ -120,24 +125,61 @@ function mergeBrief(previous: BriefDraft, raw: unknown): BriefDraft {
   return next;
 }
 
-const BRIEF_FENCE = /```json\s*([\s\S]*?)```/g;
+/** Remove code fences and a balanced raw JSON object from visible text. */
+function stripArtifacts(text: string): string {
+  let out = text.replace(/```(?:json)?[\s\S]*?```/g, " ");
+  const first = out.indexOf("{");
+  if (first !== -1) {
+    let depth = 0;
+    let end = -1;
+    for (let i = first; i < out.length; i++) {
+      if (out[i] === "{") depth += 1;
+      else if (out[i] === "}") {
+        depth -= 1;
+        if (depth === 0) {
+          end = i;
+          break;
+        }
+      }
+    }
+    if (end > first) out = out.slice(0, first) + " " + out.slice(end + 1);
+  }
+  return out.replace(/\s+/g, " ").trim();
+}
 
-function extractBrief(text: string): { reply: string; raw: unknown } {
-  let raw: unknown = null;
-  let last: RegExpExecArray | null = null;
-  BRIEF_FENCE.lastIndex = 0;
-  let match: RegExpExecArray | null;
-  while ((match = BRIEF_FENCE.exec(text)) !== null) last = match;
-  if (last) {
+/**
+ * Layered parse of the model's structured answer. JSON mode misbehaves
+ * occasionally (truncated objects, stray fences, prose around the object), so
+ * each layer degrades gracefully and the visitor never sees raw JSON.
+ */
+function tryParseTurn(text: string): { reply: string; briefRaw: unknown } | null {
+  const candidates: string[] = [text];
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced) candidates.push(fenced[1]);
+  const first = text.indexOf("{");
+  const last = text.lastIndexOf("}");
+  if (first !== -1 && last > first) candidates.push(text.slice(first, last + 1));
+  for (const candidate of candidates) {
     try {
-      raw = JSON.parse(last[1]);
+      const obj = JSON.parse(candidate) as { reply?: unknown; brief?: unknown };
+      if (obj && typeof obj.reply === "string" && obj.reply.trim()) {
+        return { reply: obj.reply.trim(), briefRaw: obj.brief };
+      }
     } catch {
-      raw = null;
+      // try the next candidate
     }
   }
-  BRIEF_FENCE.lastIndex = 0;
-  const reply = text.replace(BRIEF_FENCE, "").trim();
-  return { reply, raw };
+  // Last salvage: a truncated object still holds a complete reply string.
+  const salvaged = text.match(/"reply"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  if (salvaged) {
+    try {
+      const reply = JSON.parse(`"${salvaged[1]}"`) as string;
+      if (reply.trim()) return { reply: reply.trim(), briefRaw: null };
+    } catch {
+      // fall through
+    }
+  }
+  return null;
 }
 
 /**
@@ -181,6 +223,10 @@ export async function getAssistantReply(
           messages: chat,
           max_tokens: 1024,
           temperature: 0.7,
+          // Groq's OpenAI-compatible JSON mode: the model must answer with a
+          // single JSON object, which keeps internal structure out of the
+          // customer-facing reply even when the model gets chatty.
+          response_format: { type: "json_object" },
         }),
       });
     } catch (err) {
@@ -209,7 +255,7 @@ export async function getAssistantReply(
       SYSTEM_PROMPT,
       buildGrounding(),
       `PROJECT BRIEF DRAFT SO FAR: ${JSON.stringify(briefSoFar)}`,
-      BRIEF_INSTRUCTIONS,
+      TURN_INSTRUCTIONS,
     ].join("\n\n");
     let chat: GroqMessage[] = [
       { role: "system", content: systemContent },
@@ -307,11 +353,19 @@ export async function getAssistantReply(
     if (!text) {
       throw new AssistantUnavailableError("upstream", "Empty Groq response");
     }
-    const { reply, raw } = extractBrief(text);
-    if (!reply) {
+    const turn = tryParseTurn(text);
+    if (turn) {
+      const reply = stripArtifacts(turn.reply);
+      if (reply) {
+        return { reply, brief: mergeBrief(briefSoFar, turn.briefRaw) };
+      }
+    }
+    // Every structured-parse layer failed: show cleaned prose, keep the draft.
+    const cleaned = stripArtifacts(text);
+    if (!cleaned) {
       throw new AssistantUnavailableError("upstream", "Empty Groq response");
     }
-    return { reply, brief: mergeBrief(briefSoFar, raw) };
+    return { reply: cleaned, brief: briefSoFar };
   }
   if (quotaSeen) {
     throw new AssistantUnavailableError("quota", "Groq quota exceeded (429)");
