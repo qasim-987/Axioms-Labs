@@ -14,10 +14,14 @@ export interface BackendEnv {
   contactFromEmail: string;
   contactWebhookUrl: string;
   supabaseUrl: string;
+  /** Optional override for JWKS discovery (defaults to supabaseUrl). */
+  staffJwksUrl: string;
   supabaseServiceRoleKey: string;
   groqApiKey: string;
   groqModel: string;
   groqBaseUrl: string;
+  /** Comma-separated staff emails allowed into the private inquiry dashboard. */
+  staffEmails: string[];
   /** Optional distributed rate-limit store. Both must be set to activate; no extra dependency is used. */
   upstashRedisRestUrl: string;
   upstashRedisRestToken: string;
@@ -81,10 +85,12 @@ export const env: BackendEnv = {
   contactFromEmail: process.env.CONTACT_FROM_EMAIL || "Axioms Lab <info@axiomslab.com>",
   contactWebhookUrl: process.env.CONTACT_WEBHOOK_URL || "",
   supabaseUrl: process.env.SUPABASE_URL || "",
+  staffJwksUrl: process.env.SUPABASE_JWKS_URL || "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
   groqApiKey: process.env.GROQ_API_KEY || "",
   groqModel: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
   groqBaseUrl: process.env.GROQ_BASE_URL || "https://api.groq.com/openai",
+  staffEmails: parseOriginList(process.env.STAFF_EMAILS || ""),
   upstashRedisRestUrl: process.env.UPSTASH_REDIS_REST_URL || "",
   upstashRedisRestToken: process.env.UPSTASH_REDIS_REST_TOKEN || "",
 };

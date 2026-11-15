@@ -33,8 +33,20 @@ export type BriefDraft = z.infer<typeof briefDraftSchema>;
  * brief, so every required slot must be present. Budget stays optional by
  * product decision — plenty of visitors genuinely do not have one yet.
  */
+/**
+ * Conversation context travels with the submission ONLY when the visitor
+ * ticked the explicit consent checkbox in the widget; the backend stores it
+ * only when this flag is true.
+ */
+const contextMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().min(1).max(1500),
+});
+
 export const projectBriefSubmissionSchema = z.object({
   idempotencyKey: z.string().uuid(),
+  includeContext: z.boolean().optional(),
+  context: z.array(contextMessageSchema).max(12).optional(),
   business: z.string().trim().min(2).max(200),
   service: z.string().trim().min(2).max(200),
   requirements: z.string().trim().min(10).max(4000),

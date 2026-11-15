@@ -62,6 +62,7 @@ export default function AssistantWidget() {
   const [submitted, setSubmitted] = useState(false);
   const [submittedId, setSubmittedId] = useState("");
   const [sendingBrief, setSendingBrief] = useState(false);
+  const [includeContext, setIncludeContext] = useState(false);
   const [briefError, setBriefError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const atBottomRef = useRef(true);
@@ -153,6 +154,8 @@ export default function AssistantWidget() {
     try {
       const res = await submitProjectBrief({
         idempotencyKey: briefKey,
+        includeContext,
+        context: includeContext ? messages.slice(-12) : undefined,
         business: brief.business || "",
         service: brief.service || "",
         requirements: brief.requirements || "",
@@ -192,6 +195,7 @@ export default function AssistantWidget() {
     }
     setBriefKey(key);
     setBrief({});
+    setIncludeContext(false);
     setSubmitted(false);
     setSubmittedId("");
     setShowBrief(false);
@@ -368,6 +372,18 @@ export default function AssistantWidget() {
                     {briefError}
                   </p>
                 )}
+                <label className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-[#6A6A71]">
+                  <input
+                    type="checkbox"
+                    checked={includeContext}
+                    onChange={(e) => setIncludeContext(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-[#0061FD]"
+                  />
+                  <span>
+                    Include our chat conversation with this brief so the team
+                    sees the full context (optional).
+                  </span>
+                </label>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"

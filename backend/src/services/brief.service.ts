@@ -189,6 +189,8 @@ async function insertBriefRow(
       message: sanitizePlainText(renderBriefText(brief)),
       source: "assistant_brief",
       brief_json: brief,
+      // Stored only with the visitor's explicit consent (widget checkbox).
+      conversation_context: brief.includeContext === true ? brief.context || [] : null,
       email_delivered: false,
       received_at: receivedAt,
     }),

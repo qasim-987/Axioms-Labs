@@ -120,6 +120,8 @@ test("confirmed brief stores first and reports success only after delivery", asy
   assert.equal(row.budget, "Unspecified");
   assert.match(row.message, /Requirements:/);
   assert.equal(row.brief_json.business, "Bluebird Bakery");
+  // No consent flag -> no conversation context stored, ever.
+  assert.equal(row.conversation_context, null);
 
   assert.equal(scenario.resendCalls, 1);
   assert.equal(scenario.patchCalls.length, 1);
@@ -153,6 +155,17 @@ test("failed delivery resumes on retry with the same idempotency key", async () 
   assert.equal(second.body.status, "delivered");
   assert.equal(scenario.insertCalls.length, 1); // still one row, no duplicate
   assert.equal(scenario.patchCalls.length, 1);
+});
+
+test("conversation context is stored only with explicit consent", async () => {
+  const context = [
+    { role: "user", content: "We need a menu page." },
+    { role: "assistant", content: "Noted - adding it to your brief." },
+  ];
+  const { status } = await postBrief({ ...BRIEF, includeContext: true, context });
+  assert.equal(status, 200);
+  assert.equal(scenario.insertCalls.length, 1);
+  assert.deepEqual(scenario.insertCalls[0].conversation_context, context);
 });
 
 test("invalid briefs are rejected before touching storage", async () => {

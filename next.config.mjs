@@ -175,12 +175,25 @@ const nextConfig = {
   async rewrites() {
     const backendUrl =
       process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:4000";
-    return [
+    const rewrites = [
       {
         source: "/api/:path*",
         destination: `${backendUrl}/api/:path*`,
       },
     ];
+    /**
+     * Local-development bridge only: when SUPABASE_STUB_URL is set, /sb/* is
+     * proxied to a local Supabase stub so the staff dashboard can be exercised
+     * end-to-end without exposing sandbox-internal ports to the browser.
+     * Unset in production, so this rewrite never ships.
+     */
+    if (process.env.SUPABASE_STUB_URL) {
+      rewrites.push({
+        source: "/sb/:path*",
+        destination: `${process.env.SUPABASE_STUB_URL}/:path*`,
+      });
+    }
+    return rewrites;
   },
   async headers() {
     /**
