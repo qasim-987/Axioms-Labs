@@ -28,14 +28,14 @@ export const metadata: Metadata = {
     apple: [{ url: "/brand/axl-monogram-512.png", type: "image/png", sizes: "512x512" }],
   },
   metadataBase: new URL(SITE_URL),
-  title: "Axioms Lab — UI/UX Web Design, Web Development & AI Agents",
+  title: "Axioms Lab — AI Agents, Web Development & UI/UX Web Design",
   description:
-    "Axioms Lab offers UI/UX Web Design, Web Development, and AI Agents to help businesses create clear customer experiences, reliable digital products, and practical automation. Operating from Kuopio, Finland and Lahore, Pakistan for clients worldwide.",
+    "Axioms Lab builds practical AI Agents, reliable Web Development, and clear UI/UX Web Design — helping businesses create practical automation, dependable digital products, and clear customer experiences. Operating from Kuopio, Finland and Lahore, Pakistan for clients worldwide.",
   keywords: [
     "Axioms Lab",
+    "AI Agents",
     "Web Development",
     "UI/UX Web Design",
-    "AI Agents",
     "Next.js Agency",
     "Figma Design Systems",
     "Kuopio Web Agency",
@@ -43,9 +43,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: SITE_NAME }],
   openGraph: {
-    title: "Axioms Lab — UI/UX Web Design, Web Development & AI Agents",
+    title: "Axioms Lab — AI Agents, Web Development & UI/UX Web Design",
     description:
-      "UI/UX Web Design, Web Development, and Practical AI Agents — Kuopio, Finland & Lahore, Pakistan.",
+      "Practical AI Agents, reliable Web Development, and clear UI/UX Web Design — Kuopio, Finland & Lahore, Pakistan.",
     url: SITE_URL,
     siteName: SITE_NAME,
     locale: "en_US",
@@ -55,16 +55,21 @@ export const metadata: Metadata = {
         url: `${SITE_URL}/og/axioms-lab-og.png`,
         width: 1200,
         height: 630,
-        alt: "Axioms Lab — AXL monogram with wordmark and service line",
+        alt: "Axioms Lab lockup — AI Agents, Web Development, UI/UX Web Design",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Axioms Lab — UI/UX Web Design, Web Development & AI Agents",
+    title: "Axioms Lab — AI Agents, Web Development & UI/UX Web Design",
     description:
-      "UI/UX Web Design, Web Development, and Practical AI Agents.",
-    images: [`${SITE_URL}/og/axioms-lab-og.png`],
+      "Practical AI Agents, reliable Web Development, and clear UI/UX Web Design.",
+    images: [
+      {
+        url: `${SITE_URL}/og/axioms-lab-og.png`,
+        alt: "Axioms Lab lockup — AI Agents, Web Development, UI/UX Web Design",
+      },
+    ],
   },
   robots: {
     index: true,
@@ -101,9 +106,9 @@ const organizationJsonLd = {
     },
   ],
   knowsAbout: [
+    "AI Agents",
     "Web Development",
     "UI/UX Web Design",
-    "AI Agents",
     "Next.js & TypeScript",
     "Figma Design Systems",
   ],
