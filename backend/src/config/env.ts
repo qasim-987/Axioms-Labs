@@ -22,6 +22,12 @@ export interface BackendEnv {
   groqBaseUrl: string;
   /** Comma-separated staff emails allowed into the private inquiry dashboard. */
   staffEmails: string[];
+  /** WhatsApp Cloud API wiring (all server-only). */
+  whatsappVerifyToken: string;
+  whatsappAppSecret: string;
+  whatsappAccessToken: string;
+  whatsappPhoneNumberId: string;
+  whatsappApiVersion: string;
   /** Optional distributed rate-limit store. Both must be set to activate; no extra dependency is used. */
   upstashRedisRestUrl: string;
   upstashRedisRestToken: string;
@@ -91,6 +97,11 @@ export const env: BackendEnv = {
   groqModel: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
   groqBaseUrl: process.env.GROQ_BASE_URL || "https://api.groq.com/openai",
   staffEmails: parseOriginList(process.env.STAFF_EMAILS || ""),
+  whatsappVerifyToken: process.env.WHATSAPP_VERIFY_TOKEN || "",
+  whatsappAppSecret: process.env.WHATSAPP_APP_SECRET || "",
+  whatsappAccessToken: process.env.WHATSAPP_ACCESS_TOKEN || "",
+  whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || "",
+  whatsappApiVersion: process.env.WHATSAPP_API_VERSION || "v25.0",
   upstashRedisRestUrl: process.env.UPSTASH_REDIS_REST_URL || "",
   upstashRedisRestToken: process.env.UPSTASH_REDIS_REST_TOKEN || "",
 };

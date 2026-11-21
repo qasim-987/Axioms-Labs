@@ -8,6 +8,7 @@ import { contactRouter } from "./routes/contact.routes";
 import { catalogRouter } from "./routes/catalog.routes";
 import { assistantRouter } from "./routes/assistant.routes";
 import { staffRouter } from "./routes/staff.routes";
+import { whatsappRouter } from "./routes/whatsapp.routes";
 import { STUDIO_LOCATIONS, STUDIO_SERVICES } from "./services/catalog.service";
 
 export function createBackendApp() {
@@ -45,6 +46,11 @@ export function createBackendApp() {
   );
 
   // Strict JSON body limit to mitigate payload DoS
+  /**
+   * WhatsApp webhook needs the exact raw bytes Meta signed, so this path is
+   * captured with express.raw BEFORE the JSON body parser runs.
+   */
+  app.use("/api/whatsapp/webhook", express.raw({ type: "*/*", limit: "1mb" }));
   app.use(express.json({ limit: "32kb" }));
   app.use(requestLogger);
 
@@ -70,6 +76,7 @@ export function createBackendApp() {
   app.use("/api", catalogRouter);
   app.use("/api", assistantRouter);
   app.use("/api", staffRouter);
+  app.use("/api", whatsappRouter);
 
   // 404 JSON Handler
   app.use((_req: Request, res: Response) => {
