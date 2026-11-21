@@ -49,6 +49,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/contact`,
       lastModified: STATIC_CONTENT_LASTMOD,
     },
+    {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: STATIC_CONTENT_LASTMOD,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: STATIC_CONTENT_LASTMOD,
+    },
   ];
 
   const serviceRoutes: MetadataRoute.Sitemap = [...servicesData, ...retiredServicePages].map((s) => ({

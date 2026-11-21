@@ -329,6 +329,18 @@ export default function Footer() {
             >
               Get in Touch
             </Link>
+            <Link
+              href="/privacy-policy"
+              className="hover:text-[#121317] transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-[#121317] transition-colors"
+            >
+              Terms
+            </Link>
           </div>
         </div>
       </div>
