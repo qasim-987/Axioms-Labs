@@ -6,7 +6,6 @@ import SplitTextReveal from "./SplitTextReveal";
 import { submitContactInquiry } from "@/lib/apiClient";
 import { servicesData } from "@/data/services";
 import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
-import { PricingTrustCopy } from "./LaunchPricing";
 import { MOTION_EASE } from "@/lib/motionTokens";
 import { SITE_EMAIL } from "@/config/site";
 import {
@@ -323,7 +322,9 @@ export default function ContactSection() {
                           </option>
                         ))}
                       </select>
-                      <PricingTrustCopy />
+                      <p className="pricing-trust text-xs leading-relaxed text-[#6A6A71]">
+                        {pricing.copy.engagement} {pricing.copy.disclaimer}
+                      </p>
                     </div>
                   </div>
 

@@ -1,22 +1,13 @@
-/** Owner-supplied portfolio-launch placeholders, NOT market research or fixed quotes. */
+/**
+ * Engagement-first pricing stance (owner directive, November 2026): the site
+ * publishes NO price list. Every project is quoted individually after a
+ * scoping conversation (AI assistant brief or contact form), so visitors are
+ * invited into a conversation instead of being screened by numbers.
+ *
+ * The budget bands below are the visitor's OWN budget hint captured in the
+ * brief - never published rates - and the default stays "Not sure yet".
+ */
 export const pricing = {
-  currency: "USD", // TODO(owner): confirm
-  locale: "en-US", // TODO(owner): confirm
-  services: {
-    "ui-ux-design": {
-      startingPrice: 300, // TODO(owner): confirm
-      typicalRange: [300, 1500], // TODO(owner): confirm
-    },
-    "web-development": {
-      startingPrice: 600, // TODO(owner): confirm
-      typicalRange: [600, 3500], // TODO(owner): confirm
-      customAppStartingPrice: 2000, // TODO(owner): confirm
-    },
-    "ai-agents": {
-      startingPrice: 800, // TODO(owner): confirm
-      typicalRange: [800, 5000], // TODO(owner): confirm
-    },
-  },
   budgetBands: [
     "Under $500", // TODO(owner): confirm
     "$500 - $1,500", // TODO(owner): confirm
@@ -26,15 +17,9 @@ export const pricing = {
     "Not sure yet, let's talk", // TODO(owner): confirm
   ],
   copy: {
-    launch: "Launch pricing for our first clients", // TODO(owner): confirm
-    consultation: "Free 30-minute consultation", // TODO(owner): confirm offer before enabling
-    showConsultation: false, // TODO(owner): confirm; no unverified free offer is published
-    disclaimer: "Starting estimates only. Final scope and quote are agreed before work begins.",
+    engagement:
+      "No public price list - every project is quoted individually after a short scoping chat.",
+    disclaimer: "Scope and quote are agreed in writing before work begins.",
   },
 } as const;
-export type PricedService = keyof typeof pricing.services;
 export const DEFAULT_BUDGET: string = pricing.budgetBands[5];
-export const formatPrice = (value:number) => new Intl.NumberFormat(pricing.locale,{style:"currency",currency:pricing.currency,maximumFractionDigits:0}).format(value);
-export function getServicePricing(slug:string) { return pricing.services[slug as PricedService]; }
-export function startingPriceText(slug:string) { const value=getServicePricing(slug);return value ? `Starting from ${formatPrice(value.startingPrice)}` : "Scope and quote on request"; }
-export function pricingDescription(slug:string) { const value=getServicePricing(slug);return value?`${startingPriceText(slug)}. Typical project range ${formatPrice(value.typicalRange[0])}–${formatPrice(value.typicalRange[1])}. ${pricing.copy.disclaimer}`:""; }

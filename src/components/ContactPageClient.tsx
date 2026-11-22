@@ -2,7 +2,6 @@
 
 
 import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
-import { PricingTrustCopy } from "@/components/LaunchPricing";
 import React, { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 import LightRays from "@/components/LightRays";
@@ -352,7 +351,9 @@ export default function DedicatedContactPage() {
                       >
                         {pricing.budgetBands.map(band=><option key={band} value={band}>{band}</option>)}
                       </select>
-                  <PricingTrustCopy />
+                  <p className="pricing-trust text-xs leading-relaxed text-[#6A6A71]">
+                    {pricing.copy.engagement} {pricing.copy.disclaimer}
+                  </p>
                     </div>
                   </div>
 

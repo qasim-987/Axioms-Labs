@@ -49,8 +49,10 @@ export default function ServicesIndexPage() {
           </h1>
           <p className="max-w-2xl text-base sm:text-lg text-[#45474D] leading-relaxed mb-12">
             Axioms Lab works across three connected services. Every engagement
-            is scoped in clear weekly milestones, priced with published starting
-            estimates, and delivered with full source ownership.
+            is scoped in clear weekly milestones and quoted per project - we
+            publish no price list, because no two builds are the same. Start
+            with the AI assistant or a short brief, and get a scoped quote
+            within 24 hours.
           </p>
 
           <div className="grid md:grid-cols-2 gap-6">

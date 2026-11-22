@@ -11,7 +11,7 @@ import {
 } from "@/lib/apiClient";
 
 const GREETING =
-  "Hi! I'm an AI assistant for Axioms Lab. Ask me about our services, selected work, or how to start a project - for prices and dates I'll point you to our team.";
+  "Hi! I'm the Axioms Lab AI assistant. Ask me about our services and selected work, or start your project brief right here - I gather the details as we talk so our team can send you a scoped quote.";
 const FALLBACK =
   "The assistant is unavailable right now. The project brief form at /contact always works.";
 const SUBMITTED_NOTE =
@@ -67,6 +67,14 @@ export default function AssistantWidget() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const atBottomRef = useRef(true);
   const forceScrollRef = useRef(false);
+
+  // Service pages invite visitors into the assistant with a CTA button that
+  // dispatches "axl:open-assistant"; opening here keeps that a pure UI event.
+  useEffect(() => {
+    const openFromCta = () => setOpen(true);
+    window.addEventListener("axl:open-assistant", openFromCta);
+    return () => window.removeEventListener("axl:open-assistant", openFromCta);
+  }, []);
 
   useEffect(() => {
     setBriefKey(loadBriefKey());
@@ -442,7 +450,7 @@ export default function AssistantWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 maxLength={1500}
-                placeholder="Ask about services, work, pricing approach…"
+                placeholder="Ask about services, work, or start a brief…"
                 aria-label="Message the Axioms Lab assistant"
                 className="min-w-0 flex-1 rounded-xl border border-[#212226]/15 bg-[#F8F9FC] px-3 py-2 text-base text-[#121317] placeholder:text-[#6A6A71] focus:border-[#0061FD] focus:outline-none"
               />
