@@ -1,7 +1,6 @@
 "use client";
 
 import { pricing, DEFAULT_BUDGET } from "@/config/pricing";
-import LaunchPricing, { PricingTrustCopy } from "@/components/LaunchPricing";
 import ToolChipContent from "@/components/ToolChipContent";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -172,7 +171,36 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
             <p className="text-base sm:text-lg text-[#45474D] leading-relaxed font-normal mb-8 max-w-3xl mx-auto">
               {service.longDesc}
             </p>
-              <LaunchPricing slug={service.slug} />
+              <div className="mb-8 w-full max-w-xl mx-auto p-5 sm:p-6 rounded-2xl bg-[#F8F9FC] border border-[#212226]/[0.08] text-left">
+                <p className="text-sm font-semibold text-[#121317] mb-1.5">
+                  Scope &amp; estimate in minutes
+                </p>
+                <p className="text-xs sm:text-sm text-[#45474D] leading-relaxed mb-4">
+                  We publish no price list, because no two builds are the
+                  same. Chat with the Axioms Lab AI assistant now - it gathers
+                  your requirements as you talk, and our team follows up with
+                  a scoped quote within 24 hours.
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      window.dispatchEvent(new Event("axl:open-assistant"))
+                    }
+                    className="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-[#3186FF] hover:bg-[#0061FD] text-white text-xs font-semibold uppercase tracking-wider transition-colors"
+                  >
+                    <Bot className="w-4 h-4" />
+                    Chat with the AI assistant
+                  </button>
+                  <a
+                    href="#scope-form"
+                    className="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-[#FFFFFF] border border-[#212226]/[0.1] hover:border-[#3186FF]/40 text-[#121317] text-xs font-semibold uppercase tracking-wider transition-colors"
+                  >
+                    Send a brief instead
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
 
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
               <span className="px-3.5 py-1.5 rounded-full bg-[#F8F9FC] border border-[#212226]/[0.08] text-[#121317] font-medium">
@@ -359,7 +387,10 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
           </div>
 
           {/* Dedicated Inline Service Scoping Form */}
-          <div className="mb-24 p-8 sm:p-12 rounded-3xl bg-[#F8F9FC] border border-[#212226]/[0.1] shadow-[0_20px_56px_rgba(18,19,23,0.06)]">
+          <div
+            id="scope-form"
+            className="mb-24 p-8 sm:p-12 rounded-3xl bg-[#F8F9FC] border border-[#212226]/[0.1] shadow-[0_20px_56px_rgba(18,19,23,0.06)] scroll-mt-28"
+          >
             <div className="max-w-2xl mb-8">
               <span className="text-xs font-mono uppercase tracking-widest text-[#3186FF] font-semibold mb-2 block">
                 START YOUR PROJECT
@@ -483,7 +514,9 @@ export default function ServiceDetailClient({ service, otherServices }: Props) {
                   >
                     {pricing.budgetBands.map(band=><option key={band} value={band}>{band}</option>)}
                   </select>
-                  <PricingTrustCopy />
+                  <p className="pricing-trust text-xs leading-relaxed text-[#6A6A71]">
+                    {pricing.copy.engagement} {pricing.copy.disclaimer}
+                  </p>
                 </div>
 
                 <div className="sm:col-span-2">

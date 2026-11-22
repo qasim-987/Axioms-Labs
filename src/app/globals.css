@@ -521,7 +521,7 @@ body {
 @media (max-width:1023px) {
  .responsive-tool-chip {display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;max-width:100%;white-space:nowrap;}
  .responsive-tool-logo {display:inline-flex;align-items:center;justify-content:center;flex:none;}
- .launch-pricing {max-width:100%;overflow-wrap:anywhere;}.pricing-trust {margin-top:6px;}
+ .pricing-trust {margin-top:6px;}
 }
 @media (max-width:639px) {
  .technology-pill {width:44px;height:44px;min-width:44px;min-height:44px;padding:0;justify-content:center;border-radius:50%;}
